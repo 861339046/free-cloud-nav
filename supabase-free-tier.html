@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supabase 免费层能做多大 · 免费云服务导航</title>
+<meta name="description" content="实测 Supabase 免费套餐：500MB Postgres、5 万 MAU、1GB 存储与真实边界，附 7 个踩坑，帮中文个人开发者零成本搭起小产品后端。">
+<meta name="keywords" content="Supabase,免费后端,Postgres,Firebase 替代,Auth,数据库,教程,踩坑,免费额度">
+<meta property="og:title" content="Supabase 免费层能做多大">
+<meta property="og:description" content="500MB 数据库 + 5 万月活 + 1GB 存储的真实边界与 7 个踩坑，零成本搭后端。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://keting.eu.org/supabase-free-tier">
+<link rel="canonical" href="https://keting.eu.org/supabase-free-tier">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:36px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:680px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:20px;margin-top:34px;border-left:4px solid var(--brand);padding-left:10px}
+  .post h3{font-size:17px;margin-top:22px}
+  .post p,.post li{font-size:15px;color:#374151}
+  ol.steps{counter-reset:s;padding-left:0;list-style:none}
+  ol.steps>li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;color:#92400e;margin:16px 0;font-size:14px}
+  .tip{background:var(--brand-soft);border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;color:#1e40af;margin:16px 0;font-size:14px}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.5}
+  code{font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+  .post a{color:var(--brand)}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Supabase 免费层能做多大</h1>
+  <p class="sub">开源 Firebase 替代：500MB Postgres + 5 万月活 + 1GB 存储的真实边界，附 7 个踩坑。</p>
+  <a class="btn" href="tutorials">← 返回教程列表</a>
+</header>
+<article class="post">
+  <p class="meta">分类：实测教程 · 最后更新：2026-09-30 · 适用：中文个人开发者</p>
+
+  <p><strong>Supabase</strong> 常被称作「开源版 Firebase」：它在一套界面里给您 <strong>Postgres 数据库 + 用户认证（Auth）+ 对象存储 + 实时订阅 + Edge Functions</strong>。对想做小产品后端、又不想自己拼 MySQL+Redis+登录系统的个人开发者，免费层几乎是「开箱即用」的最优解——注册即用、不绑卡也能跑起来。</p>
+
+  <div class="tip">本篇是<strong>实测向</strong>教程，重点在「免费层到底给多少」和「哪里会踩坑」。注册网址：<a href="https://supabase.com/" target="_blank" rel="noopener">supabase.com</a>。支持用 GitHub 账号直接登录，无需信用卡。</div>
+
+  <h2>一、免费层额度清单（先看清边界）</h2>
+  <p>Supabase 的免费套餐叫 <strong>Free plan</strong>，下面这些额度是 2026 年实测到的量级，做产品前心里先有数：</p>
+  <table>
+    <tr><th>资源</th><th>免费层额度</th><th>说明</th></tr>
+    <tr><td>数据库（Postgres）</td><td><strong>500 MB</strong></td><td>含数据 + 索引，超出需升级</td></tr>
+    <tr><td>对象存储（Storage）</td><td><strong>1 GB</strong></td><td>放图片 / 文件，另有带宽限制</td></tr>
+    <tr><td>出口带宽</td><td><strong>2 GB / 月</strong></td><td>用户下载产生的流量，图片站很快超标</td></tr>
+    <tr><td>Auth 月活用户（MAU）</td><td><strong>50,000</strong></td><td>这是 Supabase 最大卖点，5 万月活前不花钱</td></tr>
+    <tr><td>Edge Functions</td><td>500,000 次 / 月</td><td>跑轻量后端函数够用</td></tr>
+    <tr><td>项目数</td><td><strong>2 个</strong></td><td>超出需删除或升级；非活跃项目会被自动暂停</td></tr>
+    <tr><td>数据库连接</td><td>共享算力 + 并发上限</td><td>Serverless 必须走连接池，详见踩坑 5</td></tr>
+  </table>
+  <div class="warn">⚠️ 踩坑 1 — 免费层项目会「休眠」。一个项目 <strong>7 天无活跃请求会被自动暂停（paused）</strong>，再次访问时需要几秒冷启动唤醒。低频次的小工具尤其明显：用户第一次打开会卡一下。对策：用外部定时请求（如免费 Cron 或 UptimeRobot）保活，或接受首次延迟。</div>
+
+  <h2>二、适合用它做什么</h2>
+  <ul>
+    <li><strong>小产品 / MVP 后端</strong>：用户系统 + 数据库 + 文件存储一站搞定，不用自己搭。</li>
+    <li><strong>Firebase 的开源替代</strong>：数据存在您自己的 Postgres 里，不锁定、可导出。</li>
+    <li><strong>和前端搭配做全栈</strong>：前端放 Vercel / Cloudflare Pages（本站首页就是这么部署的），后端与数据放 Supabase。</li>
+    <li><strong>不适合</strong>：超大数据库、高并发写、需要长期不休眠的生产服务——这些该上付费层。</li>
+  </ul>
+
+  <h2>三、开通全流程（实测步骤）</h2>
+  <ol class="steps">
+    <li><strong>注册 / 登录。</strong>打开 supabase.com，点 Sign Up，可用 <strong>GitHub 账号</strong>一键登录，无需信用卡。</li>
+    <li><strong>新建组织（Organization）。</strong>首次会要求建一个组织，名字随意（如您的昵称或项目名），区域选「离用户近」的，如 <code>Singapore</code>、<code>Tokyo</code>、<code>Frankfurt</code>。</li>
+    <li><strong>新建项目（Project）。</strong>填项目名、设一个数据库密码（务必记下），选区域，<strong>套餐保持 Free</strong>。点 Create，初始化约 30–60 秒。</li>
+    <li><strong>拿到密钥。</strong>进项目后左侧 <code>Project Settings → API</code>，会看到：
+      <ul>
+        <li><code>Project URL</code>（形如 <code>https://xxxx.supabase.co</code>）</li>
+        <li><code>anon public key</code>（浏览器端用，可公开）</li>
+        <li><code>service_role key</code>（服务端用，<strong>绝不能暴露到前端</strong>）</li>
+      </ul>
+    </li>
+    <li><strong>拿数据库连接串。</strong>同页 <code>Connection string</code> 里有两种：<code>Direct connection</code>（端口 5432）和 <code>Connection pooling</code>（端口 6543，走 pgbouncer）。<strong>Serverless 环境务必用 pooler</strong>（详见踩坑 5）。</li>
+  </ol>
+
+  <h2>四、最小可跑示例</h2>
+  <p>先在 <code>SQL Editor</code> 建一张表：</p>
+  <pre><code>create table posts (
+  id bigint generated always as identity primary key,
+  title text,
+  created_at timestamptz default now()
+);
+-- 别忘了开启行级安全（见踩坑 6）
+alter table posts enable row level security;</code></pre>
+  <p>前端用官方 JS 客户端读写（只放 anon key）：</p>
+  <pre><code>import { createClient } from '@supabase/supabase-js'
+const supabase = createClient(
+  'https://YOUR-PROJECT.supabase.co',
+  'YOUR-ANON-KEY'   // 浏览器端只用 anon key
+)
+const { data, error } = await supabase
+  .from('posts').select('*')</code></pre>
+
+  <h2>五、7 个真实踩坑提醒</h2>
+
+  <div class="warn">⚠️ 踩坑 2 — 500MB 数据库上限。数据 + 索引都算，日志表、附件元数据也会占空间。小产品随手用没事，但别拿它当网盘元数据仓。超了只能升级付费计划。</div>
+
+  <div class="warn">⚠️ 踩坑 3 — Storage 1GB + 带宽 2GB/月。放用户上传图片、或做图床，很容易超标。图片类业务建议：小图走 Supabase，大文件 / 高频下载转 Cloudflare R2（免出口流量费，本站前文有讲）。</div>
+
+  <div class="warn">⚠️ 踩坑 4 — 仅 2 个免费项目。想多开几个试验田？不行。而且不活跃项目会被自动暂停释放资源。规划好：一个正式、一个折腾足矣。</div>
+
+  <div class="warn">⚠️ 踩坑 5 — 连接串用错会「连接数爆炸」。在 Vercel / Cloudflare Pages 这类 <strong>Serverless</strong> 环境，每次调用都可能新建连接；若用 Direct（5432），免费层并发连接很快耗尽、请求报错。正确做法：用 <strong>Connection pooling（6543）</strong> 那条 URL，并在连接参数加 <code>?pgbouncer=true</code>。</div>
+
+  <div class="warn">⚠️ 踩坑 6 — anon key 是公开的，<strong>必须开 RLS</strong>。前端代码里能看到 anon key，若不给表开「行级安全（Row Level Security）」，任何人都能读改写您的全部数据，等于裸奔。建表后务必 <code>enable row level security</code> 并写好策略。</div>
+
+  <div class="warn">⚠️ 踩坑 7 — 删除项目有 7 天宽限期。手滑删了项目别慌，删除后进入暂停态、7 天内可在控制台恢复；超过才真正销毁。同样，改套餐、清数据前先备份。</div>
+
+  <div class="tip">💡 组合拳：Supabase（数据 + 登录）+ Cloudflare Pages（前端托管，本站即此）+ R2（大文件存储）= 一个几乎零成本的全栈小产品底座，正好对应本站收录的免费服务矩阵。</div>
+
+  <h2>六、什么时候该升级付费</h2>
+  <p>出现下面任一信号，说明免费层到顶了：数据库快满、需要更多项目、受不了休眠冷启动、要自定义邮件域名 / SAML 登录 / 审计日志、或团队要协作。届时 Supabase 的 Pro 计划按需升级即可，迁移成本很低（数据都在您自己的 Postgres 里）。</p>
+
+  <p style="margin-top:24px"><a class="btn" href="tutorials">← 返回教程列表</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-09-30</div>
+  <div>本教程为实测经验整理，Supabase 政策可能变动，请以官方文档为准。</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实测教程 · 免费云服务导航</title>
+<meta name="description" content="中文个人开发者免费云服务的实测教程合集：Oracle 永久免费实例、Supabase 免费层边界等，附踩坑经验。">
+<meta name="keywords" content="免费云教程,Oracle,Supabase,实测,踩坑,个人开发者">
+<meta property="og:title" content="实测教程 · 免费云服务导航">
+<meta property="og:description" content="手把手实测免费云服务，附真实踩坑经验。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://keting.eu.org/tutorials">
+<link rel="canonical" href="https://keting.eu.org/tutorials">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:44px 20px 26px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:28px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .wrap{max-width:900px;margin:0 auto;padding:30px 20px 60px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,transform .15s}
+  .card:hover{box-shadow:0 8px 24px rgba(37,99,235,.10);transform:translateY(-2px)}
+  .card h3{margin:0;font-size:18px}
+  .card p{margin:0;font-size:14px;color:var(--muted);flex:1}
+  .card .go{color:var(--brand);font-weight:600;text-decoration:none;font-size:14px}
+  .card .go:hover{text-decoration:underline}
+  .soon{background:#f1f5f9;border-style:dashed}
+  .soon h3{color:var(--muted)}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>实测教程</h1>
+  <p class="sub">手把手实测免费云服务，附真实踩坑经验 —— 比纯链接清单更有用，帮您少走弯路。</p>
+  <a class="btn" href="/">← 返回免费云导航</a>
+</header>
+<div class="wrap">
+  <div class="grid">
+    <a class="card" href="oracle-free-instance">
+      <h3>Oracle Cloud 永久免费实例开通实测</h3>
+      <p>从注册、选区、创建 ARM A1 实例到 SSH 登录全流程，附 7 个真实踩坑，零成本拿一台常驻云服务器。</p>
+      <span class="go">阅读 →</span>
+    </a>
+    <a class="card" href="supabase-free-tier">
+      <h3>Supabase 免费层能做多大</h3>
+      <p>500MB Postgres + 5 万月活 + 1GB 存储的真实边界，附 7 个踩坑，帮您零成本搭起小产品后端。</p>
+      <span class="go">阅读 →</span>
+    </a>
+    <div class="card soon">
+      <h3>更多教程筹备中…</h3>
+      <p>计划补充：Cloudflare R2 + Pages 零成本图床、Vercel 免费函数跑 AI 小应用、Neon Serverless Postgres 实测等。有想看的也欢迎在导航站提交收录。</p>
+      <span class="go">敬请期待</span>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="updated">最后更新：2026-09-30</div>
+  <div>教程为实测经验整理，各服务政策可能变动，请以官方文档为准。</div>
+</footer>
+</body>
+</html>
