@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>免费云服务导航 · 个人开发者省钱清单</title>
+<meta name="description" content="面向中文个人开发者的免费云服务导航：静态托管、数据库、服务器、存储等真实免费额度清单，附适合场景与避坑提醒。">
+<meta name="keywords" content="免费云服务,免费云服务器,个人开发者,省钱,GitHub Pages,Vercel,Supabase,Oracle Cloud,免费托管">
+<meta property="og:title" content="免费云服务导航 · 个人开发者省钱清单">
+<meta property="og:description" content="真实可用的免费云服务清单，面向中文个人开发者，附踩坑评测。">
+<meta property="og:url" content="https://keting.eu.org/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#2563eb">
+<link rel="canonical" href="https://keting.eu.org/">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:48px 20px 28px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:28px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:16px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 60px}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:24px 0}
+  #search{flex:1;min-width:220px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;outline:none}
+  #search:focus{border-color:var(--brand)}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{padding:7px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;cursor:pointer;font-size:14px;color:var(--muted)}
+  .tag.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:8px;transition:box-shadow .15s,transform .15s}
+  .card:hover{box-shadow:0 8px 24px rgba(37,99,235,.10);transform:translateY(-2px)}
+  .card h3{margin:0;font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .cat{font-size:12px;color:var(--brand);background:var(--brand-soft);padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .desc{font-size:14px;color:var(--muted);margin:0;flex:1}
+  .note{font-size:13px;color:#b45309;background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;border-radius:6px}
+  .acts{display:flex;gap:12px;align-items:center;margin-top:2px}
+  .card a{color:var(--brand);text-decoration:none;font-size:14px;font-weight:600}
+  .card a:hover{text-decoration:underline}
+  .copy{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;font-family:inherit}
+  .copy:hover{background:var(--brand);color:#fff}
+  .empty{text-align:center;color:var(--muted);padding:40px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+  .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(20px);background:#1f2937;color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:99;max-width:90vw}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header>
+  <h1>免费云服务导航</h1>
+  <p class="sub">面向中文个人开发者的省钱清单 —— 只收真实可用的免费层 / 免费额度。每条附「适合谁」与「坑在哪」，帮您少踩雷。</p>
+  <a class="btn" href="https://github.com/861339046/free-cloud-nav/issues/new" target="_blank" rel="noopener">+ 提交收录</a>
+</header>
+<div class="wrap">
+  <div class="controls">
+    <input id="search" placeholder="搜索服务名、用途、关键词…" />
+  </div>
+  <div class="tags" id="tags"></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">没有匹配的结果，换个关键词试试。</div>
+</div>
+<footer>
+  <div class="updated">最后更新：2026-09-30</div>
+  <div>数据由社区整理，免费额度随各官网政策变动，请以官方页面为准。本导航不构成任何承诺。</div>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+const data = [
+  // 静态托管
+  {name:"GitHub Pages",cat:"静态托管",desc:"纯静态站点托管，完全免费，绑定自定义域名也免费。",note:"适合纯前端 / 文档站；不支持后端逻辑。",url:"https://pages.github.com/"},
+  {name:"Vercel",cat:"静态托管",desc:"前端 + Serverless 函数，免费额度对个人项目足够。",note:"Next.js 首选；免费层有带宽 / 函数调用限制。",url:"https://vercel.com/"},
+  {name:"Netlify",cat:"静态托管",desc:"Jamstack 友好，前端 + 函数 + 表单，免费层体验好。",note:"适合静态站 + 轻量后台。",url:"https://www.netlify.com/"},
+  {name:"Cloudflare Pages",cat:"静态托管",desc:"接入 Cloudflare 全球 CDN，前端托管免费且快。",note:"追求访问速度 / 国内可达性的好选择。",url:"https://pages.cloudflare.com/"},
+  // 后端与数据库
+  {name:"Supabase",cat:"后端与数据库",desc:"Postgres + Auth + 存储 + 实时，免费层可直接上手。",note:"小产品后端首选；免费层有项目数与算力限制。",url:"https://supabase.com/"},
+  {name:"MongoDB Atlas",cat:"后端与数据库",desc:"M0 共享集群永久免费，文档型数据库。",note:"适合非结构化数据；免费层存储 / 算力有限。",url:"https://www.mongodb.com/atlas"},
+  {name:"Railway",cat:"后端与数据库",desc:"一键部署后端服务，按用量有免费试用额度。",note:"额度政策曾调整，上线前请确认当前免费范围。",url:"https://railway.app/"},
+  {name:"Render",cat:"后端与数据库",desc:"Web Service / Postgres 均有免费层。",note:"冷启动较慢，适合非高频服务。",url:"https://render.com/"},
+  {name:"Neon",cat:"后端与数据库",desc:"Serverless Postgres，提供免费分支。",note:"按需计费，免费层适合开发与小规模。",url:"https://neon.tech/"},
+  {name:"Upstash",cat:"后端与数据库",desc:"Serverless Redis / Kafka，免费层可直接用。",note:"适合缓存 / 队列；按请求数计费。",url:"https://upstash.com/"},
+  {name:"TiDB Serverless",cat:"后端与数据库",desc:"HTAP 数据库 Serverless 版，免费层可用。",note:"兼容 MySQL；适合关系型 + 弹性伸缩。",url:"https://www.pingcap.com/tidb-serverless/"},
+  // 计算与服务器
+  {name:"Oracle Cloud",cat:"计算与服务器",desc:"永久免费 2 台微型实例（含 ARM）。",note:"需绑卡；账号审核有时较严，适合常驻小服务。",url:"https://www.oracle.com/cloud/free/"},
+  {name:"腾讯云轻量",cat:"计算与服务器",desc:"新用户常有免费体验 / 限时优惠实例。",note:"限时非永久；适合需要国内访问的场景。",url:"https://cloud.tencent.com/product/lighthouse"},
+  {name:"Fly.io",cat:"计算与服务器",desc:"全球部署应用，提供免费额度。",note:"免费额度有限，适合边缘部署尝鲜。",url:"https://fly.io/"},
+  // 存储
+  {name:"Cloudflare R2",cat:"存储",desc:"对象存储，免费额度 + 免出口流量费。",note:"适合图片 / 静态资源托管，成本极低。",url:"https://www.cloudflare.com/products/r2/"},
+  {name:"Backblaze B2",cat:"存储",desc:"对象存储，免费 10GB。",note:"适合备份 / 冷存储。",url:"https://www.backblaze.com/b2"},
+  // 其他工具
+  {name:"Web3Forms",cat:"其他工具",desc:"静态站接收联系表单，免费额度可用。",note:"无需后端即可收邮件，适合落地页。",url:"https://web3forms.com/"},
+  {name:"Resend",cat:"其他工具",desc:"事务邮件发送，提供免费额度。",note:"适合发注册 / 通知邮件。",url:"https://resend.com/"},
+  {name:"Hugging Face Spaces",cat:"其他工具",desc:"免费部署机器学习 Demo 与应用，社区生态强。",note:"适合 AI 演示；免费资源有限可能排队。",url:"https://huggingface.co/spaces"}
+];
+
+const grid = document.getElementById('grid');
+const tagsEl = document.getElementById('tags');
+const searchEl = document.getElementById('search');
+const emptyEl = document.getElementById('empty');
+
+const counts = {};
+data.forEach(d => counts[d.cat] = (counts[d.cat] || 0) + 1);
+const cats = ["全部", ...Array.from(new Set(data.map(d => d.cat)))];
+let activeCat = "全部";
+let kw = "";
+
+cats.forEach(c => {
+  const b = document.createElement('span');
+  b.className = 'tag' + (c === "全部" ? ' active' : '');
+  b.textContent = c === "全部" ? `全部 (${data.length})` : `${c} (${counts[c]})`;
+  b.onclick = () => {
+    activeCat = c;
+    [...tagsEl.children].forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    render();
+  };
+  tagsEl.appendChild(b);
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 1800);
+}
+function copyUrl(u) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(u).then(() => showToast('已复制链接')).catch(() => showToast('复制失败，请手动复制'));
+  } else {
+    showToast('当前环境不支持自动复制');
+  }
+}
+
+function render() {
+  const list = data.filter(d => {
+    const okCat = activeCat === "全部" || d.cat === activeCat;
+    const okKw = !kw || (d.name + d.desc + d.note + d.cat).toLowerCase().includes(kw.toLowerCase());
+    return okCat && okKw;
+  });
+  grid.innerHTML = list.map(d => `
+    <div class="card">
+      <h3>${d.name}<span class="cat">${d.cat}</span></h3>
+      <p class="desc">${d.desc}</p>
+      <div class="note">注意：${d.note}</div>
+      <div class="acts">
+        <a href="${d.url}" target="_blank" rel="noopener">访问官网 →</a>
+        <button class="copy" data-url="${d.url}">复制链接</button>
+      </div>
+    </div>`).join('');
+  emptyEl.style.display = list.length ? 'none' : 'block';
+}
+
+grid.addEventListener('click', e => {
+  if (e.target.classList.contains('copy')) copyUrl(e.target.dataset.url);
+});
+searchEl.addEventListener('input', e => { kw = e.target.value; render(); });
+render();
+</script>
+</body>
+</html>
