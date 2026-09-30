@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle Cloud 永久免费实例开通实测 · 免费云服务导航</title>
+<meta name="description" content="手把手实测 Oracle Cloud Always Free 永久免费实例：从注册、选区、创建 ARM A1 实例到 SSH 登录，附 7 个真实踩坑提醒，帮中文个人开发者零成本拿一台常驻云服务器。">
+<meta name="keywords" content="Oracle Cloud,永久免费,Always Free,ARM 实例,云服务器,免费服务器,开通教程,踩坑">
+<meta property="og:title" content="Oracle Cloud 永久免费实例开通实测">
+<meta property="og:description" content="从注册到 SSH 登录全流程 + 7 个真实踩坑，零成本拿一台常驻云服务器。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://keting.eu.org/oracle-free-instance">
+<link rel="canonical" href="https://keting.eu.org/oracle-free-instance">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:36px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:680px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:20px;margin-top:34px;border-left:4px solid var(--brand);padding-left:10px}
+  .post h3{font-size:17px;margin-top:22px}
+  .post p,.post li{font-size:15px;color:#374151}
+  ol.steps{counter-reset:s;padding-left:0;list-style:none}
+  ol.steps>li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;color:#92400e;margin:16px 0;font-size:14px}
+  .tip{background:var(--brand-soft);border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;color:#1e40af;margin:16px 0;font-size:14px}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.5}
+  code{font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+  .post a{color:var(--brand)}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Oracle Cloud 永久免费实例开通实测</h1>
+  <p class="sub">零成本拿一台常驻云服务器：从注册、选区、创建 ARM A1 实例到 SSH 登录，附 7 个真实踩坑。</p>
+  <a class="btn" href="/">← 返回免费云导航</a>
+</header>
+<article class="post">
+  <p class="meta">分类：实测教程 · 最后更新：2026-09-30 · 适用：中文个人开发者</p>
+
+  <p><strong>Oracle Cloud 的免费套餐（Always Free）</strong>是公认的「最厚道免费云」：它给的不是限时试用，而是<strong>永久免费</strong>。其中最香的是 ARM 架构的 Ampere A1 实例——最多 <strong>4 个 OCPU + 24GB 内存</strong>，可以拆成 1 台大机器或多台小机器，常年免费、不用绑着信用卡每月扣费（一次性验证后不再产生费用）。对个人开发者做常驻小服务、跑脚本、挂 Bot，非常合适。</p>
+
+  <div class="tip">本篇是<strong>实测向</strong>教程，重点在「怎么开通」和「哪里会踩坑」。注册网址：<a href="https://www.oracle.com/cloud/free/" target="_blank" rel="noopener">oracle.com/cloud/free</a>。开始前准备一张<strong>能完成小额预授权的信用卡/借记卡</strong>（验证用，不真正扣费）。</div>
+
+  <h2>一、两种「免费」先分清（别混淆）</h2>
+  <p>Oracle 的免费有两类，新手最容易搞错：</p>
+  <table>
+    <tr><th>类型</th><th>时长</th><th>额度</th><th>到期</th></tr>
+    <tr><td><strong>Always Free（永久免费）</strong></td><td>永久</td><td>2 台微型实例 或 ARM A1（4 OCPU/24GB）+ 200GB 存储</td><td>不注销就一直免费</td></tr>
+    <tr><td>免费试用（Free Trial）</td><td>30 天</td><td>赠 $300 额度，可试用付费规格</td><td>30 天后停止，未用额度作废</td></tr>
+  </table>
+  <div class="warn">⚠️ 踩坑 1：注册时选的是「免费套餐」，但创建实例若<strong>没勾选 Always Free 形状</strong>，会按量计费从信用卡扣钱。下文第 4 步会强调怎么确认。</div>
+
+  <h2>二、开通全流程（实测步骤）</h2>
+  <ol class="steps">
+    <li><strong>注册账号。</strong>填邮箱、设置密码、手机收验证码。到付款方式时绑定一张卡，Oracle 会做 <strong>$1（或等值本币）预授权</strong>验证，通常几天内释放、不真正扣款。手机号建议用真实号，收短信快。</li>
+    <li><strong>进入控制台并选「主页区域（Home Region）」。</strong>注册过程会让您选一个主页区域。注意：<strong>主页区域注册后不易更改</strong>，但您仍可以在其它支持 Always Free 的区域创建免费实例。新手建议选离自己近、且 A1 库存相对充足的区，如<code>首尔(icn)</code>、<code>大阪(kix)</code>、<code>孟买(bom)</code>。</li>
+    <li><strong>打开「计算 → 实例」。</strong>顶部搜索「实例」或左侧菜单 计算(Compute) → 实例(Instances)，点<strong>「创建实例」</strong>。</li>
+    <li><strong>关键：确认选了 Always Free 形状。</strong>在「配置」里：
+      <ul>
+        <li>选 <code>VM.Standard.A1.Flex</code>（ARM Ampere），形状旁会标注「Always Free eligible」；</li>
+        <li>OCPU 最多填 4、内存最多 24GB（免费上限，超了就计费）；</li>
+        <li>或选 x86 的 <code>VM.Standard.E2.1.Micro</code>（仅特定区有，1/8 OCPU + 1GB）。</li>
+      </ul>
+      页面右侧若显示预估费用为 <strong>$0.00/月</strong>，说明选对了。
+    </li>
+    <li><strong>选镜像。</strong>推荐 <code>Ubuntu 22.04</code> 或 <code>Oracle Linux</code>。Ubuntu 对中文开发者更友好。</li>
+    <li><strong>配置 SSH 密钥。</strong>选「生成密钥对」并下载私钥（<code>.key</code> 文件），<strong>务必保存好</strong>；或粘贴您已有的公钥。这是唯一登录方式，丢了只能控制台重置。</li>
+    <li><strong>创建并获取公网 IP。</strong>点「创建」，约 1–2 分钟就绪。实例详情页的<strong>公共 IP 地址</strong>就是您服务器的对外地址。</li>
+  </ol>
+
+  <h2>三、SSH 登录</h2>
+  <p>把下载的私钥权限收紧，然后登录（以 Ubuntu 为例，默认用户 <code>ubuntu</code>）：</p>
+  <pre><code>chmod 400 ~/Downloads/实例名.key
+ssh -i ~/Downloads/实例名.key ubuntu@&lt;您的公网IP&gt;</code></pre>
+  <p>登录成功即代表这台永久免费服务器已归您掌控。接下来装 Docker、跑脚本、挂服务都随您。</p>
+
+  <h2>四、7 个真实踩坑提醒</h2>
+
+  <div class="warn">⚠️ 踩坑 2 — A1 配额常「售罄」。很多区域长期显示 <code>Out of capacity</code> 或创建失败。对策：换区域（首尔/大阪/孟买轮流试）、换时段（凌晨相对容易）、或先在可用区创建 x86 微型实例占位。</div>
+
+  <div class="warn">⚠️ 踩坑 3 — 默认只开 22 端口。Oracle 的「安全列表（Security List）」默认只放行 SSH（22）。您要跑 Web 服务，必须手动加<strong>入站规则</strong>：协议 TCP、源 0.0.0.0/0、端口 80 和 443，否则外网访问不了。</div>
+
+  <div class="warn">⚠️ 踩坑 4 — 信用卡被拒。部分国内卡、预付卡会被 Oracle 风控拒掉。可换一张、或尝试绑定 PayPal（部分地区支持）。验证失败账号进不去控制台。</div>
+
+  <div class="warn">⚠️ 踩坑 5 — 误用试用额度。在控制台看到的 $300 是「免费试用」额度，有 30 天期限；而 Always Free 实例不消耗它。别把两者混为一谈，到期前把要常驻的服务落在 Always Free 形状上。</div>
+
+  <div class="warn">⚠️ 踩坑 6 — 区域库存不等于永久可用。即便某区今天有 A1 库存，删了实例后未必能立刻重建。重要服务建议做快照（免费引导卷额度内），便于恢复。</div>
+
+  <div class="warn">⚠️ 踩坑 7 — 账号可能被人工审核。极少数新账号注册后会进入人工审核（要求补充资料），通常几天内邮件通知。耐心等、按要求补材料即可，不是封号。</div>
+
+  <div class="tip">💡 小技巧：免费引导卷总额度约 200GB，您可以把 A1 实例的引导盘调到接近上限，顺带白拿一块大存储；再配合 Cloudflare R2（免流量费对象存储），静态资源成本几乎为零。</div>
+
+  <h2>五、小结</h2>
+  <p>Oracle Always Free 是个人开发者「零成本常驻云」的最优解之一。开通核心就三点：<strong>绑卡验证 → 创建时确认 Always Free 形状（费用显示 $0）→ 配好 SSH 密钥</strong>。剩下的大多是「选区库存」和「防火墙端口」两件事。拿到机器后，它就能和本站收录的 Cloudflare Pages、Supabase、R2 等免费服务组合出完整的小产品后端。</p>
+
+  <p style="margin-top:24px"><a class="btn" href="/">← 返回免费云导航</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-09-30</div>
+  <div>本教程为实测经验整理，Oracle 政策可能变动，请以官方文档为准。</div>
+</footer>
+</body>
+</html>
