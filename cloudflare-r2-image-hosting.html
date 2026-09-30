@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloudflare R2 + Pages 零成本图床 · 免费云服务导航</title>
+<meta name="description" content="实测用 Cloudflare R2（10GB 免费存储 + 免出口流量费）搭配 Pages Functions 搭一个零成本图床：开通流程、上传代码示例与 7 个真实踩坑。">
+<meta name="keywords" content="Cloudflare,R2,图床,对象存储,免流量费,Pages Functions,教程,踩坑,免费额度">
+<meta property="og:title" content="Cloudflare R2 + Pages 零成本图床">
+<meta property="og:description" content="10GB 免费存储 + 免出口流量费，搭一个零成本图床，附 7 个踩坑。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://keting.eu.org/cloudflare-r2-image-hosting">
+<link rel="canonical" href="https://keting.eu.org/cloudflare-r2-image-hosting">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:36px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:680px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:20px;margin-top:34px;border-left:4px solid var(--brand);padding-left:10px}
+  .post h3{font-size:17px;margin-top:22px}
+  .post p,.post li{font-size:15px;color:#374151}
+  ol.steps{counter-reset:s;padding-left:0;list-style:none}
+  ol.steps>li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;color:#92400e;margin:16px 0;font-size:14px}
+  .tip{background:var(--brand-soft);border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;color:#1e40af;margin:16px 0;font-size:14px}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.5}
+  code{font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+  .post a{color:var(--brand)}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cloudflare R2 + Pages 零成本图床</h1>
+  <p class="sub">R2 免费层 10GB 存储 + 免出口流量费，配 Pages Functions 上传 —— 自己搭一个不花一分钱的图床。</p>
+  <a class="btn" href="tutorials">← 返回教程列表</a>
+</header>
+<article class="post">
+  <p class="meta">分类：实测教程 · 最后更新：2026-09-30 · 适用：中文个人开发者</p>
+
+  <p><strong>Cloudflare R2</strong> 是 Cloudflare 的对象存储（对标 AWS S3），最大卖点是 <strong>「免出口流量费」</strong>——上传下载都不按流量扣钱（AWS S3 出口流量是出了名地贵）。对个人站长、图床、小产品存储来说，这点直接省掉最大的隐性成本。再配合 <strong>Pages Functions</strong>（本站首页就是 Cloudflare Pages 托管的），前端上传 → 函数转存 R2，一套下来零成本。</p>
+
+  <div class="tip">本篇是<strong>实测向</strong>教程，重点在「免费层给多少」和「哪里会踩坑」。控制台入口：<a href="https://dash.cloudflare.com/" target="_blank" rel="noopener">dash.cloudflare.com</a>。您需要有一个 Cloudflare 账号（本站域名就托管在这），但<strong>开 R2 必须绑一张信用卡</strong>，详见踩坑 1。</div>
+
+  <h2>一、免费层额度清单（先看清边界）</h2>
+  <p>R2 的免费额度叫 <strong>Free Tier</strong>，下面这些量级是 2026 年实测到的，做图床前心里先有数：</p>
+  <table>
+    <tr><th>资源</th><th>免费层额度</th><th>说明</th></tr>
+    <tr><td>存储空间</td><td><strong>10 GB</strong></td><td>含对象本身，超出 $0.015/GB·月</td></tr>
+    <tr><td>出口流量（Egress）</td><td><strong>免费</strong></td><td>这是 R2 最大卖点，下载不收费</td></tr>
+    <tr><td>A 类操作（写/列）</td><td><strong>1,000 万次 / 月</strong></td><td>上传、列举算 A 类，正常图床用不完</td></tr>
+    <tr><td>B 类操作（读）</td><td><strong>100 万次 / 月</strong></td><td>下载读取算 B 类，免费层偏紧，见踩坑 4</td></tr>
+    <tr><td>每次对象大小上限</td><td>300 MB（单对象）</td><td>单张图远小于此，图床足够</td></tr>
+  </table>
+  <div class="warn">⚠️ 踩坑 1 — 开 R2 必须绑卡，但不一定扣费。R2 要求账号绑定一张有效信用卡（或 PayPal）才能启用，<strong>免费层 10GB 内不扣钱</strong>，但要注意：绑卡后如果误开其他付费服务（如 Workers 超出、R2 超量）才会扣。对策：绑一张额度可控的卡，并定期看 Billing 页。</div>
+
+  <h2>二、适合用它做什么</h2>
+  <ul>
+    <li><strong>图床 / 文件床</strong>：博客配图、Markdown 贴图、小产品用户上传，免出口费最关键。</li>
+    <li><strong>Supabase 存储的「补充」</strong>：<a href="supabase-free-tier">Supabase 教程</a> 提到它存储仅 1GB + 带宽 2GB，大文件 / 高频下载转 R2 正好互补。</li>
+    <li><strong>静态资源 CDN</strong>：R2 自带 Cloudflare 全球加速，公开读直接当 CDN 用。</li>
+    <li><strong>不适合</strong>：需要复杂元数据检索、海量小文件（B 类操作超 100 万次会收费）、对数据主权要求极高的场景。</li>
+  </ul>
+
+  <h2>三、开通全流程（实测步骤）</h2>
+  <ol class="steps">
+    <li><strong>进入 R2 控制台。</strong>左侧菜单找到 <code>R2</code>（若没看到，先在 Account Home 点开 R2 并<strong>绑卡激活</strong>）。</li>
+    <li><strong>创建存储桶（Bucket）。</strong>点 <code>Create bucket</code>，填桶名（全局唯一，如 <code>my-img-bed</code>），区域选 <code>auto</code>（自动就近）。<strong>是否公开</strong>这里先选 <code>Private</code>（稍后单独配公开读，见踩坑 3），更稳妥。</li>
+    <li><strong>拿到桶信息。</strong>进桶后，记下 <code>Bucket name</code> 和 <code>Account ID</code>（在右侧 API 信息里），上传代码要用。</li>
+    <li><strong>建 API 令牌。</strong>进桶 <code>Manage R2 API tokens → Create API token</code>，权限选 <code>Object Read & Write</code>，作用域限定这个桶。保存好生成的 <code>Access Key ID</code> 和 <code>Secret Access Key</code>（只显示一次）。</li>
+    <li><strong>建一个 Pages 项目（或复用本站）。</strong>图床前端 + 上传函数跑在 Cloudflare Pages 上。可在现有 keting.eu.org 仓库加一个 <code>/imgbed</code> 路径，或单独建项目。本篇示例走「独立函数」最简形态。</li>
+    <li><strong>把密钥配成环境变量。</strong>Pages 项目 <code>Settings → Environment variables</code> 加：<code>R2_ACCOUNT_ID</code>、<code>R2_BUCKET</code>、<code>R2_ACCESS_KEY_ID</code>、<code>R2_SECRET_ACCESS_KEY</code>。切勿把 Secret 写进前端代码。</li>
+  </ol>
+
+  <h2>四、最小可跑示例</h2>
+  <p>一个最简单的上传函数（<code>/api/upload.js</code>，Pages Functions 约定路径）：</p>
+  <pre><code>export async function onRequestPost({ request, env }) {
+  const form = await request.formData()
+  const file = form.get('file')
+  if (!file) return new Response('no file', { status: 400 })
+
+  // 用原文件名 + 时间戳避免覆盖
+  const key = Date.now() + '-' + file.name
+  await env.MY_BUCKET.put(key, file.stream())
+
+  // 公开读地址（需桶设为 public，见踩坑 3）
+  const url = `https://pub-${env.R2_ACCOUNT_ID}.r2.dev/${key}`
+  return new Response(JSON.stringify({ url }), {
+    headers: { 'content-type': 'application/json' }
+  })
+}</code></pre>
+  <p>函数里用到的 <code>env.MY_BUCKET</code> 需要在 <code>wrangler.toml</code>（或 Pages 的 R2 绑定界面）把存储桶绑成这个名字。前端只要一个文件输入框 <code>POST</code> 到 <code>/api/upload</code> 即可。</p>
+
+  <h2>五、7 个真实踩坑提醒</h2>
+
+  <div class="warn">⚠️ 踩坑 2 — 公开读要显式开。R2 默认 Private，直接拼 <code>r2.dev</code> 地址会 403。两种公开方式：① 桶设为 <code>Public</code>（最简单，适合纯图床）；② 用 Cloudflare 自定义域 + <code>r2.dev</code> 关闭只允许自定义域。图床选 ① 最省事。</div>
+
+  <div class="warn">⚠️ 踩坑 3 — <code>r2.dev</code> 仅用于开发，生产建议绑自定义域。免费即可在桶的 <code>Settings → Public development URL</code> 拿到 <code>pub-xxx.r2.dev</code>，但 Cloudflare 不保证其 SLA，量起来后请在 Cloudflare 侧绑一个自己的子域（如 <code>img.yourdomain.com</code>）。</div>
+
+  <div class="warn">⚠️ 踩坑 4 — B 类操作（读）免费层只有 100 万次 / 月。看似多，但图床被热帖刷、或页面里塞了几百张图，一个月很容易冲到。超出按量计费。对策：给图片加浏览器缓存头、控制单页图片数；真要高频读，把热门图转 CDN 缓存。</div>
+
+  <div class="warn">⚠️ 踩坑 5 — 密钥别进前端。上传用的 Secret Access Key 只能在 <strong>Pages Functions（服务端）</strong>里用，绝不可暴露到浏览器。一旦泄露，别人能读写您的整个桶。建议用「仅限该桶 + 读写」的最小权限令牌，并定期轮换。</div>
+
+  <div class="warn">⚠️ 踩坑 6 — 文件名冲突会覆盖。上面示例用时间戳前缀规避；若您想保留原文件名，需先 <code>list</code> 检查是否已存在，否则同名直接覆盖、不可自动恢复（见踩坑 7）。</div>
+
+  <div class="warn">⚠️ 踩坑 7 — R2 没有「回收站」。对象删除是<strong>立即、不可逆</strong>的，不像 Supabase 有 7 天宽限。删错只能从备份恢复。重要图床建议：开 R2 的 <code>Event notifications</code> 或定期导出清单做异地备份。</div>
+
+  <div class="tip">💡 组合拳：R2（大文件/图片存储，免流量费）+ Cloudflare Pages（本站前端，免费托管）+ Supabase（用户/元数据，见本站另一篇）。三者叠加 = 一个几乎零成本的全栈小产品底座。本系列教程正是教您把这套矩阵用起来。</div>
+
+  <h2>六、什么时候该付费</h2>
+  <p>出现下面任一信号，说明免费层到顶了：存储超 10GB、B 类读取远超 100 万次/月、需要更强的合规/加密、或要把 R2 当生产数据库备份。届时 R2 按量计费很透明（存储 $0.015/GB·月、免出口），迁移也只是改桶名，无痛。</p>
+
+  <p style="margin-top:24px"><a class="btn" href="tutorials">← 返回教程列表</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-09-30</div>
+  <div>本教程为实测经验整理，Cloudflare R2 政策可能变动，请以官方文档为准。</div>
+</footer>
+</body>
+</html>

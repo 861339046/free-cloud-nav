@@ -112,7 +112,7 @@ const { data, error } = await supabase
 
   <div class="warn">⚠️ 踩坑 2 — 500MB 数据库上限。数据 + 索引都算，日志表、附件元数据也会占空间。小产品随手用没事，但别拿它当网盘元数据仓。超了只能升级付费计划。</div>
 
-  <div class="warn">⚠️ 踩坑 3 — Storage 1GB + 带宽 2GB/月。放用户上传图片、或做图床，很容易超标。图片类业务建议：小图走 Supabase，大文件 / 高频下载转 Cloudflare R2（免出口流量费，本站前文有讲）。</div>
+  <div class="warn">⚠️ 踩坑 3 — Storage 1GB + 带宽 2GB/月。放用户上传图片、或做图床，很容易超标。图片类业务建议：小图走 Supabase，大文件 / 高频下载转 <a href="cloudflare-r2-image-hosting">Cloudflare R2（免出口流量费，本站有专篇教程）</a>。</div>
 
   <div class="warn">⚠️ 踩坑 4 — 仅 2 个免费项目。想多开几个试验田？不行。而且不活跃项目会被自动暂停释放资源。规划好：一个正式、一个折腾足矣。</div>
 
