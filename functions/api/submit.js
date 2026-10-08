@@ -44,7 +44,9 @@ async function handleSubmit(context) {
   const SUPABASE_URL = cleanEnv(env.SUPABASE_URL).replace(/\/+$/, '');
   const SUPABASE_ANON_KEY = cleanEnv(env.SUPABASE_ANON_KEY);
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    return json({ ok: false, message: '服务端未配置 Supabase（Pages 变量和密钥里需有 SUPABASE_URL / SUPABASE_ANON_KEY，保存后需重新部署）', got: { url: !!SUPABASE_URL, key: !!SUPABASE_ANON_KEY } }, 500);
+    // 注意：应用层错误一律返回 HTTP 200 + ok:false。
+    // 502/5xx 状态码会被 Cloudflare 替换成自家错误页，把真实错误信息吞掉。
+    return json({ ok: false, message: '服务端未配置 Supabase（Pages 变量和密钥里需有 SUPABASE_URL / SUPABASE_ANON_KEY，保存后需重新部署）', got: { url: !!SUPABASE_URL, key: !!SUPABASE_ANON_KEY } });
   }
 
   let b;
@@ -79,13 +81,13 @@ async function handleSubmit(context) {
       body: JSON.stringify(payload)
     });
   } catch (e) {
-    return json({ ok: false, message: '转发到 Supabase 失败（网络异常）：' + (e && e.message) }, 502);
+    return json({ ok: false, message: '转发到 Supabase 失败（网络异常）：' + (e && e.message) });
   }
 
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     // 透传 Supabase 的错误码，便于诊断（如表不存在 42P01 / RLS 拒绝 42501 / 密钥无效 401）
-    return json({ ok: false, status: res.status, message: 'Supabase 返回错误：' + text.slice(0, 300) }, 502);
+    return json({ ok: false, upstreamStatus: res.status, message: 'Supabase 返回错误：' + text.slice(0, 300) });
   }
 
   return json({ ok: true });
@@ -96,7 +98,7 @@ export async function onRequestPost(context) {
   try {
     return await handleSubmit(context);
   } catch (e) {
-    return json({ ok: false, message: '服务内部错误：' + (e && e.message ? e.message : String(e)) }, 500);
+    return json({ ok: false, message: '服务内部错误：' + (e && e.message ? e.message : String(e)) });
   }
 }
 
