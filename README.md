@@ -78,15 +78,17 @@ git push -u origin main
 
 ## 提交收录后端（Supabase，免费层）
 
-「+ 提交收录」页（`submit.html`）用 Supabase 免费层存申请，配置只需一次：
+「+ 提交收录」页（`submit.html`）通过 Pages Function（`functions/api/submit.js`）**服务端中转**写入 Supabase 免费层——国内访客直连 supabase.co 不通，由 Cloudflare 边缘转发；密钥只存服务端，前端零暴露。配置只需一次：
 
 1. 注册 [Supabase](https://supabase.com/)（GitHub 登录，免费层无需绑卡），新建项目（区域建议 Singapore）
 2. 控制台 → **SQL Editor** → 粘贴本仓库 `supabase-setup.sql` 全部内容 → Run（建 `submissions` 表 + 只许匿名插入的 RLS 策略）
-3. 控制台 → **Project Settings → API**，复制 `Project URL` 和 `anon public` key
-4. 打开 `submit.html`，把顶部两个常量 `SUPABASE_URL` / `SUPABASE_ANON_KEY` 换成自己的值
-5. `git push` 上线即生效
+3. 控制台 → **Project Settings → API**，复制 `Project URL` 和 `anon public`（或新版 `sb_publishable_`）key
+4. Cloudflare Pages 项目 → **设置 → 变量和密钥**，添加两个文本变量：
+   - `SUPABASE_URL` = `https://你的项目.supabase.co`
+   - `SUPABASE_ANON_KEY` = 你的 publishable / anon key
+5. 保存后**重新部署**一次生效
 
-审核流程：Supabase → **Table Editor → submissions**，`status` 为 `pending` 的是新申请；确认后把该服务手动加进 `index.html` 的 `data` 数组上墙。`anon` key 的 RLS 策略只允许插入、不允许读取，公开在前端是安全的（密钥泄露也只能被人塞垃圾数据，读不到任何内容）。
+审核流程：Supabase → **Table Editor → submissions**，`status` 为 `pending` 的是新申请；确认后把该服务手动加进 `index.html` 的 `data` 数组上墙。RLS 策略只允许插入、不允许读取，且密钥只存在服务端环境变量里，安全。
 
 ---
 

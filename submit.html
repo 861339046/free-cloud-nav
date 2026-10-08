@@ -129,11 +129,8 @@
   <div><a href="privacy">隐私政策</a> · <a href="tutorials">实测教程</a> · <a href="/">返回导航</a></div>
 </footer>
 <script>
-// ====== Supabase 配置：把下面两行换成您自己项目的值（Settings → API）======
-const SUPABASE_URL = "https://quqqeccjuoptbtqlecmw.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_mqsQyEqOfKPYEz_VLv1VkA_5bW8eyw_";
-// ========================================================================
-
+// 提交走站内 Pages Function（/api/submit）服务端中转：
+// 国内访客直连 supabase.co 不通，由 Cloudflare 边缘转发；密钥也保存在服务端，前端零暴露。
 const form = document.getElementById('form');
 const msg = document.getElementById('msg');
 const btn = document.getElementById('submitBtn');
@@ -169,22 +166,18 @@ form.addEventListener('submit', async (e) => {
   btn.disabled = true;
   btn.textContent = '提交中…';
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/submissions', {
+    const res = await fetch('/api/submit', {
       method: 'POST',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify([{
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         name, category, url, description,
         note: note || null,
         email: email || null,
-        status: 'pending'
-      }])
+        website: document.getElementById('website').value
+      })
     });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data.message || ('HTTP ' + res.status));
     show('ok', '提交成功！已收到您的申请，审核通过后 1–3 天内上墙。');
     form.reset();
   } catch (err) {
