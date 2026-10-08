@@ -3,7 +3,7 @@
 // 但 Cloudflare 边缘节点到 Supabase 是通的 —— 由 Function 服务端转发即可。
 // 附带好处：Supabase 密钥不再出现在前端代码里。
 //
-// 需要在 Pages 项目 → 设置 → 变量和密钥 里配置两个文本变量：
+// 需要在 Pages 项目 → 设置 → 变量和密钥 里配置两个文本变量（生产环境）：
 //   SUPABASE_URL       = https://xxxx.supabase.co
 //   SUPABASE_ANON_KEY  = sb_publishable_xxx（或旧的 anon JWT）
 // 数据库表和 RLS 策略见仓库根目录 supabase-setup.sql（只需跑一次）。
@@ -19,8 +19,12 @@ function json(data, status = 200) {
   });
 }
 
+// 清洗环境变量：去掉首尾空白和误粘贴的引号
+function cleanEnv(v) {
+  return typeof v === 'string' ? v.trim().replace(/^["']+|["']+$/g, '') : '';
+}
+
 function validInput(b) {
-  if (!b || typeof b !== 'object') return '请求格式错误';
   const name = (b.name || '').trim();
   const category = (b.category || '').trim();
   const url = (b.url || '').trim();
@@ -34,13 +38,13 @@ function validInput(b) {
   return null;
 }
 
-export async function onRequestPost(context) {
+async function handleSubmit(context) {
   const { request, env } = context;
 
-  const SUPABASE_URL = (env.SUPABASE_URL || '').replace(/\/+$/, '');
-  const SUPABASE_ANON_KEY = env.SUPABASE_ANON_KEY;
+  const SUPABASE_URL = cleanEnv(env.SUPABASE_URL).replace(/\/+$/, '');
+  const SUPABASE_ANON_KEY = cleanEnv(env.SUPABASE_ANON_KEY);
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    return json({ ok: false, message: '服务端未配置 Supabase（请在 Pages 变量和密钥里添加 SUPABASE_URL / SUPABASE_ANON_KEY）' }, 500);
+    return json({ ok: false, message: '服务端未配置 Supabase（Pages 变量和密钥里需有 SUPABASE_URL / SUPABASE_ANON_KEY，保存后需重新部署）', got: { url: !!SUPABASE_URL, key: !!SUPABASE_ANON_KEY } }, 500);
   }
 
   let b;
@@ -75,7 +79,7 @@ export async function onRequestPost(context) {
       body: JSON.stringify(payload)
     });
   } catch (e) {
-    return json({ ok: false, message: '转发到 Supabase 失败（网络异常），请稍后重试' }, 502);
+    return json({ ok: false, message: '转发到 Supabase 失败（网络异常）：' + (e && e.message) }, 502);
   }
 
   if (!res.ok) {
@@ -85,4 +89,18 @@ export async function onRequestPost(context) {
   }
 
   return json({ ok: true });
+}
+
+// POST /api/submit —— 提交申请
+export async function onRequestPost(context) {
+  try {
+    return await handleSubmit(context);
+  } catch (e) {
+    return json({ ok: false, message: '服务内部错误：' + (e && e.message ? e.message : String(e)) }, 500);
+  }
+}
+
+// GET /api/submit —— 探针：返回 JSON 说明函数已部署（若返回网页说明部署还没带上本函数）
+export async function onRequestGet() {
+  return json({ ok: true, service: 'submit-api', method: 'POST' });
 }
