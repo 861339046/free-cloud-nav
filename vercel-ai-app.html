@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vercel 免费函数跑 AI 小应用 · 免费云服务导航</title>
+<meta name="description" content="实测用 Vercel 免费层（Hobby）托管前端 + Serverless Functions 调大模型，做轻量 AI 小工具：免费额度、开通流程、AI 调用示例与 7 个真实踩坑，含变现边界。">
+<meta name="keywords" content="Vercel,Serverless,AI,小应用,免费部署,Next.js,函数,教程,踩坑,变现">
+<meta property="og:title" content="Vercel 免费函数跑 AI 小应用">
+<meta property="og:description" content="Hobby 免费层托管前端+函数调大模型，附 7 个踩坑与变现边界。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://keting.eu.org/vercel-ai-app">
+<link rel="canonical" href="https://keting.eu.org/vercel-ai-app">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:36px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:680px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:20px;margin-top:34px;border-left:4px solid var(--brand);padding-left:10px}
+  .post h3{font-size:17px;margin-top:22px}
+  .post p,.post li{font-size:15px;color:#374151}
+  ol.steps{counter-reset:s;padding-left:0;list-style:none}
+  ol.steps>li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;color:#92400e;margin:16px 0;font-size:14px}
+  .tip{background:var(--brand-soft);border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;color:#1e40af;margin:16px 0;font-size:14px}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.5}
+  code{font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+  .post a{color:var(--brand)}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Vercel 免费函数跑 AI 小应用</h1>
+  <p class="sub">Hobby 免费层托管前端 + Serverless Functions 调大模型，做一个零服务器成本的 AI 小工具，附 7 个踩坑与变现边界。</p>
+  <a class="btn" href="tutorials">← 返回教程列表</a>
+</header>
+<article class="post">
+  <p class="meta">分类：实测教程 · 最后更新：2026-10-08 · 适用：中文个人开发者</p>
+
+  <p><strong>Vercel</strong> 是目前最主流的前端部署平台，对 Next.js 等框架几乎「一键上线」。它的 <strong>Serverless Functions（函数）</strong>能在不用自己买服务器的情况下，跑后端逻辑——比如调用大模型 API，做一个 AI 小工具（周报生成器、文案润色、简历改写）。对本站一贯的「<strong>零成本起步、跑通再投入</strong>」思路，Vercel 是验证 AI 点子的最低门槛入口。</p>
+
+  <div class="tip">本篇是<strong>实测向</strong>教程，重点在「Hobby 免费层给多少」和「哪里会踩坑」，并专门讲清<strong>变现边界</strong>（这关系到您这个站最终要不要靠它赚钱）。控制台入口：<a href="https://vercel.com/" target="_blank" rel="noopener">vercel.com</a>，可用 GitHub 账号登录。</div>
+
+  <h2>一、免费层额度清单（先看清边界）</h2>
+  <p>Vercel 的免费计划叫 <strong>Hobby</strong>，下面这些量级是 2026 年实测到的，做 AI 小工具前心里先有数：</p>
+  <table>
+    <tr><th>资源</th><th>免费层（Hobby）额度</th><th>说明</th></tr>
+    <tr><td>带宽</td><td><strong>100 GB / 月</strong></td><td>用户访问产生的流量，小工具够用</td></tr>
+    <tr><td>Serverless Functions 计算</td><td><strong>100 GB-hr / 月</strong></td><td>函数运行时长 × 内存，调一次 AI 很快花完？其实单次很小</td></tr>
+    <tr><td>函数超时</td><td><strong>10 秒（Hobby）</strong></td><td>大模型慢响应容易超，见踩坑 2</td></tr>
+    <tr><td>函数并发</td><td><strong>1（Hobby）</strong></td><td>同时只跑一个请求，见踩坑 3</td></tr>
+    <tr><td>构建时长</td><td>6,000 分钟 / 月</td><td>正常部署用不完</td></tr>
+    <tr><td>自定义域名</td><td>支持 1 个</td><td>Hobby 也能绑自己的域名</td></tr>
+    <tr><td>Edge Functions</td><td>请求数无硬上限（有公平使用）</td><td>适合轻量中转，不能跑重计算</td></tr>
+  </table>
+  <div class="warn">⚠️ 踩坑 1（最关键，关于「赚钱」）—— <strong>Hobby 计划禁止商用。</strong>Vercel 条款明确：Hobby 仅用于个人、非商业、学习用途，<strong>不能用来赚钱（盈利活动、商业产品）</strong>。您的「免费云导航」如果未来接 AdSense、或这个 AI 工具收费，就超出了 Hobby 许可范围，<strong>必须升级 Pro（约 $20/月）</strong>。这是本站「变现拐点」的真实成本，别等被风控才补。</div>
+
+  <h2>二、适合用它做什么</h2>
+  <ul>
+    <li><strong>验证 AI 点子</strong>：先用 Hobby 把工具做出来、给人试用，零服务器成本跑通闭环（本站「跑通再投入」思路）。</li>
+    <li><strong>个人小工具 / 作品集</strong>：不收费的 AI 助手、简历润色器，纯自用或展示。</li>
+    <li><strong>和本站矩阵搭配</strong>：前端在 Vercel，数据进 <a href="supabase-free-tier">Supabase</a>、大文件走 <a href="cloudflare-r2-image-hosting">Cloudflare R2</a>、常驻服务用 <a href="oracle-free-instance">Oracle 免费实例</a>。</li>
+    <li><strong>不适合（Hobby 下）</strong>：任何收费产品、高并发、长耗时任务、需要团队协作权限的商业项目。</li>
+  </ul>
+
+  <h2>三、开通全流程（实测步骤）</h2>
+  <ol class="steps">
+    <li><strong>注册 / 登录。</strong>打开 vercel.com，用 <strong>GitHub 账号</strong>登录（免密、且与您 <a href="https://github.com/861339046/free-cloud-nav" target="_blank" rel="noopener">已有的 GitHub</a> 打通）。</li>
+    <li><strong>导入或新建。</strong>点 <code>Add New → Project</code>，选「Import Git Repository」导入您仓库，或「Deploy」一个模板（如 Next.js 模板）。</li>
+    <li><strong>选框架。</strong>Vercel 会自动识别（Next.js / Vite / 纯静态）。纯函数小工具推荐 Next.js（自带 API Route）。</li>
+    <li><strong>配环境变量。</strong>在 <code>Environment Variables</code> 里加上大模型 API Key，如 <code>OPENAI_API_KEY</code>、<code>API_BASE_URL</code>。<strong>切勿</strong>写成 <code>NEXT_PUBLIC_</code> 前缀（见踩坑 5）。</li>
+    <li><strong>部署。</strong>点 Deploy，Vercel 拉代码构建，几秒到几分钟出 <code>xxx.vercel.app</code> 临时域名。绑定自定义域在 <code>Settings → Domains</code>。</li>
+    <li><strong>（变现时）升级 Pro。</strong>一旦要收费，进 <code>Settings → Plan</code> 切到 Pro，再合规部署商业版本。</li>
+  </ol>
+
+  <h2>四、最小可跑示例（调大模型）</h2>
+  <p>一个 Next.js 的 API Route（<code>app/api/chat/route.ts</code>），在服务端用环境变量调模型，密钥不暴露给浏览器：</p>
+  <pre><code>export async function POST(req: Request) {
+  const { prompt } = await req.json()
+  const res = await fetch(process.env.API_BASE_URL!, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  const data = await res.json()
+  return Response.json({ reply: data.choices[0].message.content })
+}</code></pre>
+  <p>前端只 <code>fetch('/api/chat')</code> 即可。注意：<strong>模型 API 本身要钱</strong>（见踩坑 6），Vercel 的免费只覆盖「托管和函数」，不覆盖「调模型」。</p>
+
+  <h2>五、7 个真实踩坑提醒</h2>
+
+  <div class="warn">⚠️ 踩坑 2 — 函数超时 10 秒。Hobby 的函数最长跑 10 秒，而大模型首字延迟（TTFT）慢、生成长文本时很容易超时返回 504。对策：用流式响应（streaming）、换更快的小模型（如 mini 系列）、或升级 Pro 把超时提到 60s+。</div>
+
+  <div class="warn">⚠️ 踩坑 3 — 并发只有 1。Hobby 同一时刻只处理 1 个函数请求，第二个人访问会排队甚至失败。个人试用没事，一旦有点流量就卡。对策：真有用户就升级 Pro（并发提升），或把重逻辑挪到 Supabase Edge / Cloudflare Workers。</div>
+
+  <div class="warn">⚠️ 踩坑 4 — 默认部署在美国，国内访问慢。Vercel 免费节点主要在美/欧，广州用户打开可能要 1–2 秒甚至更久。对策：用 <code>Edge Functions</code> 把轻量逻辑放边缘节点；或用 Cloudflare 做反代加速（结合本站 R2 篇）。</div>
+
+  <div class="warn">⚠️ 踩坑 5 — 环境变量前缀泄露。Vercel 里 <code>NEXT_PUBLIC_</code> 前缀的变量会被打进前端 JS、任何人能在浏览器看到。API Key 必须用<strong>普通名</strong>（如 <code>OPENAI_API_KEY</code>）只在服务端读，否则密钥被盗刷。</div>
+
+  <div class="warn">⚠️ 踩坑 6 — Vercel 免费 ≠ 模型免费。很多人以为「Vercel 免费部署 AI 应用就零成本」，其实函数托管免费，但<strong>每次调大模型都要向模型厂商付费</strong>（OpenAI / 国内模型都有价）。对策：用有免费额度的模型（如各家入门档）、加缓存避免重复调用、做使用上限防刷。</div>
+
+  <div class="warn">⚠️ 踩坑 7 — 超额不会自动停，会出账单/暂停。Hobby 超了带宽或函数额度，可能暂停部署或产生按量费用（尤其函数 GB-hr 失控）。对策：在 <code>Settings → Usage</code> 看实时用量，给函数加超时与频率限制，避免被刷爆。</div>
+
+  <div class="tip">💡 组合拳与本系列定位：Vercel（前端+函数）+ Supabase（数据/登录）+ R2（大文件）+ Oracle（常驻服务）= 一个「几乎零成本验证、跑通再付钱」的全栈底座。本站前几篇分别讲了每一块；Vercel 是让「AI 小应用」最快上线的入口，但记住踩坑 1：<strong>要赚钱先升 Pro</strong>。</div>
+
+  <h2>六、什么时候该付费</h2>
+  <p>出现下面任一信号，说明 Hobby 到顶、该升级 Pro（约 $20/月）：① 您这个工具或站点开始收费 / 接广告；② 并发不够、用户排队；③ 函数老超时；④ 需要团队协作、预览环境权限、更多域名。升级后这些限制大幅放宽，且合规商用。一句话：<strong>Vercel 帮您零成本验证点子，赚钱那一步的成本是每月 $20，不是零。</strong></p>
+
+  <p style="margin-top:24px"><a class="btn" href="tutorials">← 返回教程列表</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-10-08</div>
+  <div>本教程为实测经验整理，Vercel 政策与条款可能变动，请以官方文档为准。</div>
+</footer>
+</body>
+</html>
