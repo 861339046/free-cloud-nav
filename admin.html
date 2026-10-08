@@ -49,7 +49,10 @@
 <div class="wrap">
   <header class="top">
     <span class="brand">🛡 收录审核后台</span>
-    <a href="/">← 返回导航站</a>
+    <span>
+      <a href="#" id="logout" style="display:none" onclick="logout();return false;">退出登录</a>
+      <a href="/">← 返回导航站</a>
+    </span>
   </header>
 
   <!-- 登录区：密码只存本机浏览器 localStorage，请求时放在 x-admin-token 头里 -->
@@ -81,7 +84,8 @@
 
 <script>
 const $ = s => document.querySelector(s);
-let TOKEN = localStorage.getItem('admin_token') || '';
+// 密码只存 sessionStorage：关掉浏览器标签页即清除，不落盘明文长期保存
+let TOKEN = sessionStorage.getItem('admin_token') || '';
 let filter = 'pending';
 let cache = [];
 
@@ -157,10 +161,21 @@ async function enter(pwd){
   TOKEN = pwd;
   const { status, data } = await api('/api/admin?status=pending');
   if(status===401 || !data.ok){ $('#loginErr').textContent = (data.message||'密码不对，或服务端还没配置好'); TOKEN=''; return; }
-  localStorage.setItem('admin_token', pwd);
+  sessionStorage.setItem('admin_token', pwd);
   cache = data.rows||[];
   $('#loginBox').style.display='none'; $('#panel').style.display='';
+  $('#logout').style.display='';
   render();
+}
+
+function logout(){
+  sessionStorage.removeItem('admin_token');
+  TOKEN = '';
+  $('#panel').style.display='none';
+  $('#loginBox').style.display='';
+  $('#logout').style.display='none';
+  $('#pwd').value='';
+  $('#loginErr').textContent='';
 }
 
 $('#loginBtn').addEventListener('click', ()=>enter($('#pwd').value.trim()));
