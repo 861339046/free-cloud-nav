@@ -50,6 +50,12 @@
   footer .updated{color:var(--brand);margin-bottom:6px}
   .toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(20px);background:#1f2937;color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:99;max-width:90vw}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .adslot{margin:22px 0;padding:18px;text-align:center;background:#fff;border:1px dashed var(--line);border-radius:var(--radius);color:var(--muted);font-size:14px;min-height:60px;display:flex;align-items:center;justify-content:center}
+  .biz{margin:26px 0;padding:22px 24px;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}
+  .biz h2{margin:0 0 10px;font-size:19px;color:var(--brand)}
+  .biz p,.biz li{font-size:14px;color:#374151}
+  .biz ul{margin:10px 0;padding-left:20px}
+  .biz a{color:var(--brand);font-weight:600}
 </style>
 </head>
 <body>
@@ -66,10 +72,26 @@
   <div class="tags" id="tags"></div>
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" style="display:none">没有匹配的结果，换个关键词试试。</div>
+  <div class="adslot" id="ad-top">
+    <!-- 广告位占位：申请到 Google AdSense 的 ca-pub-xxx 后，取消注释下两行并替换 client/slot 值 -->
+    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="YYYYYYYYYY" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+    <span>广告位招租 · AdSense 审核通过后展示</span>
+  </div>
+  <section class="biz">
+    <h2>商务合作 / 付费收录</h2>
+    <p>本导航站面向中文个人开发者，正在积累自然搜索流量。若您的云服务 / 开发者工具希望获得<strong>长期稳定曝光</strong>，欢迎洽谈精选收录或广告投放。</p>
+    <ul>
+      <li><strong>精选付费收录</strong>：在对应分类置顶展示并标注「精选」，适合希望精准触达开发者用户的合规服务。</li>
+      <li><strong>广告投放</strong>：全站 AdSense 上线后开放，按真实展示计费。</li>
+    </ul>
+    <p>合作请联系：<a href="mailto:861339046@qq.com?subject=免费云服务导航-商务合作">861339046@qq.com</a>（标题注明「商务合作」）。审核通过后上墙，<strong>违规 / 灰产服务一律不接</strong>。</p>
+  </section>
 </div>
 <footer>
-  <div class="updated">最后更新：2026-09-30</div>
+  <div class="updated">最后更新：2026-10-08</div>
   <div>数据由社区整理，免费额度随各官网政策变动，请以官方页面为准。本导航不构成任何承诺。</div>
+  <div style="margin-top:8px"><a href="privacy" style="color:var(--brand);text-decoration:none">隐私政策</a> · <a href="mailto:861339046@qq.com?subject=免费云服务导航-商务合作" style="color:var(--brand);text-decoration:none">商务合作</a></div>
 </footer>
 <div class="toast" id="toast"></div>
 <script>
@@ -178,5 +200,12 @@ render();
   s.parentNode.insertBefore(bp, s);
 })();
 </script>
+<!--
+  Google AdSense 主脚本（变现入口 A）：
+  1) 到 google.com/adsense 申请，站点需已上线、含隐私政策（privacy 页已建）、内容充实、稳定运行。
+  2) 审核通过后，把下面 client 改成您的 ca-pub-xxx，并取消注释。
+  3) 各广告位用 <ins class="adsbygoogle" ...> + (adsbygoogle=window.adsbygoogle||[]).push({}) 投放。
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX" crossorigin="anonymous"></script>
+-->
 </body>
 </html>
