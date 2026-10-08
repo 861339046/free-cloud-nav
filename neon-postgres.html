@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Serverless Postgres 实测 · 免费云服务导航</title>
+<meta name="description" content="实测 Neon 免费 Serverless Postgres：512MB 存储 + 计算自动休眠 + 分支功能，开通流程、连接示例与 7 个真实踩坑，和 Oracle/Supabase 互补的数据库底座。">
+<meta name="keywords" content="Neon,Serverless,Postgres,数据库,免费额度,分支,休眠,教程,踩坑">
+<meta property="og:title" content="Neon Serverless Postgres 实测">
+<meta property="og:description" content="512MB 免费存储 + 计算自动休眠 + 分支功能，附 7 个真实踩坑。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://keting.eu.org/neon-postgres">
+<link rel="canonical" href="https://keting.eu.org/neon-postgres">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:36px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:680px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:20px;margin-top:34px;border-left:4px solid var(--brand);padding-left:10px}
+  .post h3{font-size:17px;margin-top:22px}
+  .post p,.post li{font-size:15px;color:#374151}
+  ol.steps{counter-reset:s;padding-left:0;list-style:none}
+  ol.steps>li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;color:#92400e;margin:16px 0;font-size:14px}
+  .tip{background:var(--brand-soft);border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;color:#1e40af;margin:16px 0;font-size:14px}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.5}
+  code{font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+  .post a{color:var(--brand)}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+  table th,table td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+  table th{background:var(--brand-soft);color:#1e40af}
+  table tr:nth-child(even) td{background:#fafcff}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Neon Serverless Postgres 实测</h1>
+  <p class="sub">512MB 免费存储 + 计算自动休眠 + 数据库分支 —— 一个为「开发态」而生的 Serverless Postgres，附 7 个真实踩坑。</p>
+  <a class="btn" href="tutorials">← 返回教程列表</a>
+</header>
+<article class="post">
+  <p class="meta">分类：实测教程 · 最后更新：2026-10-08 · 适用：中文个人开发者</p>
+
+  <p><strong>Neon</strong> 是近年火起来的 Serverless Postgres：它把「存储」和「计算」拆开——计算节点<strong>无请求时自动休眠、有请求时秒级唤醒</strong>，所以空闲不烧钱；它还支持 <strong>数据库分支（Branch）</strong>，像 git 一样复制一份库做开发 / 测试，这对个人开发者极友好。相比 <a href="oracle-free-instance">Oracle 永久实例</a>（一台常驻 VM）和 <a href="supabase-free-tier">Supabase</a>（带后端的 BaaS），Neon 更像一个「纯数据库、按需唤醒」的轻量底座。</p>
+
+  <div class="tip">本篇是<strong>实测向</strong>教程，重点在「免费层给多少」和「哪里会踩坑」。控制台：<a href="https://console.neon.tech/" target="_blank" rel="noopener">console.neon.tech</a>。用 GitHub 账号即可登录，<strong>免费层无需绑卡</strong>（这点比 R2 省心，详见踩坑 1）。</div>
+
+  <h2>一、免费层额度清单（先看清边界）</h2>
+  <p>Neon 免费层叫 <strong>Free plan</strong>，2026 年实测到的量级如下：</p>
+  <table>
+    <tr><th>资源</th><th>免费层额度</th><th>说明</th></tr>
+    <tr><td>存储（Storage）</td><td><strong>512 MB</strong></td><td>数据和分支快照都算，超出需升级</td></tr>
+    <tr><td>计算（Compute）</td><td>自动休眠 + 唤醒</td><td>无请求 5 分钟后休眠，首请求唤醒约 1–2 秒</td></tr>
+    <tr><td>项目数（Projects）</td><td><strong>无限</strong></td><td>免费层也允许多项目，比 Supabase 的 2 个宽松</td></tr>
+    <tr><td>分支数（Branches）</td><td><strong>10 个 / 项目</strong></td><td>含主分支；开发 / 预览各开一个很够</td></tr>
+    <tr><td>并发连接</td><td>~20</td><td>小流量足够；详见踩坑 6</td></tr>
+  </table>
+  <div class="warn">⚠️ 踩坑 1 — 免费层无需绑卡，但「计算唤醒」有冷启动。Neon 不要求信用卡即可用免费层，比 <a href="cloudflare-r2-image-hosting">R2</a> 友好。代价是计算节点空闲后休眠，<strong>第一个请求会冷启动 1–2 秒</strong>。高频线上服务要评估这个延迟（见踩坑 4）。</div>
+
+  <h2>二、适合用它做什么</h2>
+  <ul>
+    <li><strong>开发 / 测试库</strong>：配合分支功能，每个功能拉一个 branch，测完删掉，主库不受污染。</li>
+    <li><strong>低频小产品后端</strong>：个人工具、内部小系统，空闲多、偶发访问，休眠机制白省钱。</li>
+    <li><strong>Supabase 的「替代 / 补充」</strong>：要纯 PG 不受 BaaS 约束时选 Neon；要现成 Auth/存储选 <a href="supabase-free-tier">Supabase</a>。</li>
+    <li><strong>不适合</strong>：高并发 7×24 生产、超 512MB 数据量、对冷启动零容忍的实时场景。</li>
+  </ul>
+
+  <h2>三、开通全流程（实测步骤）</h2>
+  <ol class="steps">
+    <li><strong>登录控制台。</strong>进 <a href="https://console.neon.tech/" target="_blank" rel="noopener">console.neon.tech</a>，用 GitHub 授权登录（无需绑卡）。</li>
+    <li><strong>新建项目（Create project）。</strong>填项目名，<strong>区域选离用户近的</strong>（亚洲可选 <code>aws-ap-southeast-1</code> 新加坡），Postgres 版本默认最新即可。</li>
+    <li><strong>拿到连接串。</strong>项目创建后，<code>Dashboard</code> 直接给出 <code>postgresql://user:pass@xxx.neon.tech/neondb</code>。注意页面上有 <strong>「Pooled connection」</strong> 开关——带 <code>?pgbouncer=true</code> 的是连接池地址，Serverless 环境务必用它（见踩坑 6）。</li>
+    <li><strong>建一张测试表。</strong>在 <code>SQL Editor</code> 跑建表语句（示例见第四节），或用客户端连上去执行。</li>
+    <li><strong>接入应用。</strong>把连接串放进环境变量（<strong>不要硬编码进前端</strong>），后端代码用它连库。</li>
+    <li><strong>（可选）开分支。</strong>点 <code>Branches → Create branch</code>，选「基于当前数据」复制一份，用于开发环境，互不影响。</li>
+  </ol>
+
+  <h2>四、最小可跑示例</h2>
+  <p>建表 + Node 连接的极简片段（连接串从环境变量读）：</p>
+  <pre><code>-- SQL Editor 里执行
+CREATE TABLE notes (
+  id   SERIAL PRIMARY KEY,
+  body TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+// db.ts（后端，pg 库）
+import { Pool } from 'pg'
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL  // 用 Pooled 地址
+})
+const { rows } = await pool.query('SELECT * FROM notes LIMIT 5')
+console.log(rows)</code></pre>
+  <p>把 <code>DATABASE_URL</code> 设为 Neon 给的 <strong>Pooled</strong> 连接串（带 <code>?pgbouncer=true</code>），部署到 <a href="vercel-ai-app">Vercel</a> / <a href="cloudflare-r2-image-hosting">Cloudflare Pages</a> 这类 Serverless 平台即可。</p>
+
+  <h2>五、7 个真实踩坑提醒</h2>
+
+  <div class="warn">⚠️ 踩坑 2 — 512MB 存储含分支快照。您建的分支、做过的 <code>restore</code> 历史都占空间，不是只有主库数据。对策：定期清理无用分支；<code>Storage</code> 页能看到明细，别等到超限才慌。</div>
+
+  <div class="warn">⚠️ 踩坑 3 — 休眠后「首查慢」会让健康检测 / 首访体验差。若您的服务有「探针」或用户首访，冷启动 1–2s 可能被误判超时。对策：用 <a href="https://github.com/neondatabase/serverless" target="_blank" rel="noopener">@neondatabase/serverless</a> 驱动自动管理连接；或对延迟敏感的接口加一个预热请求。</div>
+
+  <div class="warn">⚠️ 踩坑 4 — 免费层计算有「活跃时长」上限。每个自然月有一定量的「计算活跃小时」配额，超了会让项目 <strong>暂停（suspend）</strong>，需手动在控制台点恢复或升级。对策：真正的长期在线生产别压在免费层，低频场景才稳。</div>
+
+  <div class="warn">⚠️ 踩坑 5 — 分支是「软复制」，不是无限白嫖。分支共享底层存储，开太多仍计入 10 个上限 + 存储消耗。开发完记得删分支，别堆着。</div>
+
+  <div class="warn">⚠️ 踩坑 6 — Serverless 连接务必用 Pooled 地址。直接拿普通连接串在 Vercel/Cloudflare Functions 里连，<strong>连接数会瞬间打满</strong>（函数并发下每个实例开一条长连），报错 <code>too many connections</code>。对策：用带 <code>?pgbouncer=true</code> 的 Pooled 串，并配合 <code>pg</code> 的连接池。</div>
+
+  <div class="warn">⚠️ 踩坑 7 — 删除项目 / 分支<strong>不进回收站</strong>。Neon 删除操作立即生效，免费层没有 Supabase 那种 7 天宽限。误删只能从自己的备份恢复。重要库请定期 <code>pg_dump</code> 导出。</div>
+
+  <div class="tip">💡 组合拳：<strong>Neon（按需唤醒的 PG）</strong> + <a href="cloudflare-r2-image-hosting">R2（大文件 / 图片，免流量费）</a> + <a href="vercel-ai-app">Vercel（前端 + Serverless 函数）</a> = 几乎零成本的全栈小产品底座，且全程无需预先绑卡（Neon、Vercel Hobby 均免费层免卡）。本站这套教程矩阵正是教您把它拼起来。</div>
+
+  <h2>六、什么时候该付费</h2>
+  <p>出现下面任一信号说明免费层到顶：数据超 512MB、需要 7×24 不休眠的计算、并发连接远超 20、或要更高的计算规格。Neon 付费按 <strong>计算时长 + 存储</strong> 计费，透明且可预测，升级不丢数据，平滑过渡。</p>
+
+  <p style="margin-top:24px"><a class="btn" href="tutorials">← 返回教程列表</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-10-08</div>
+  <div>本教程为实测经验整理，Neon 政策可能变动，请以官方文档为准。</div>
+</footer>
+</body>
+</html>
