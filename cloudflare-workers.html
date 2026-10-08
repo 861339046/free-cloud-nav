@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloudflare Workers 实测 · 免费云服务导航</title>
+<meta name="description" content="实测 Cloudflare Workers 边缘 Serverless 函数：每天 10 万次免费请求 + KV 免费额度，开通流程、最小可跑示例与 7 个真实踩坑，把 R2/Pages 拼成零成本全球应用的胶水层。">
+<meta name="keywords" content="Cloudflare Workers,边缘函数,Serverless,wrangler,免费额度,KV,教程,踩坑">
+<meta property="og:title" content="Cloudflare Workers 实测">
+<meta property="og:description" content="每天 10 万次免费请求 + KV 免费额度，附 7 个真实踩坑。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://keting.eu.org/cloudflare-workers">
+<link rel="canonical" href="https://keting.eu.org/cloudflare-workers">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:36px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:680px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:20px;margin-top:34px;border-left:4px solid var(--brand);padding-left:10px}
+  .post h3{font-size:17px;margin-top:22px}
+  .post p,.post li{font-size:15px;color:#374151}
+  ol.steps{counter-reset:s;padding-left:0;list-style:none}
+  ol.steps>li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;color:#92400e;margin:16px 0;font-size:14px}
+  .tip{background:var(--brand-soft);border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;color:#1e40af;margin:16px 0;font-size:14px}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.5}
+  code{font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+  .post a{color:var(--brand)}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+  table th,table td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+  table th{background:var(--brand-soft);color:#1e40af}
+  table tr:nth-child(even) td{background:#fafcff}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cloudflare Workers 实测</h1>
+  <p class="sub">每天 10 万次免费请求 + KV 边缘存储免费额度 —— 把 <a href="cloudflare-r2-image-hosting" style="color:var(--brand)">R2</a> / <a href="cloudflare-r2-image-hosting" style="color:var(--brand)">Pages</a> 拼成零成本全球应用的「胶水层」，附 7 个真实踩坑。</p>
+  <a class="btn" href="tutorials">← 返回教程列表</a>
+</header>
+<article class="post">
+  <p class="meta">分类：实测教程 · 最后更新：2026-10-08 · 适用：中文个人开发者</p>
+
+  <p><strong>Cloudflare Workers</strong> 是跑在 Cloudflare 全球边缘节点的 Serverless 函数：代码不是起一台容器，而是被塞进 <strong>V8 isolate</strong>，在全球几百个节点上毫秒级冷启动。它最适合做「请求进来的瞬间干点轻活」——改个响应头、做反代、接 KV 缓存、给 <a href="cloudflare-r2-image-hosting">R2</a> 套个上传 / 鉴权层。相比 <a href="vercel-ai-app">Vercel 函数</a>（Node 运行时）和 <a href="neon-postgres">Neon</a>（数据库），Workers 是「贴着用户最近的、最便宜的计算」。</p>
+
+  <div class="tip">本篇是<strong>实测向</strong>教程，重点在「免费层给多少」和「哪里会踩坑」。控制台 / 文档：<a href="https://workers.cloudflare.com/" target="_blank" rel="noopener">workers.cloudflare.com</a>。免费层<strong>无需绑卡</strong>即可部署到 <code>*.workers.dev</code> 子域名（想绑自己域名再接解析即可）。</div>
+
+  <h2>一、免费层额度清单（先看清边界）</h2>
+  <p>Workers 免费层叫 <strong>Workers Free</strong>，2026 年实测到的量级如下（具体以 <a href="https://www.cloudflare.com/plans/developer-platform/" target="_blank" rel="noopener">官网定价页</a> 为准）：</p>
+  <table>
+    <tr><th>资源</th><th>免费层额度</th><th>说明</th></tr>
+    <tr><td>请求数</td><td><strong>100,000 次 / 天</strong></td><td>硬上限，超了需升级付费计划</td></tr>
+    <tr><td>CPU 时长</td><td><strong>10 ms / 请求</strong></td><td>免费层单请求最多跑 10ms CPU（付费可到 50ms+）</td></tr>
+    <tr><td>子请求（subrequest）</td><td><strong>50 次 / 请求</strong></td><td>免费层每个请求内最多发起 50 次子请求</td></tr>
+    <tr><td>Workers KV</td><td>读 10 万 / 天、写 1 千 / 天、存 1 GB</td><td>边缘键值存储，附赠的免费额度</td></tr>
+    <tr><td>部署子域</td><td><strong>*.workers.dev 免费</strong></td><td>无需自有域名即可上线；绑自有域名需把域名解析到 Cloudflare</td></tr>
+    <tr><td>Worker 脚本数</td><td>可创建多个</td><td>免费层允许同时维护多个脚本项目</td></tr>
+  </table>
+  <div class="warn">⚠️ 踩坑 1 — 10 万次 / 天是「硬上限」，不是软限速。免费层请求一旦超量，Cloudflare 会直接拒绝（表现为 1015 或函数不响应），不会温柔降级。对策：用 <strong>Cache API / KV</strong> 缓存结果，把「每个用户请求」收敛成「少量回源」；真有稳定大流量再升付费。</div>
+
+  <h2>二、适合用它做什么</h2>
+  <ul>
+    <li><strong>API 网关 / 反代</strong>：给后端（<a href="neon-postgres">Neon</a>、<a href="supabase-free-tier">Supabase</a>）套一层，加鉴权、改写响应、隐藏真实域名。</li>
+    <li><strong>边缘缓存层</strong>：把 <a href="cloudflare-r2-image-hosting">R2</a> 的对象用 Worker 包成带签名的下载 / 上传接口，省去单独鉴权服务。</li>
+    <li><strong>Webhook 接收 / 转发</strong>：轻量接收第三方回调、写入 KV 或转发，毫秒级响应。</li>
+    <li><strong>不适合</strong>：重 CPU 任务（>10ms）、长连接 / WebSocket（需特定计划）、强一致事务、超高频写 KV。</li>
+  </ul>
+
+  <h2>三、开通全流程（实测步骤）</h2>
+  <ol class="steps">
+    <li><strong>注册 Cloudflare 账号。</strong>进 <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">dash.cloudflare.com</a> 注册（免费层无需绑卡）。绑定自有域名可选，不影响先用 <code>workers.dev</code>。</li>
+    <li><strong>安装 Wrangler。</strong><code>npm install -g wrangler</code>（或用 <code>npx wrangler</code>）。Wrangler 是官方 CLI，本地开发 + 部署都靠它。</li>
+    <li><strong>登录授权。</strong>跑 <code>wrangler login</code>，浏览器跳授权后拿到凭证（凭证存在本地，<strong>不要提交进 git</strong>）。</li>
+    <li><strong>初始化项目。</strong><code>wrangler init my-worker</code>，选「Hello World (fetch handler)」模板，会生成 <code>src/index.js</code> + <code>wrangler.toml</code>。</li>
+    <li><strong>写代码。</strong>在 <code>src/index.js</code> 实现 <code>fetch</code> 入口（示例见第四节）。</li>
+    <li><strong>本地调试。</strong><code>wrangler dev</code> 本地起一个边缘运行时，<code>http://localhost:8787</code> 实时测，改完即生效。</li>
+    <li><strong>部署上线。</strong><code>wrangler deploy</code>，得到 <code>https://my-worker.&lt;你的子域&gt;.workers.dev</code>，全球边缘即可访问。</li>
+    <li><strong>（可选）绑 KV / R2。</strong>在 <code>wrangler.toml</code> 声明绑定（见第四节），让 Worker 直接读写边缘存储。</li>
+  </ol>
+
+  <h2>四、最小可跑示例</h2>
+  <p>一个返回 JSON、并带一个静态问候的 Worker（<code>src/index.js</code>）：</p>
+  <pre><code>export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
+    // 简单 API：/api/hello 返回 JSON
+    if (url.pathname === '/api/hello') {
+      return Response.json({ ok: true, msg: '来自边缘节点' });
+    }
+
+    // 默认问候
+    return new Response('Hello from Cloudflare Worker!', {
+      headers: { 'content-type': 'text/plain; charset=utf-8' }
+    });
+  }
+}</code></pre>
+  <p>绑定 KV 的 <code>wrangler.toml</code> 片段（部署时 <code>env.MY_KV</code> 即可用）：</p>
+  <pre><code>name = "my-worker"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+[[kv_namespaces]]
+binding = "MY_KV"
+id = "你的_kv_namespace_id"</code></pre>
+  <p>把 Worker 当 <a href="cloudflare-r2-image-hosting">R2</a> 的上传 / 鉴权网关时，再在 <code>wrangler.toml</code> 加 <code>[[r2_buckets]]</code> 绑定即可，部署到 <a href="cloudflare-r2-image-hosting">Cloudflare Pages</a> 同生态，零成本拼全栈。</p>
+
+  <h2>五、7 个真实踩坑提醒</h2>
+
+  <div class="warn">⚠️ 踩坑 2 — 免费层单请求只有 10ms CPU，重活会超时。解析大 JSON、循环很多次、调慢接口，超过 10ms CPU 就报 <code>1102 exceeded CPU</code>。对策：把重计算挪到后台任务或拆小请求；需要更长运行时间就升付费（50ms 起）。</div>
+
+  <div class="warn">⚠️ 踩坑 3 — KV 是「最终一致 + 写限频」。免费 KV 每天只有 1 千次写、10 万次读，而且写入后<strong>边缘节点同步有延迟</strong>，刚写的值在另一地读可能还是旧的。对策：别把 KV 当强一致主数据库；高频写场景换 <a href="neon-postgres">Neon</a> / <a href="supabase-free-tier">Supabase</a>。</div>
+
+  <div class="warn">⚠️ 踩坑 4 — <code>*.workers.dev</code> 子域在部分地区「可达性不稳定」。免费部署的默认域名，个别网络环境访问慢甚至不通。对策：把自有域名（已解析到 Cloudflare）绑定到 Worker / 路由，走自家域名更稳更可控。</div>
+
+  <div class="warn">⚠️ 踩坑 5 — 子请求上限 50 次 / 请求。免费层每个请求内部最多发 50 次 subrequest（fetch 调用），超了直接报错。对策：合并外部调用、加缓存、减少瀑布式 fetch；需要更多用付费计划（最高 1000）。</div>
+
+  <div class="warn">⚠️ 踩坑 6 — 别依赖「内存常驻」做跨请求状态。Worker 是事件驱动、实例可能随时复用也可能随时销毁，<code>globalThis</code> 缓存只是「尽力复用」而非保证。对策：跨请求状态一律放 KV / <a href="cloudflare-r2-image-hosting">R2</a> / Cache API；内存只当临时缓存。</div>
+
+  <div class="warn">⚠️ 踩坑 7 — 免费层实时日志 / 调试能力有限。生产排错想看 <code>wrangler tail</code> 实时日志在免费层受限。对策：上线前本地 <code>wrangler dev</code> 充分测；关键路径打结构化日志，异常主动抛错便于追溯。</div>
+
+  <div class="tip">💡 组合拳终极版：<strong>Workers（边缘函数）</strong> + <a href="cloudflare-r2-image-hosting">R2（大文件 / 图片，免流量费）</a> + <a href="cloudflare-r2-image-hosting">Pages（静态前端）</a> + KV（边缘缓存） + <a href="neon-postgres">Neon（按需唤醒的 PG）</a> = 几乎零成本、全球可达的全栈小产品底座，且 Workers / R2 / Pages / KV 免费层均<strong>无需绑卡</strong>。本站的教程矩阵正是教您把它拼起来赚钱。</div>
+
+  <h2>六、什么时候该付费</h2>
+  <p>出现任一信号说明免费层到顶：每天请求超 10 万、单请求需要 >10ms CPU、要 Durable Objects / Queue / Workflows 这类高级绑定、要更高 SLA 或更多子请求。Cloudflare 付费按 <strong>请求量 + CPU 时长</strong> 计费，升级不中断服务，平滑过渡。</p>
+
+  <p style="margin-top:24px"><a class="btn" href="tutorials">← 返回教程列表</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-10-08</div>
+  <div>本教程为实测经验整理，Cloudflare 政策可能变动，请以官方文档为准。</div>
+  <div><a href="privacy" style="color:var(--brand);text-decoration:none">隐私政策</a></div>
+</footer>
+</body>
+</html>
