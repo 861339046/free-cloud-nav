@@ -2,7 +2,7 @@
 
 > 方案：**Cloudflare Pages（免费托管）+ 域名（可用免费 eu.org 二级域名，零成本；或付费域名）**
 > 为什么选它：国内访问快、百度收录好、能建独立品牌——这三点正是「中文流量变现」的命门。
-> 代码是纯静态站点，零服务器成本，无需后端。
+> 代码是纯静态站点 + 可选轻后端（Supabase 存提交申请、Pages Functions 做点击统计），全部免费层，零服务器成本。
 
 ---
 
@@ -73,6 +73,32 @@ git push -u origin main
 - **新增服务**：编辑 `index.html` 里的 `data` 数组，加一个对象即可（`name` / `cat` / `desc` / `note` / `url`）
 - **免费额度变动**：各官网政策常变，留意后及时更新 `note` 字段
 - **变现**：流量起来后可接入 Google AdSense，或做「精选付费收录」
+
+---
+
+## 提交收录后端（Supabase，免费层）
+
+「+ 提交收录」页（`submit.html`）用 Supabase 免费层存申请，配置只需一次：
+
+1. 注册 [Supabase](https://supabase.com/)（GitHub 登录，免费层无需绑卡），新建项目（区域建议 Singapore）
+2. 控制台 → **SQL Editor** → 粘贴本仓库 `supabase-setup.sql` 全部内容 → Run（建 `submissions` 表 + 只许匿名插入的 RLS 策略）
+3. 控制台 → **Project Settings → API**，复制 `Project URL` 和 `anon public` key
+4. 打开 `submit.html`，把顶部两个常量 `SUPABASE_URL` / `SUPABASE_ANON_KEY` 换成自己的值
+5. `git push` 上线即生效
+
+审核流程：Supabase → **Table Editor → submissions**，`status` 为 `pending` 的是新申请；确认后把该服务手动加进 `index.html` 的 `data` 数组上墙。`anon` key 的 RLS 策略只允许插入、不允许读取，公开在前端是安全的（密钥泄露也只能被人塞垃圾数据，读不到任何内容）。
+
+---
+
+## 点击统计后端（Pages Functions + KV，免费层）
+
+访客点击「访问官网」时，前端会向 `/api/click`（`functions/api/click.js`）发一次统计请求，用 Workers KV 计数。Cloudflare Pages 会自动识别 `functions/` 目录，无需额外配置；**未绑定 KV 时网站完全不受影响**。启用步骤：
+
+1. Cloudflare 控制台 → **Workers & Pages → KV → Create namespace**，命名如 `nav-clicks`
+2. Pages 项目 → **Settings → Functions → KV namespace bindings**：变量名填 `CLICKS`，选择上面的命名空间，保存
+3. 下次部署生效；查看数据：浏览器访问 `https://keting.eu.org/api/click` 即可拿到全部计数 JSON
+
+免费层额度：KV 读 10 万次/天、写 1 千次/天，小流量站点绰绰有余；点击数据是后续谈「付费收录 / 广告按效果计费」的谈判筹码。
 
 ---
 
