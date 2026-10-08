@@ -63,7 +63,7 @@
   <!-- 列表区 -->
   <div id="panel" style="display:none">
     <h1>收录申请</h1>
-    <p class="sub">审核要点：官网真实可访问、确有免费层、非灰产擦边。通过后点「生成上墙代码」粘进 index.html。</p>
+    <p class="sub">审核要点：官网真实可访问、确有免费层、非灰产擦边。<b>点「通过」即上架</b>——访客刷新首页立即可见（动态社区收录区）。若想固化进静态代码（百度 SEO 更稳），再用「生成固化代码」粘进 index.html。</p>
     <div class="bar">
       <button class="chip on" data-f="pending">待审核</button>
       <button class="chip" data-f="approved">已通过</button>
@@ -116,7 +116,7 @@ function render(){
         <button class="op pass" onclick="setStatus(${r.id},'approved')">✓ 通过</button>
         <button class="op rej" onclick="setStatus(${r.id},'rejected')">✗ 拒绝</button>
         <button class="op del" onclick="del(${r.id})">删除</button>
-        <button class="op code" onclick="toggleCode(${r.id})">生成上墙代码</button>
+        <button class="op code" onclick="toggleCode(${r.id})">生成固化代码（可选，SEO）</button>
       </div>
       <div class="snippet" id="sn-${r.id}">${esc(snippet(r))}</div>
     </div>`;
@@ -133,7 +133,7 @@ async function load(){
 
 window.setStatus = async (id, status) => {
   const { data } = await api('/api/admin', { method:'POST', body: JSON.stringify({action:'setStatus', id, status}) });
-  if(data.ok){ toast(status==='approved'?'已标记通过':'已标记拒绝'); load(); } else toast(data.message||'操作失败');
+  if(data.ok){ toast(status==='approved'?'已通过，首页即刻上架':'已标记拒绝'); load(); } else toast(data.message||'操作失败');
 };
 window.del = async (id) => {
   if(!confirm('确定删除这条申请？不可恢复。')) return;

@@ -38,6 +38,7 @@
   .card:hover{box-shadow:0 8px 24px rgba(37,99,235,.10);transform:translateY(-2px)}
   .card h3{margin:0;font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:8px}
   .cat{font-size:12px;color:var(--brand);background:var(--brand-soft);padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .new-badge{font-size:11px;color:#fff;background:#10b981;padding:2px 8px;border-radius:999px;white-space:nowrap}
   .desc{font-size:14px;color:var(--muted);margin:0;flex:1}
   .note{font-size:13px;color:#b45309;background:#fffbeb;border-left:3px solid #f59e0b;padding:6px 10px;border-radius:6px}
   .acts{display:flex;gap:12px;align-items:center;margin-top:2px}
@@ -130,22 +131,29 @@ const emptyEl = document.getElementById('empty');
 
 const counts = {};
 data.forEach(d => counts[d.cat] = (counts[d.cat] || 0) + 1);
-const cats = ["全部", ...Array.from(new Set(data.map(d => d.cat)))];
 let activeCat = "全部";
 let kw = "";
 
-cats.forEach(c => {
-  const b = document.createElement('span');
-  b.className = 'tag' + (c === "全部" ? ' active' : '');
-  b.textContent = c === "全部" ? `全部 (${data.length})` : `${c} (${counts[c]})`;
-  b.onclick = () => {
-    activeCat = c;
-    [...tagsEl.children].forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-    render();
-  };
-  tagsEl.appendChild(b);
-});
+// 生成分类筛选标签（社区收录并入后需重建，故抽成函数）
+function buildTags() {
+  const counts = {};
+  data.forEach(d => counts[d.cat] = (counts[d.cat] || 0) + 1);
+  const cats = ["全部", ...Array.from(new Set(data.map(d => d.cat)))];
+  tagsEl.innerHTML = '';
+  cats.forEach(c => {
+    const b = document.createElement('span');
+    b.className = 'tag' + (c === activeCat ? ' active' : '');
+    b.textContent = c === "全部" ? `全部 (${data.length})` : `${c} (${counts[c]})`;
+    b.onclick = () => {
+      activeCat = c;
+      [...tagsEl.children].forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      render();
+    };
+    tagsEl.appendChild(b);
+  });
+}
+buildTags();
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -170,7 +178,7 @@ function render() {
   });
   grid.innerHTML = list.map(d => `
     <div class="card">
-      <h3>${d.name}<span class="cat">${d.cat}</span></h3>
+      <h3>${d.name}${d.community ? '<span class="new-badge">新收录</span>' : ''}<span class="cat">${d.cat}</span></h3>
       <p class="desc">${d.desc}</p>
       <div class="note">注意：${d.note}</div>
       <div class="acts">
@@ -199,6 +207,24 @@ function trackClick(id) {
 }
 searchEl.addEventListener('input', e => { kw = e.target.value; render(); });
 render();
+
+// 社区收录动态上墙：拉取 /api/services（审核通过的申请，只含公开字段），并入网格。
+// 站长在 /admin 点「通过」后，访客刷新首页即可看到，无需改代码重新部署。
+// 静态 data 数组仍保留：手动固化的服务对百度 SEO 更稳，动态区负责「即时上架」。
+(async function loadCommunity() {
+  try {
+    const res = await fetch('/api/services');
+    const j = await res.json();
+    if (!j.ok || !Array.isArray(j.services) || !j.services.length) return;
+    const known = new Set(data.map(d => d.name.toLowerCase()));
+    j.services.forEach(s => {
+      if (!s.name || !s.url || known.has(String(s.name).toLowerCase())) return; // 与静态条目重名则跳过
+      data.push({ name: String(s.name), cat: String(s.cat || '其他工具'), desc: String(s.desc || ''), note: String(s.note || '免费额度以官网为准。'), url: String(s.url), community: true });
+    });
+    buildTags();
+    render();
+  } catch (err) { /* 社区区加载失败不影响静态内容 */ }
+})();
 </script>
 <!-- 百度自动推送：每次页面被访问即主动上报百度，加速收录 -->
 <script>

@@ -88,7 +88,7 @@ git push -u origin main
    - `SUPABASE_ANON_KEY` = 你的 publishable / anon key
 5. 保存后**重新部署**一次生效
 
-审核流程（网页后台，推荐）：打开 `https://你的域名/admin`，输入后台密码即可在网页上「通过 / 拒绝 / 删除」申请，通过后还能一键生成可直接粘进 `index.html` 的上墙代码。首次启用需再配两个环境变量（保存后重新部署）：
+审核流程（网页后台，推荐）：打开 `https://你的域名/admin`，输入后台密码即可「通过 / 拒绝 / 删除」申请。**点「通过」即上架**——首页会通过 `/api/services`（`functions/api/services.js`）实时拉取已通过的社区收录动态渲染，访客刷新立即可见，无需改代码重新部署。若想把某条固化进静态代码（对百度 SEO 更稳），在后台点「生成固化代码」粘进 `index.html` 的 `data` 数组即可（与动态条目重名会自动去重）。首次启用需再配两个环境变量（保存后重新部署）：
 
 - `SUPABASE_SERVICE_KEY` = Supabase **service_role** 密钥（Settings → API，绕过 RLS 的管理员密钥，**只许放服务端环境变量，绝不能写进任何前端代码**）
 - `ADMIN_SECRET` = 自定的后台密码（建议 20 位以上随机字符串，别用弱密码）
