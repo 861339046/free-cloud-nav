@@ -67,7 +67,7 @@ export async function onRequestGet(context) {
     const url = new URL(request.url);
     const status = (url.searchParams.get('status') || '').trim();
     const qs = new URLSearchParams({ select: '*', order: 'created_at.desc', limit: '200' });
-    if (status === 'pending' || status === 'approved' || status === 'rejected') qs.set('status', 'eq.' + status);
+    if (status === 'pending' || status === 'approved' || status === 'rejected' || status === 'off') qs.set('status', 'eq.' + status);
 
     const res = await fetch(cfg.SUPABASE_URL + '/rest/v1/submissions?' + qs.toString(), {
       headers: supabaseHeaders(env)
@@ -98,8 +98,9 @@ export async function onRequestPost(context) {
     let method, qs, body;
     if (b.action === 'setStatus') {
       const status = String(b.status || '');
-      if (status !== 'approved' && status !== 'rejected' && status !== 'pending') {
-        return json({ ok: false, message: 'status 只能是 approved / rejected / pending' }, 400);
+      // off = 下架（首页 /api/services 只拉 approved，off 自动隐藏）
+      if (status !== 'approved' && status !== 'rejected' && status !== 'pending' && status !== 'off') {
+        return json({ ok: false, message: 'status 只能是 approved / rejected / pending / off' }, 400);
       }
       method = 'PATCH';
       qs = 'id=eq.' + id;

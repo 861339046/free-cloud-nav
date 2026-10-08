@@ -31,12 +31,13 @@
   .st.pending{color:var(--warn);background:#fdf4e3}
   .st.approved{color:var(--ok);background:#e5f6ef}
   .st.rejected{color:var(--bad);background:#fdeaea}
+  .st.off{color:#64748b;background:#eef2f6}
   .row p{margin:6px 0 0;font-size:14px}
   .row .meta{color:var(--sub);font-size:12px;margin-top:4px;word-break:break-all}
   .row .meta a{color:var(--blue);text-decoration:none}
   .ops{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .op{border:0;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;color:#fff}
-  .op.pass{background:var(--ok)} .op.rej{background:var(--bad)} .op.del{background:#8a97a5} .op.code{background:var(--blue)}
+  .op.pass{background:var(--ok)} .op.rej{background:var(--bad)} .op.del{background:#8a97a5} .op.code{background:var(--blue)} .op.offb{background:var(--warn)}
   .snippet{display:none;margin-top:10px;background:#f6fafd;border:1px dashed var(--line);border-radius:8px;padding:10px;font-family:Consolas,monospace;font-size:12.5px;word-break:break-all;white-space:pre-wrap;color:#274b6d}
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:var(--ink);color:#fff;border-radius:8px;padding:9px 20px;font-size:14px;opacity:0;pointer-events:none;transition:.25s}
   .toast.show{opacity:.95}
@@ -68,6 +69,7 @@
       <button class="chip on" data-f="pending">待审核</button>
       <button class="chip" data-f="approved">已通过</button>
       <button class="chip" data-f="rejected">已拒绝</button>
+      <button class="chip" data-f="off">已下架</button>
       <button class="chip" data-f="all">全部</button>
       <span class="cnt" id="cnt"></span>
     </div>
@@ -113,8 +115,12 @@ function render(){
       ${r.note?`<p>⚠️ ${esc(r.note)}</p>`:''}
       <div class="meta">官网：<a href="${esc(r.url)}" target="_blank" rel="noopener nofollow">${esc(r.url)}</a>${r.email?` · 联系：${esc(r.email)}`:''} · ${esc(t)}</div>
       <div class="ops">
-        <button class="op pass" onclick="setStatus(${r.id},'approved')">✓ 通过</button>
-        <button class="op rej" onclick="setStatus(${r.id},'rejected')">✗ 拒绝</button>
+        ${r.status==='approved'
+          ? `<button class="op offb" onclick="setStatus(${r.id},'off')">⬇ 下架</button>`
+          : r.status==='off'
+            ? `<button class="op pass" onclick="setStatus(${r.id},'approved')">⬆ 重新上架</button>`
+            : `<button class="op pass" onclick="setStatus(${r.id},'approved')">✓ 通过</button>
+               <button class="op rej" onclick="setStatus(${r.id},'rejected')">✗ 拒绝</button>`}
         <button class="op del" onclick="del(${r.id})">删除</button>
         <button class="op code" onclick="toggleCode(${r.id})">生成固化代码（可选，SEO）</button>
       </div>
@@ -133,7 +139,7 @@ async function load(){
 
 window.setStatus = async (id, status) => {
   const { data } = await api('/api/admin', { method:'POST', body: JSON.stringify({action:'setStatus', id, status}) });
-  if(data.ok){ toast(status==='approved'?'已通过，首页即刻上架':'已标记拒绝'); load(); } else toast(data.message||'操作失败');
+  if(data.ok){ toast(status==='approved'?'已通过，首页即刻上架':(status==='off'?'已下架，首页即刻隐藏':'已标记拒绝')); load(); } else toast(data.message||'操作失败');
 };
 window.del = async (id) => {
   if(!confirm('确定删除这条申请？不可恢复。')) return;
