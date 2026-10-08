@@ -88,7 +88,12 @@ git push -u origin main
    - `SUPABASE_ANON_KEY` = 你的 publishable / anon key
 5. 保存后**重新部署**一次生效
 
-审核流程：Supabase → **Table Editor → submissions**，`status` 为 `pending` 的是新申请；确认后把该服务手动加进 `index.html` 的 `data` 数组上墙。RLS 策略只允许插入、不允许读取，且密钥只存在服务端环境变量里，安全。
+审核流程（网页后台，推荐）：打开 `https://你的域名/admin`，输入后台密码即可在网页上「通过 / 拒绝 / 删除」申请，通过后还能一键生成可直接粘进 `index.html` 的上墙代码。首次启用需再配两个环境变量（保存后重新部署）：
+
+- `SUPABASE_SERVICE_KEY` = Supabase **service_role** 密钥（Settings → API，绕过 RLS 的管理员密钥，**只许放服务端环境变量，绝不能写进任何前端代码**）
+- `ADMIN_SECRET` = 自定的后台密码（建议 20 位以上随机字符串，别用弱密码）
+
+审核流程（手动兜底）：Supabase → **Table Editor → submissions**，`status` 为 `pending` 的是新申请；确认后把该服务手动加进 `index.html` 的 `data` 数组上墙。RLS 策略只允许插入、不允许读取，且密钥只存在服务端环境变量里，安全。
 
 ---
 

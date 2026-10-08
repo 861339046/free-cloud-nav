@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>收录审核后台 · 免费云服务导航</title>
+<style>
+  :root{--bg:#f0f7ff;--card:#fff;--ink:#1e3a5f;--sub:#5b7a9d;--line:#d6e6f5;--blue:#2b7de0;--ok:#1a9e6c;--bad:#d9534f;--warn:#c98a12}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+  header.top{display:flex;justify-content:space-between;align-items:center;padding:14px 4px;border-bottom:1px solid var(--line);margin-bottom:20px}
+  header.top .brand{font-weight:700}
+  header.top a{color:var(--blue);text-decoration:none;font-size:14px}
+  h1{font-size:22px;margin:6px 0 4px}
+  .sub{color:var(--sub);font-size:14px;margin:0 0 18px}
+  .login{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;max-width:460px;margin:40px auto}
+  .login input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:15px;margin:10px 0}
+  .btn{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:8px;padding:10px 22px;font-size:15px;cursor:pointer}
+  .btn:hover{filter:brightness(1.08)}
+  .bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 14px;font-size:13px;cursor:pointer}
+  .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .bar .cnt{color:var(--sub);font-size:13px;margin-left:auto}
+  .row{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+  .row .head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .row .head .name{font-weight:700;font-size:16px}
+  .row .head .cat{font-size:12px;color:var(--blue);background:#e8f2fd;border-radius:6px;padding:1px 8px}
+  .row .head .st{font-size:12px;border-radius:6px;padding:1px 8px;margin-left:auto}
+  .st.pending{color:var(--warn);background:#fdf4e3}
+  .st.approved{color:var(--ok);background:#e5f6ef}
+  .st.rejected{color:var(--bad);background:#fdeaea}
+  .row p{margin:6px 0 0;font-size:14px}
+  .row .meta{color:var(--sub);font-size:12px;margin-top:4px;word-break:break-all}
+  .row .meta a{color:var(--blue);text-decoration:none}
+  .ops{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .op{border:0;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;color:#fff}
+  .op.pass{background:var(--ok)} .op.rej{background:var(--bad)} .op.del{background:#8a97a5} .op.code{background:var(--blue)}
+  .snippet{display:none;margin-top:10px;background:#f6fafd;border:1px dashed var(--line);border-radius:8px;padding:10px;font-family:Consolas,monospace;font-size:12.5px;word-break:break-all;white-space:pre-wrap;color:#274b6d}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:var(--ink);color:#fff;border-radius:8px;padding:9px 20px;font-size:14px;opacity:0;pointer-events:none;transition:.25s}
+  .toast.show{opacity:.95}
+  .empty{color:var(--sub);text-align:center;padding:40px 0}
+  .hint{font-size:12.5px;color:var(--sub);background:#f6fafd;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="brand">🛡 收录审核后台</span>
+    <a href="/">← 返回导航站</a>
+  </header>
+
+  <!-- 登录区：密码只存本机浏览器 localStorage，请求时放在 x-admin-token 头里 -->
+  <div class="login" id="loginBox">
+    <h1>站长登录</h1>
+    <p class="sub">输入后台密码（即 Cloudflare Pages 环境变量 <code>ADMIN_SECRET</code> 的值）</p>
+    <input type="password" id="pwd" placeholder="后台密码" autocomplete="off">
+    <button class="btn" id="loginBtn">进入后台</button>
+    <p class="sub" id="loginErr" style="color:var(--bad);min-height:1.5em"></p>
+  </div>
+
+  <!-- 列表区 -->
+  <div id="panel" style="display:none">
+    <h1>收录申请</h1>
+    <p class="sub">审核要点：官网真实可访问、确有免费层、非灰产擦边。通过后点「生成上墙代码」粘进 index.html。</p>
+    <div class="bar">
+      <button class="chip on" data-f="pending">待审核</button>
+      <button class="chip" data-f="approved">已通过</button>
+      <button class="chip" data-f="rejected">已拒绝</button>
+      <button class="chip" data-f="all">全部</button>
+      <span class="cnt" id="cnt"></span>
+    </div>
+    <div class="hint">安全提醒：本页已 noindex 不进搜索引擎；<code>service_role</code> 密钥只存在服务端环境变量，前端拿不到。</div>
+    <div id="list"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let TOKEN = localStorage.getItem('admin_token') || '';
+let filter = 'pending';
+let cache = [];
+
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1800); }
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function api(path, opts={}){
+  const res = await fetch(path, { ...opts, headers: { 'x-admin-token': TOKEN, 'Content-Type':'application/json', ...(opts.headers||{}) } });
+  let data = {}; try { data = await res.json(); } catch {}
+  return { status: res.status, data };
+}
+
+function snippet(r){
+  const o = (k)=>String(r[k]??'').replace(/"/g,'\\"');
+  return `{name:"${o('name')}",cat:"${o('category')}",desc:"${o('description')}",note:"${o('note')||'免费额度以官网为准。'}",url:"${o('url')}"},`;
+}
+
+function render(){
+  const rows = filter==='all' ? cache : cache.filter(r=>r.status===filter);
+  $('#cnt').textContent = `共 ${rows.length} 条`;
+  if(!rows.length){ $('#list').innerHTML = '<p class="empty">这个状态下暂时没有申请。</p>'; return; }
+  $('#list').innerHTML = rows.map(r=>{
+    const t = new Date(r.created_at).toLocaleString('zh-CN');
+    return `<div class="row" data-id="${r.id}">
+      <div class="head">
+        <span class="name">#${r.id} ${esc(r.name)}</span>
+        <span class="cat">${esc(r.category)}</span>
+        <span class="st ${esc(r.status)}">${esc(r.status)}</span>
+      </div>
+      <p>${esc(r.description)}</p>
+      ${r.note?`<p>⚠️ ${esc(r.note)}</p>`:''}
+      <div class="meta">官网：<a href="${esc(r.url)}" target="_blank" rel="noopener nofollow">${esc(r.url)}</a>${r.email?` · 联系：${esc(r.email)}`:''} · ${esc(t)}</div>
+      <div class="ops">
+        <button class="op pass" onclick="setStatus(${r.id},'approved')">✓ 通过</button>
+        <button class="op rej" onclick="setStatus(${r.id},'rejected')">✗ 拒绝</button>
+        <button class="op del" onclick="del(${r.id})">删除</button>
+        <button class="op code" onclick="toggleCode(${r.id})">生成上墙代码</button>
+      </div>
+      <div class="snippet" id="sn-${r.id}">${esc(snippet(r))}</div>
+    </div>`;
+  }).join('');
+}
+
+async function load(){
+  const q = filter==='all' ? '' : '?status='+filter;
+  const { status, data } = await api('/api/admin'+q);
+  if(!data.ok){ toast(data.message||'加载失败'); return; }
+  cache = data.rows || [];
+  render();
+}
+
+window.setStatus = async (id, status) => {
+  const { data } = await api('/api/admin', { method:'POST', body: JSON.stringify({action:'setStatus', id, status}) });
+  if(data.ok){ toast(status==='approved'?'已标记通过':'已标记拒绝'); load(); } else toast(data.message||'操作失败');
+};
+window.del = async (id) => {
+  if(!confirm('确定删除这条申请？不可恢复。')) return;
+  const { data } = await api('/api/admin', { method:'POST', body: JSON.stringify({action:'delete', id}) });
+  if(data.ok){ toast('已删除'); load(); } else toast(data.message||'删除失败');
+};
+window.toggleCode = (id) => { const el=document.getElementById('sn-'+id); el.style.display = el.style.display==='block'?'none':'block'; };
+
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); filter=c.dataset.f; load();
+}));
+
+async function enter(pwd){
+  TOKEN = pwd;
+  const { status, data } = await api('/api/admin?status=pending');
+  if(status===401 || !data.ok){ $('#loginErr').textContent = (data.message||'密码不对，或服务端还没配置好'); TOKEN=''; return; }
+  localStorage.setItem('admin_token', pwd);
+  cache = data.rows||[];
+  $('#loginBox').style.display='none'; $('#panel').style.display='';
+  render();
+}
+
+$('#loginBtn').addEventListener('click', ()=>enter($('#pwd').value.trim()));
+$('#pwd').addEventListener('keydown', e=>{ if(e.key==='Enter') enter($('#pwd').value.trim()); });
+if(TOKEN) enter(TOKEN); // 已存密码直接尝试进
+</script>
+</body>
+</html>
