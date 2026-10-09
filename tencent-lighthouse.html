@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>腾讯云轻量应用服务器实测 · 免费云服务导航</title>
+<meta name="description" content="实测腾讯云轻量应用服务器（Lighthouse）：新人特惠 ¥38/年起、套餐流量包与带宽边界、境内节点备案要求、防火墙放行与 Nginx/Pm2/Docker 部署示例，附 8 个真实踩坑。">
+<meta name="keywords" content="腾讯云轻量,轻量应用服务器,Lighthouse,备案,ICP备案,国内服务器,教程,踩坑,建站">
+<meta property="og:title" content="腾讯云轻量应用服务器实测">
+<meta property="og:description" content="¥38/年起的境内节点：怎么买、怎么建站、怎么备案，附 8 个真实踩坑。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://keting.eu.org/tencent-lighthouse">
+<link rel="canonical" href="https://keting.eu.org/tencent-lighthouse">
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{padding:36px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:680px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:20px;margin-top:34px;border-left:4px solid var(--brand);padding-left:10px}
+  .post h3{font-size:17px;margin-top:22px}
+  .post p,.post li{font-size:15px;color:#374151}
+  ol.steps{counter-reset:s;padding-left:0;list-style:none}
+  ol.steps>li{counter-increment:s;position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line)}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:10px;width:28px;height:28px;background:var(--brand);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+  .warn{background:#fffbeb;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:8px;color:#92400e;margin:16px 0;font-size:14px}
+  .tip{background:var(--brand-soft);border-left:4px solid var(--brand);padding:12px 16px;border-radius:8px;color:#1e40af;margin:16px 0;font-size:14px}
+  pre{background:#0f172a;color:#e2e8f0;padding:14px 16px;border-radius:10px;overflow:auto;font-size:13px;line-height:1.5}
+  code{font-family:"SFMono-Regular",Consolas,Menlo,monospace}
+  .post a{color:var(--brand)}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px}
+  table th,table td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+  table th{background:var(--brand-soft);color:#1e40af}
+  table tr:nth-child(even) td{background:#fafcff}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>腾讯云轻量应用服务器实测</h1>
+  <p class="sub">新人特惠 ¥38/年起的<strong>境内节点</strong> —— 把「国内访问快 + 百度收录好 + 备案合规」这块最贵的拼图补上，附 8 个真实踩坑。</p>
+  <a class="btn" href="tutorials">← 返回教程列表</a>
+</header>
+<article class="post">
+  <p class="meta">分类：实测教程 · 最后更新：2026-10-09 · 适用：中文个人开发者</p>
+
+  <p>前 6 篇教程（<a href="oracle-free-instance">Oracle</a> / <a href="supabase-free-tier">Supabase</a> / <a href="cloudflare-r2-image-hosting">R2</a> / <a href="vercel-ai-app">Vercel</a> / <a href="neon-postgres">Neon</a> / <a href="cloudflare-workers">Workers</a>）都在讲「海外免费云」。但中文流量变现有一道绕不开的坎：<strong>国内访问速度与备案</strong>。<a href="cloudflare-r2-image-hosting">Cloudflare Pages</a> 免备案也能用，可如果你要的是真正的国内低延迟、要跑常驻后端（爬虫 / 机器人 / 定时任务）、要一个能正规矩阵的中文站，就必须有<strong>一台境内服务器 + 一个已备案域名</strong>。</p>
+
+  <p><strong>腾讯云轻量应用服务器（Lighthouse）</strong>就是这条路上最便宜的一档：套餐制、开箱即用、带公网 IP 和流量包，新人首单常见 ¥38/年起。<a href="oracle-free-instance">Oracle 永久免费实例</a>解决「有没有服务器」，轻量解决「服务器在不在国内、合不合规」——两者不冲突，是互补的。</p>
+
+  <div class="tip">本篇定位与其它教程不同，先说清楚：<strong>轻量不是永久免费产品</strong>，它的价值是「用几十元/年换一台境内完整的服务器控制权」。新用户可以先薅<strong>免费试用</strong>再决定要不要买。价格随活动频繁变动，本文数字仅为实测观察值，<strong>一律以腾讯云官方活动页为准</strong>。</div>
+
+  <h2>一、先把「多少钱」说清楚</h2>
+  <p>轻量的成本结构比免费服务复杂，因为它有两层：<strong>首购价</strong>（很便宜，拉新）和<strong>续费价</strong>（按官网价，通常贵好几倍）。下单前一定要把这两层分开算。</p>
+  <table>
+    <tr><th>档位</th><th>典型配置</th><th>参考活动价</th><th>适合谁</th></tr>
+    <tr><td>秒杀 / 首单款</td><td>2核2G · 4M带宽 · 300GB月流量 · 40G SSD</td><td><strong>约 ¥38/年</strong></td><td>个人博客、练手、测试环境</td></tr>
+    <tr><td>入门款</td><td>2核2G · 3M带宽 · 200GB月流量</td><td>约 ¥68/年</td><td>轻量站点、小工具</td></tr>
+    <tr><td>性价比款</td><td>2核4G · 5M~6M带宽 · 500GB月流量</td><td>约 ¥188~199/年</td><td>小型官网、多应用并跑</td></tr>
+    <tr><td>高性能款</td><td>4核8G · 10M带宽 · 1500GB月流量</td><td>约 ¥630/年</td><td>有一定流量的正式项目</td></tr>
+    <tr><td>境外款（中国香港 / 东京 / 新加坡等）</td><td>2核2G · 30M带宽 · 1TB月流量</td><td>约 ¥99/年</td><td>不想备案、要免备案即时上线</td></tr>
+  </table>
+  <div class="warn">⚠️ 踩坑 1 — 新人特惠<strong>只限首单</strong>，续费按官网原价。¥38/年 是拉新价，第二年很可能变成几百元。对策：直接看 3 年 / 5 年套餐算<strong>总成本</strong>，或专门挑标注「同价续费」的档位。别只盯着第一年的数字下单。</div>
+
+  <h2>二、轻量 / CVM / 海外免费托管，怎么选</h2>
+  <table>
+    <tr><th>维度</th><th>轻量 Lighthouse</th><th>云服务器 CVM</th><th>Cloudflare Pages</th></tr>
+    <tr><td>上手难度</td><td>套餐制，开箱即用</td><td>配置组合多，易选错</td><td>推代码即上线</td></tr>
+    <tr><td>成本</td><td><strong>新人 ¥38/年起</strong></td><td>通常更贵</td><td>免费</td></tr>
+    <tr><td>国内延迟</td><td>低（境内节点直连）</td><td>低</td><td>中等（走 CDN 边缘）</td></tr>
+    <tr><td>备案</td><td>境内节点必须备案</td><td>境内节点必须备案</td><td><strong>不需要</strong></td></tr>
+    <tr><td>弹性 / 扩展</td><td>只能升级套餐</td><td>弹性伸缩、可组网</td><td>无需运维</td></tr>
+    <tr><td>适合</td><td>个人站 / 博客 / 小程序后端</td><td>企业级架构</td><td>纯静态前端</td></tr>
+  </table>
+  <p>一句话选型：<strong>90% 的个人开发者选轻量就够了</strong>；等你需要私有网络 VPC、多机集群、独享高性能数据库时，再考虑 CVM。轻量和 CVM 是两个独立产品，控制台入口、镜像、计费方式都不通用，别混着买。</p>
+
+  <h2>三、适合用它做什么</h2>
+  <ul>
+    <li><strong>境内中文站 / 博客</strong>：国内低延迟 + 可备案，百度抓取与收录都更友好。</li>
+    <li><strong>常驻后端服务</strong>：Node / Python 的爬虫、Telegram 或微信机器人、定时任务、API 服务——这些在 Serverless 免费层上跑不稳的东西。</li>
+    <li><strong>自建小数据库 / 缓存</strong>：MySQL、Redis 装在本地，配 <a href="neon-postgres">Neon</a> / <a href="supabase-free-tier">Supabase</a> 做异地备份。</li>
+    <li><strong>中转 / 反代 / 内网穿透</strong>：给自己搭一个稳定的跳板或反向代理入口。</li>
+    <li><strong>不适合</strong>：纯静态站（Pages 免费且更快）、需要秒级弹性伸缩的业务、想完全零成本的项目。</li>
+  </ul>
+
+  <h2>四、开通全流程（实测 8 步）</h2>
+  <ol class="steps">
+    <li><strong>注册 + 实名认证。</strong>进 <a href="https://cloud.tencent.com/" target="_blank" rel="noopener">cloud.tencent.com</a> 注册，个人认证上传身份证即可。未实名无法购买服务器。</li>
+    <li><strong>选地域。</strong>境内选 <strong>广州 / 上海 / 北京 / 成都 / 南京</strong>（延迟最低、要备案）；不想备案就选<strong>中国香港 / 新加坡 / 东京 / 硅谷</strong> 等境外节点，即买即用。轻量目前支持的地域还包括首尔、法兰克福、雅加达、弗吉尼亚、曼谷、圣保罗、新山等。</li>
+    <li><strong>选镜像。</strong>应用镜像（宝塔面板 / LAMP / WordPress / Docker）买完就直接能用，适合新手；系统镜像（Ubuntu 22.04 / Debian 12）干净可控，适合要自己掌控环境的进阶用户。</li>
+    <li><strong>选套餐 + 购买时长。</strong>记得：<strong>备案要求包年包月且购买时长 ≥ 3 个月</strong>，打算正规建站就一次买长一点。</li>
+    <li><strong>放行防火墙端口。</strong>控制台 →【防火墙】→ 添加规则，放行 22（SSH）/ 80 / 443；用宝塔还要加 8888。</li>
+    <li><strong>重置密码或用密钥。</strong>【概要】里重置 root 密码（或绑定 SSH 密钥），拿到公网 IP。</li>
+    <li><strong>SSH 登录。</strong><code>ssh root@你的公网IP</code>，登录成功后先 <code>apt update</code> 或 <code>yum update</code> 更一遍系统。</li>
+    <li><strong>部署应用 → 解析域名。</strong>部署方式见下一节；境内节点要先把域名备案完成才能解析，否则会被拦截。</li>
+  </ol>
+
+  <h2>五、最小可用示例（三种常见部署）</h2>
+  <p><strong>A. Nginx 托管一个静态站</strong>（最省资源，个人站首选）：</p>
+  <pre><code>sudo apt update &amp;&amp; sudo apt install -y nginx
+sudo mkdir -p /var/www/mysite
+# 把站点文件传进 /var/www/mysite（scp / git clone / 宝塔上传均可）
+sudo nano /etc/nginx/sites-available/default   # root 指向 /var/www/mysite
+sudo nginx -t &amp;&amp; sudo systemctl reload nginx</code></pre>
+  <p><strong>B. Node 应用常驻（pm2 守护进程）</strong>：</p>
+  <pre><code>curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm i -g pm2
+pm2 start app.js --name myapp
+pm2 save &amp;&amp; pm2 startup   # 开机自启</code></pre>
+  <p><strong>C. Docker 一把梭</strong>：</p>
+  <pre><code>sudo apt install -y docker.io
+sudo docker run -d --restart=always -p 8080:80 nginx</code></pre>
+  <p>最后用 Nginx 反向代理把 <code>8080</code> 转到 <code>80</code>，应用就走上了标准 HTTP 端口：</p>
+  <pre><code>server {
+    listen 80;
+    server_name your-domain.com;
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}</code></pre>
+
+  <h2>六、防火墙：最常把人卡住的一步</h2>
+  <p>轻量的防火墙（安全组）是独立于系统 <code>iptables</code> 的一层，两边都要通。默认只放行少量常用端口，你自己起的服务端口<strong>必须手动加规则</strong>。</p>
+  <div class="warn">⚠️ 踩坑 2 — 症状「SSH 里服务明明启动了，浏览器/别的机器就是连不上」= 99% 是防火墙没放行端口。对策：控制台【防火墙】→ 添加规则 → 协议 TCP → 端口填你的服务端口 → 来源建议限自己的 IP 段，别图省事全网放行。</div>
+  <div class="warn">⚠️ 踩坑 3 — 数据库端口不要对全网开放。3306（MySQL）/ 6379（Redis）/ 27017（MongoDB）一旦暴露在公网，几小时内就会被爆破扫描。对策：只允许本机或固定 IP，或干脆走 SSH 隧道访问。</div>
+
+  <h2>七、域名与备案（境内节点的硬门槛）</h2>
+  <p><strong>结论先说：域名只要解析到境内节点，就必须完成 ICP 备案</strong>，未备案会被腾讯云的未备案监测系统直接阻断访问并跳转提示页——这是「被拦截」，不是「跑得慢」，也没有端口可以绕（不论 80 还是 8080 都能被监测到）。</p>
+  <h3>备案的前提条件（官方口径）</h3>
+  <ul>
+    <li>服务器在 <strong>中国境内</strong>，计费模式为<strong>包年包月</strong>，购买时长 <strong>≥ 3 个月</strong>（含续费），且备案期间剩余有效期 <strong>≥ 1 个月</strong>；</li>
+    <li>中国香港及境外节点<strong>无需备案，也不能用于备案</strong>；</li>
+    <li>域名需完成实名认证，且实名信息与备案主体一致；</li>
+    <li>个人账号下，同一台轻量实例最多备案 <strong>5 个</strong>网站 / APP。</li>
+  </ul>
+  <div class="warn">⚠️ 踩坑 4 — 免费二级域名（比如本站用的 <code>eu.org</code>）<strong>不能备案</strong>。想上境内节点正规建站，必须有一个可备案的域名（<code>.cn</code> / <code>.com</code> / <code>.net</code> 等），且在境内注册商处完成实名。这是很多人买了境内服务器之后才发现卡住的地方。</div>
+  <h3>备案流程与时间</h3>
+  <ol class="steps">
+    <li><strong>在腾讯云控制台提交备案</strong>：填主体信息（身份证）、域名、关联网轻量实例。备案本身<strong>免费</strong>。</li>
+    <li><strong>腾讯云初审</strong>：约 1–2 个工作日，核对资料真实性后提交管局。</li>
+    <li><strong>短信核验</strong>：部分省份（如广东、天津）需在收到工信部短信后 <strong>24 小时内</strong>完成核验，超时会自动退回。</li>
+    <li><strong>管局审核</strong>：各省 3–20 个工作日不等，广东约 7–10 个工作日。</li>
+    <li><strong>下发备案号</strong>：拿到 ICP 备案号后，域名才能正式解析到境内节点对外服务。</li>
+  </ol>
+  <p>备案全程要给网站留出「空窗期」——这段时间域名不能解析到境内服务器，你可以先用公网 IP 调试，或先挂到境外节点 / <a href="cloudflare-r2-image-hosting">Cloudflare Pages</a> 上顶着。</p>
+  <div class="tip">💡 不想折腾备案？选 <strong>中国香港节点</strong>：免备案、买完即用、国内访问延迟只比境内高 30–80ms（对博客 / 工具站完全可以接受）。代价是——严格来说不算「合规的境内站」，部分场景浏览器会提示未备案。</div>
+
+  <h2>八、8 个真实踩坑提醒</h2>
+
+  <div class="warn">⚠️ 踩坑 5 — 套餐里的「月流量」是打包限额，超了要额外掏钱或限速。轻量的带宽和流量是一次性打包出售的（比如 4M 带宽 + 300GB/月），一旦超量，要么按量计费补钱，要么被降速。对策：图片、视频、安装包这类静态大资源放 <a href="cloudflare-r2-image-hosting">Cloudflare R2</a>（免出口流量费），给服务器省流量。</div>
+
+  <div class="warn">⚠️ 踩坑 6 — 快照回滚<strong>不可逆</strong>，且不会自动开。轻量快照需要手动创建（或自行配置自动备份策略）；回滚会把整盘数据覆盖回快照时刻的状态，之后产生的数据全部丢失，删掉的快照同样无法恢复。对策：重要数据定期异地备份到 <a href="cloudflare-r2-image-hosting">R2</a> / B2，别把快照当唯一保险。</div>
+
+  <div class="warn">⚠️ 踩坑 7 — 到期不续费会停机，保留期过后实例释放、数据清空。包年包月到期后一般有几天到十几天的停机保留期，逾期未续费实例会被回收，系统盘数据随之清除。对策：开「自动续费」，并养成定期导出数据的习惯。</div>
+
+  <div class="warn">⚠️ 踩坑 8 — 选错镜像 / 重装系统会清空系统盘。应用镜像里预装的宝塔面板默认占用 8888 端口，而宝塔是全网被扫最多的入口之一。对策：装完立刻改默认端口 + 强密码 + 登录 IP 白名单；并记住「重装系统 = 系统盘全清」，数据盘不受影响但也别赌。</div>
+
+  <h2>九、什么时候该买，什么时候别买</h2>
+  <ul>
+    <li><strong>该买</strong>：要国内低延迟访问、要跑常驻后端（爬虫 / 机器人 / 定时任务）、要备案做正规中文站、要完整 root 控制权。</li>
+    <li><strong>别买</strong>：纯静态站（<a href="cloudflare-r2-image-hosting">Cloudflare Pages</a> 免费且全球更快）、只是想要「有一台服务器」（<a href="oracle-free-instance">Oracle 永久免费实例</a> 更合适）。</li>
+    <li><strong>成本视角</strong>：¥38–99/年 ≈ 每月 3–8 元，比一杯饮品便宜；但一定要把「续费价」和「流量超额」两笔潜在支出算进去。</li>
+  </ul>
+
+  <div class="tip">💡 组合拳（境内 + 海外双活）：<strong>腾讯云轻量（境内节点，跑主站 + 后端 + 本地数据库）</strong> + <strong>已备案域名</strong> = 国内最快最稳；静态资源交给 <a href="cloudflare-r2-image-hosting">R2</a> 省流量，图片走 CDN，边缘逻辑交给 <a href="cloudflare-workers">Workers</a>，免费后端用 <a href="supabase-free-tier">Supabase</a> / <a href="neon-postgres">Neon</a>，海外可达性由 <a href="vercel-ai-app">Vercel</a> / Pages 兜底。境内合规主站 + 海外免费边缘，是中文小产品性价比最高的形态。</div>
+
+  <h2>十、诚实边界</h2>
+  <p>轻量<strong>不是免费产品</strong>，本篇以「低成本入场 + 国内合规落点」定位收录，与本站其余免费教程互补。文中价格均为活动期观察值，腾讯云的促销节奏、套餐配置、备案政策与管局审核时长都会变动，<strong>一切以腾讯云官方页面与实际控制台为准</strong>。本站不构成任何购买建议，与腾讯云无返利关系。</p>
+
+  <p style="margin-top:24px"><a class="btn" href="tutorials">← 返回教程列表</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-10-09</div>
+  <div>本教程为实测经验整理，腾讯云政策与价格可能变动，请以官方文档为准。</div>
+  <div><a href="privacy" style="color:var(--brand);text-decoration:none">隐私政策</a></div>
+</footer>
+</body>
+</html>
