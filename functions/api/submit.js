@@ -24,6 +24,17 @@ function cleanEnv(v) {
   return typeof v === 'string' ? v.trim().replace(/^["']+|["']+$/g, '') : '';
 }
 
+// 清洗用户输入：去掉尖括号（防存储型 XSS 进入库）、剔除控制字符、合并空白、按字段限长。
+// 首页对输出做了转义，这里是纵深防御：即使前端被绕过，落库的也是干净文本。
+function sanitize(v, max) {
+  return String(v == null ? '' : v)
+    .replace(/[<>]/g, '')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
 function validInput(b) {
   const name = (b.name || '').trim();
   const category = (b.category || '').trim();
@@ -55,16 +66,26 @@ async function handleSubmit(context) {
   // 蜜罐：机器人填了直接假成功
   if (b.website) return json({ ok: true });
 
-  const err = validInput(b);
+  // 统一清洗后再校验（保证校验看到的就是最终落库的内容）
+  const s = {
+    name: sanitize(b.name, MAX_FIELDS.name),
+    category: sanitize(b.category, MAX_FIELDS.category),
+    url: sanitize(b.url, MAX_FIELDS.url),
+    description: sanitize(b.description, MAX_FIELDS.description),
+    note: sanitize(b.note, MAX_FIELDS.note),
+    email: sanitize(b.email, MAX_FIELDS.email)
+  };
+
+  const err = validInput(s);
   if (err) return json({ ok: false, message: err }, 400);
 
   const payload = [{
-    name: b.name.trim(),
-    category: b.category.trim(),
-    url: b.url.trim(),
-    description: b.description.trim(),
-    note: (b.note || '').trim() || null,
-    email: (b.email || '').trim() || null,
+    name: s.name,
+    category: s.category,
+    url: s.url,
+    description: s.description,
+    note: s.note || null,
+    email: s.email || null,
     status: 'pending'
   }];
 

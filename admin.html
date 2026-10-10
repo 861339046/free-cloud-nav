@@ -55,7 +55,7 @@
     </span>
   </header>
 
-  <!-- 登录区：密码只存本机浏览器 localStorage，请求时放在 x-admin-token 头里 -->
+  <!-- 登录区：密码只存 sessionStorage（关标签即清除），请求时放在 x-admin-token 头里 -->
   <div class="login" id="loginBox">
     <h1>站长登录</h1>
     <p class="sub">输入后台密码（即 Cloudflare Pages 环境变量 <code>ADMIN_SECRET</code> 的值）</p>

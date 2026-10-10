@@ -14,6 +14,17 @@
 <meta name="theme-color" content="#2563eb" data-page-node-id="IkvBmwYingRjCdkPoiCcGv">
 <link rel="canonical" href="https://keting.eu.org/" data-page-node-id="utTQBbPiDBdPUr58zEy0Zw">
 <meta name="baidu-site-verification" content="codeva-tE3qWJplF0" data-page-node-id="dftlEbijcRxSmB8sAbxxnE" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "免费云服务导航",
+  "alternateName": "Free Cloud Nav",
+  "url": "https://keting.eu.org/",
+  "description": "面向中文个人开发者的免费云服务导航：静态托管、数据库、服务器、存储等真实免费额度清单，附适合场景与避坑提醒。",
+  "inLanguage": "zh-CN"
+}
+</script>
 <style>
   :root{
     --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
@@ -46,6 +57,8 @@
   .card a:hover{text-decoration:underline}
   .copy{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:13px;cursor:pointer;font-family:inherit}
   .copy:hover{background:var(--brand);color:#fff}
+  .tut-link{color:#059669;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+  .tut-link:hover{text-decoration:underline}
   .empty{text-align:center;color:var(--muted);padding:40px}
   footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
   footer .updated{color:var(--brand);margin-bottom:6px}
@@ -90,7 +103,7 @@
   </section>
 </div>
 <footer data-page-node-id="LlBZ7t5lfJaO9t5D6ANqJ4">
-  <div class="updated" data-page-node-id="zKKUy17tX9FJzYzy2q18XC">最后更新：2026-10-08</div>
+  <div class="updated" data-page-node-id="zKKUy17tX9FJzYzy2q18XC">最后更新：2026-10-10</div>
   <div data-page-node-id="FE7WhmlNOLDX8LV4R8he9W">数据由社区整理，免费额度随各官网政策变动，请以官方页面为准。本导航不构成任何承诺。</div>
   <div style="margin-top:8px" data-page-node-id="QrDGiE0jBBmriDdVYycJMv"><a href="privacy" style="color:var(--brand);text-decoration:none" data-page-node-id="4VIXC3YM3ZWFIKo7YPqAGt">隐私政策</a> · <a href="mailto:861339046@qq.com?subject=免费云服务导航-商务合作" style="color:var(--brand);text-decoration:none" data-page-node-id="2CZE6nA6Ot55siDgehyrXH">商务合作</a></div>
 </footer>
@@ -99,24 +112,24 @@
 const data = [
   // 静态托管
   {name:"GitHub Pages",cat:"静态托管",desc:"纯静态站点托管，完全免费，绑定自定义域名也免费。",note:"适合纯前端 / 文档站；不支持后端逻辑。",url:"https://pages.github.com/"},
-  {name:"Vercel",cat:"静态托管",desc:"前端 + Serverless 函数，免费额度对个人项目足够。",note:"Next.js 首选；免费层有带宽 / 函数调用限制。",url:"https://vercel.com/"},
+  {name:"Vercel",cat:"静态托管",desc:"前端 + Serverless 函数，免费额度对个人项目足够。",note:"Next.js 首选；免费层有带宽 / 函数调用限制。",url:"https://vercel.com/",tut:"vercel-ai-app"},
   {name:"Netlify",cat:"静态托管",desc:"Jamstack 友好，前端 + 函数 + 表单，免费层体验好。",note:"适合静态站 + 轻量后台。",url:"https://www.netlify.com/"},
   {name:"Cloudflare Pages",cat:"静态托管",desc:"接入 Cloudflare 全球 CDN，前端托管免费且快。",note:"追求访问速度 / 国内可达性的好选择。",url:"https://pages.cloudflare.com/"},
   // 后端与数据库
-  {name:"Supabase",cat:"后端与数据库",desc:"Postgres + Auth + 存储 + 实时，免费层可直接上手。",note:"小产品后端首选；免费层有项目数与算力限制。",url:"https://supabase.com/"},
+  {name:"Supabase",cat:"后端与数据库",desc:"Postgres + Auth + 存储 + 实时，免费层可直接上手。",note:"小产品后端首选；免费层有项目数与算力限制。",url:"https://supabase.com/",tut:"supabase-free-tier"},
   {name:"MongoDB Atlas",cat:"后端与数据库",desc:"M0 共享集群永久免费，文档型数据库。",note:"适合非结构化数据；免费层存储 / 算力有限。",url:"https://www.mongodb.com/atlas"},
   {name:"Railway",cat:"后端与数据库",desc:"一键部署后端服务，按用量有免费试用额度。",note:"额度政策曾调整，上线前请确认当前免费范围。",url:"https://railway.app/"},
   {name:"Render",cat:"后端与数据库",desc:"Web Service / Postgres 均有免费层。",note:"冷启动较慢，适合非高频服务。",url:"https://render.com/"},
-  {name:"Neon",cat:"后端与数据库",desc:"Serverless Postgres，提供免费分支。",note:"按需计费，免费层适合开发与小规模。",url:"https://neon.tech/"},
+  {name:"Neon",cat:"后端与数据库",desc:"Serverless Postgres，提供免费分支。",note:"按需计费，免费层适合开发与小规模。",url:"https://neon.tech/",tut:"neon-postgres"},
   {name:"Upstash",cat:"后端与数据库",desc:"Serverless Redis / Kafka，免费层可直接用。",note:"适合缓存 / 队列；按请求数计费。",url:"https://upstash.com/"},
   {name:"TiDB Serverless",cat:"后端与数据库",desc:"HTAP 数据库 Serverless 版，免费层可用。",note:"兼容 MySQL；适合关系型 + 弹性伸缩。",url:"https://www.pingcap.com/tidb-serverless/"},
   // 计算与服务器
-  {name:"Oracle Cloud",cat:"计算与服务器",desc:"永久免费 2 台微型实例（含 ARM）。",note:"需绑卡；账号审核有时较严，适合常驻小服务。",url:"https://www.oracle.com/cloud/free/"},
-  {name:"腾讯云轻量",cat:"计算与服务器",desc:"新用户常有免费体验 / 限时优惠实例。",note:"限时非永久；适合需要国内访问的场景。",url:"https://cloud.tencent.com/product/lighthouse"},
+  {name:"Oracle Cloud",cat:"计算与服务器",desc:"永久免费 2 台微型实例（含 ARM）。",note:"需绑卡；账号审核有时较严，适合常驻小服务。",url:"https://www.oracle.com/cloud/free/",tut:"oracle-free-instance"},
+  {name:"腾讯云轻量",cat:"计算与服务器",desc:"新用户常有免费体验 / 限时优惠实例。",note:"限时非永久；适合需要国内访问的场景。",url:"https://cloud.tencent.com/product/lighthouse",tut:"tencent-lighthouse"},
   {name:"Fly.io",cat:"计算与服务器",desc:"全球部署应用，提供免费额度。",note:"免费额度有限，适合边缘部署尝鲜。",url:"https://fly.io/"},
-  {name:"Cloudflare Workers",cat:"计算与服务器",desc:"边缘 Serverless 函数，每天 10 万次免费请求 + KV 免费额度。",note:"适合反代 / 缓存 / 网关；免费层 CPU 限 10ms / 请求。",url:"https://workers.cloudflare.com/"},
+  {name:"Cloudflare Workers",cat:"计算与服务器",desc:"边缘 Serverless 函数，每天 10 万次免费请求 + KV 免费额度。",note:"适合反代 / 缓存 / 网关；免费层 CPU 限 10ms / 请求。",url:"https://workers.cloudflare.com/",tut:"cloudflare-workers"},
   // 存储
-  {name:"Cloudflare R2",cat:"存储",desc:"对象存储，免费额度 + 免出口流量费。",note:"适合图片 / 静态资源托管，成本极低。",url:"https://www.cloudflare.com/products/r2/"},
+  {name:"Cloudflare R2",cat:"存储",desc:"对象存储，免费额度 + 免出口流量费。",note:"适合图片 / 静态资源托管，成本极低。",url:"https://www.cloudflare.com/products/r2/",tut:"cloudflare-r2-image-hosting"},
   {name:"Backblaze B2",cat:"存储",desc:"对象存储，免费 10GB。",note:"适合备份 / 冷存储。",url:"https://www.backblaze.com/b2"},
   // 其他工具
   {name:"Web3Forms",cat:"其他工具",desc:"静态站接收联系表单，免费额度可用。",note:"无需后端即可收邮件，适合落地页。",url:"https://web3forms.com/"},
@@ -170,6 +183,23 @@ function copyUrl(u) {
   }
 }
 
+// 转义：社区收录字段来自用户提交，拼进 innerHTML 前必须转义，防存储型 XSS
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+// 只放行 http/https，挡掉 javascript: / data: 等协议注入
+function safeUrl(u) {
+  const s = String(u || '').trim();
+  return /^https?:\/\//i.test(s) ? s : '#';
+}
+// 站内教程 slug 只允许字母数字与连字符，防路径注入
+function safeSlug(s) {
+  const t = String(s || '').trim();
+  return /^[a-z0-9-]+$/i.test(t) ? t : '';
+}
+
 function render() {
   const list = data.filter(d => {
     const okCat = activeCat === "全部" || d.cat === activeCat;
@@ -178,12 +208,13 @@ function render() {
   });
   grid.innerHTML = list.map(d => `
     <div class="card">
-      <h3>${d.name}${d.community ? '<span class="new-badge">新收录</span>' : ''}<span class="cat">${d.cat}</span></h3>
-      <p class="desc">${d.desc}</p>
-      <div class="note">注意：${d.note}</div>
+      <h3>${esc(d.name)}${d.community ? '<span class="new-badge">新收录</span>' : ''}<span class="cat">${esc(d.cat)}</span></h3>
+      <p class="desc">${esc(d.desc)}</p>
+      <div class="note">注意：${esc(d.note)}</div>
       <div class="acts">
-        <a href="${d.url}" target="_blank" rel="noopener" data-sid="${d.name}">访问官网 →</a>
-        <button class="copy" data-url="${d.url}">复制链接</button>
+        <a href="${esc(safeUrl(d.url))}" target="_blank" rel="noopener" data-sid="${esc(d.name)}">访问官网 →</a>
+        <button class="copy" data-url="${esc(safeUrl(d.url))}">复制链接</button>
+        ${safeSlug(d.tut) ? `<a class="tut-link" href="${esc(safeSlug(d.tut))}">📖 实测教程</a>` : ''}
       </div>
     </div>`).join('');
   emptyEl.style.display = list.length ? 'none' : 'block';
@@ -226,7 +257,9 @@ render();
   } catch (err) { /* 社区区加载失败不影响静态内容 */ }
 })();
 </script>
-<!-- 百度自动推送：每次页面被访问即主动上报百度，加速收录 -->
+<!-- 百度自动推送（已下线，暂时停用）：
+     百度「自动推送 / API 提交」入口自 2026-09-08 起下线升级，官方称「恢复使用时另行通知」。
+     在此之前这段脚本每次访问都会白跑一次外部请求，故暂时注释。待百度恢复后取消注释即可自动生效。
 <script>
 (function(){
   var bp = document.createElement('script');
@@ -240,6 +273,7 @@ render();
   s.parentNode.insertBefore(bp, s);
 })();
 </script>
+-->
 <!--
   Google AdSense 主脚本（变现入口 A）：
   1) 到 google.com/adsense 申请，站点需已上线、含隐私政策（privacy 页已建）、内容充实、稳定运行。
