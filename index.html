@@ -75,7 +75,7 @@
 <body data-page-node-id="H2xJPT6ZMIjxS5VgVhy2Nt">
 <header data-page-node-id="pBjQzIK56QrHtl3Or0MP34">
   <h1 data-page-node-id="Bi8KXIUrfv9DnBWEUZ6egs">免费云服务导航</h1>
-  <p class="sub" data-page-node-id="GCMagkFFdTiFdV0Kngfs7E">面向中文个人开发者的省钱清单 —— 只收真实可用的免费层 / 免费额度。每条附「适合谁」与「坑在哪」，帮您少踩雷。</p>
+  <p class="sub" data-page-node-id="GCMagkFFdTiFdV0Kngfs7E">面向中文个人开发者的省钱清单 —— 20+ 个真实可用的免费层 / 免费额度，每条附「适合谁」与「坑在哪」，另有 7 篇手把手实测教程帮您少踩雷。</p>
   <a class="btn" href="submit" data-page-node-id="Qr5ZCJLkcDCHlgBcIGw8ZH">+ 提交收录</a>
   <a class="btn" href="tutorials" data-page-node-id="h5OxQjGnTqQMbQH6L5v1oE">📚 实测教程</a>
 </header>
@@ -256,6 +256,11 @@ render();
     render();
   } catch (err) { /* 社区区加载失败不影响静态内容 */ }
 })();
+
+// 页面浏览统计（复用 /api/click 的 KV 后端，零新增服务端代码）：
+// 每天一个键（pv-index-YYYY-MM-DD），GET /api/click 即可查看每日浏览量。
+// KV 免费层写 1000 次/天、键会随日期增长（一年 365 个），量大后可定期清理旧键。
+try { trackClick('pv-index-' + new Date().toISOString().slice(0, 10)); } catch (err) {}
 </script>
 <!-- 百度自动推送（已下线，暂时停用）：
      百度「自动推送 / API 提交」入口自 2026-09-08 起下线升级，官方称「恢复使用时另行通知」。

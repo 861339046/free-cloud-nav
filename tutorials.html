@@ -88,9 +88,20 @@
   </div>
 </div>
 <footer>
-  <div class="updated">最后更新：2026-10-09</div>
+  <div class="updated">最后更新：2026-10-15</div>
   <div>教程为实测经验整理，各服务政策可能变动，请以官方文档为准。</div>
   <div><a href="privacy" style="color:var(--brand);text-decoration:none">隐私政策</a></div>
 </footer>
+<script>
+// 页面浏览统计（复用 /api/click 的 KV 后端）：每天一个键 pv-tutorials-YYYY-MM-DD
+try {
+  var pvBody = JSON.stringify({ id: 'pv-tutorials-' + new Date().toISOString().slice(0, 10) });
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon('/api/click', new Blob([pvBody], { type: 'application/json' }));
+  } else {
+    fetch('/api/click', { method: 'POST', body: pvBody, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {});
+  }
+} catch (e) { /* 统计失败不影响页面 */ }
+</script>
 </body>
 </html>
