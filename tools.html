@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>开发者在线工具箱 · 免费 · 无需登录 · 数据不出浏览器</title>
+<meta name="description" content="免费在线开发者工具箱：Cron 表达式生成与解析、JSON 格式化校验、Unix 时间戳转换、Base64/URL 编解码、随机密码生成。全部在浏览器本地运行，数据不上传，无需登录。" />
+<meta name="keywords" content="在线工具,开发者工具,cron表达式生成器,JSON格式化,时间戳转换,base64编码解码,随机密码生成器,免费工具" />
+<meta property="og:title" content="开发者在线工具箱 · 免费 · 数据不出浏览器" />
+<meta property="og:description" content="Cron / JSON / 时间戳 / Base64 / 密码生成，全部本地运行，隐私安全。" />
+<meta property="og:url" content="https://keting.eu.org/tools" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tools" />
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:48px 20px 28px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:28px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:16px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px 60px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:8px;transition:box-shadow .15s,transform .15s;color:inherit;text-decoration:none}
+  .card:hover{box-shadow:0 8px 24px rgba(37,99,235,.10);transform:translateY(-2px)}
+  .card h3{margin:0;font-size:17px}
+  .icon{font-size:26px}
+  .desc{font-size:14px;color:var(--muted);margin:0;flex:1}
+  .go{color:var(--brand);font-size:14px;font-weight:600}
+  .soon{opacity:.65}
+  .soon .go{color:var(--muted)}
+  .why{margin:30px 0;padding:22px 24px;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}
+  .why h2{margin:0 0 10px;font-size:19px;color:var(--brand)}
+  .why p,.why li{font-size:14px;color:#374151}
+  .why ul{margin:10px 0;padding-left:20px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧰 开发者在线工具箱</h1>
+  <p class="sub">全部免费、无需登录、无使用次数限制。<strong>所有计算都在您的浏览器本地完成，输入的数据不会上传到任何服务器。</strong></p>
+  <a class="btn ghost" href="/">← 返回导航首页</a>
+</header>
+<div class="wrap">
+  <div class="grid">
+    <a class="card" href="tool-cron">
+      <span class="icon">⏰</span>
+      <h3>Cron 表达式生成器</h3>
+      <p class="desc">在线生成与解析 crontab 表达式（5 字段），实时预览未来 5 次执行时间，附常用模板。适合配定时任务、CI 计划。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-json">
+      <span class="icon">{ }</span>
+      <h3>JSON 格式化 / 校验</h3>
+      <p class="desc">在线 JSON 格式化、压缩、语法校验（错误定位）、键名排序。调试接口返回值必备。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-timestamp">
+      <span class="icon">🕐</span>
+      <h3>Unix 时间戳转换</h3>
+      <p class="desc">时间戳与日期双向转换（秒 / 毫秒自动识别），实时当前时间戳，支持本地时区与 UTC 查看。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-base64">
+      <span class="icon">🔤</span>
+      <h3>Base64 / URL 编解码</h3>
+      <p class="desc">Base64 与 URL 编码解码，完整支持中文等 UTF-8 字符，前后端联调排查乱码专用。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-password">
+      <span class="icon">🔑</span>
+      <h3>随机密码生成器</h3>
+      <p class="desc">本地生成高强度随机密码：长度 8–64 位、自定义字符集、排除易混淆字符、实时熵强度评估。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <div class="card soon">
+      <span class="icon">🛠️</span>
+      <h3>更多工具筹备中</h3>
+      <p class="desc">UUID 生成器、二维码生成、正则测试器等。有想用的工具欢迎在<a href="submit" style="color:var(--brand)">提交页</a>留言。</p>
+      <span class="go">敬请期待</span>
+    </div>
+  </div>
+
+  <section class="why">
+    <h2>为什么做这个工具箱？</h2>
+    <p>本站的主业是<a href="/" style="color:var(--brand);font-weight:600">免费云服务导航</a>与<a href="tutorials" style="color:var(--brand);font-weight:600">实测教程</a>。在配服务器、调接口、写定时任务的过程中，我们发现高频小工具要么满屏广告，要么要求登录，要么偷偷把输入内容发到服务端。所以这里的原则只有三条：</p>
+    <ul>
+      <li><strong>纯本地运行</strong>：页面加载后断网也能用，您粘贴的 JSON、密码、时间戳不经过任何服务器；</li>
+      <li><strong>零干扰</strong>：没有弹窗、没有强制登录、没有次数限制；</li>
+      <li><strong>贴合中文开发者</strong>：完整支持中文与北京时间，说明文字说人话。</li>
+    </ul>
+  </section>
+</div>
+<footer>
+  <div class="updated">最后更新：2026-10-16</div>
+  <div>工具由本站提供，计算全部在浏览器本地完成，不收集任何输入数据。</div>
+  <div style="margin-top:8px"><a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a> · <a href="privacy">隐私政策</a></div>
+</footer>
+<script>
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tools-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>

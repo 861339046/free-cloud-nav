@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unix 时间戳在线转换 - 时间戳与日期互转 | 免费云服务导航</title>
+<meta name="description" content="Unix 时间戳与日期时间在线双向转换：自动识别秒 / 毫秒，实时当前时间戳，支持本地时区与 UTC 双视图。纯浏览器本地运行，免费无需登录。" />
+<meta name="keywords" content="unix时间戳转换,时间戳在线,时间戳转日期,日期转时间戳,毫秒时间戳" />
+<meta property="og:title" content="Unix 时间戳在线转换" />
+<meta property="og:description" content="秒 / 毫秒自动识别，双向转换，实时当前时间戳。" />
+<meta property="og:url" content="https://keting.eu.org/tool-timestamp" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-timestamp" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type=text],input[type=datetime-local]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:15px;font-family:ui-monospace,Consolas,monospace;outline:none}
+  input:focus{border-color:var(--brand)}
+  button{padding:10px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .now{display:flex;gap:16px;flex-wrap:wrap;font-family:ui-monospace,Consolas,monospace}
+  .now div{background:var(--brand-soft);border-radius:10px;padding:12px 16px;min-width:180px}
+  .now b{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-bottom:4px}
+  .now span{font-size:20px;font-weight:600;color:var(--brand)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  .row>div{flex:1;min-width:180px}
+  .out{margin-top:12px;font-size:14px;line-height:1.9}
+  .out code{background:var(--brand-soft);padding:2px 8px;border-radius:6px;font-family:ui-monospace,Consolas,monospace;font-size:13.5px;word-break:break-all}
+  .bad{color:#dc2626;font-size:14px}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  th{background:var(--brand-soft);color:var(--brand)}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🕐 Unix 时间戳在线转换</h1>
+  <p class="sub">时间戳 ⇄ 日期双向转换，秒 / 毫秒自动识别，实时显示当前时间戳。纯本地计算。</p>
+  <nav class="toolsnav">
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a class="on" href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码生成</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>当前时间戳（实时刷新）</h2>
+    <div class="now">
+      <div><b>秒（10 位）</b><span id="nowS">—</span></div>
+      <div><b>毫秒（13 位）</b><span id="nowMs">—</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>时间戳 → 日期</h2>
+    <div class="row">
+      <div style="flex:2"><label for="tsIn">输入时间戳（10 位秒 / 13 位毫秒自动识别）</label>
+      <input type="text" id="tsIn" placeholder="例如 1760000000" spellcheck="false" /></div>
+      <div><button id="tsBtn">转换</button></div>
+    </div>
+    <div class="out" id="tsOut"></div>
+  </div>
+
+  <div class="panel">
+    <h2>日期 → 时间戳</h2>
+    <div class="row">
+      <div style="flex:2"><label for="dtIn">选择日期时间（按您本机时区）</label>
+      <input type="datetime-local" id="dtIn" step="1" /></div>
+      <div><button id="dtBtn">转换</button></div>
+    </div>
+    <div class="out" id="dtOut"></div>
+  </div>
+
+  <div class="doc">
+    <h2>关于时间戳的三个常识</h2>
+    <ul>
+      <li><strong>时区无关</strong>：Unix 时间戳是「自 1970-01-01 00:00:00 UTC 起的秒数」，同一个时间戳在全世界任何时区都指向同一瞬间，变的只是展示格式；</li>
+      <li><strong>10 位是秒、13 位是毫秒</strong>：拿到一串数字先数位数。JavaScript 里 <code>Date.now()</code> 返回毫秒，Java / Go 常用秒或毫秒，混用会差 1000 倍；</li>
+      <li><strong>2038 问题</strong>：32 位有符号整数最多存到 2038-01-19，新系统都用 64 位，但老嵌入式设备、老协议字段仍可能溢出。</li>
+    </ul>
+    <table>
+      <tr><th>常用基准</th><th>时间戳（秒）</th></tr>
+      <tr><td>2026-01-01 00:00:00 UTC</td><td>1767225600</td></tr>
+      <tr><td>2027-01-01 00:00:00 UTC</td><td>1798761600</td></tr>
+    </table>
+  </div>
+</div>
+<footer>
+  <div>计算全部在浏览器本地完成，不收集任何输入。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var p2=function(n){return (n<10?'0':'')+n;};
+function tick(){
+  var d=new Date();
+  document.getElementById('nowS').textContent=Math.floor(d.getTime()/1000);
+  document.getElementById('nowMs').textContent=d.getTime();
+}
+tick();setInterval(tick,1000);
+function fmtLocal(d){
+  return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())+' '+p2(d.getHours())+':'+p2(d.getMinutes())+':'+p2(d.getSeconds());
+}
+document.getElementById('tsBtn').addEventListener('click',function(){
+  var raw=document.getElementById('tsIn').value.trim();
+  var out=document.getElementById('tsOut');
+  out.innerHTML='';
+  if(!/^\d+$/.test(raw)){out.innerHTML='<p class="bad">请输入纯数字时间戳</p>';return;}
+  var n=parseInt(raw,10);
+  var ms=n<1e12?n*1000:n;
+  if(n>=1e17)ms=Math.floor(n/1000);
+  var d=new Date(ms);
+  if(isNaN(d.getTime())){out.innerHTML='<p class="bad">数值超出日期范围</p>';return;}
+  var utc=d.toISOString().replace('T',' ').replace('Z',' UTC');
+  out.innerHTML='<div>本地时间：<code>'+fmtLocal(d)+'</code></div>'+
+    '<div>UTC 时间：<code>'+utc+'</code></div>'+
+    '<div>ISO 8601：<code>'+d.toISOString()+'</code></div>'+
+    '<div>对应秒：<code>'+Math.floor(ms/1000)+'</code> · 毫秒：<code>'+ms+'</code></div>';
+});
+document.getElementById('dtBtn').addEventListener('click',function(){
+  var v=document.getElementById('dtIn').value;
+  var out=document.getElementById('dtOut');
+  if(!v){out.innerHTML='<p class="bad">请先选择日期时间</p>';return;}
+  var d=new Date(v);
+  if(isNaN(d.getTime())){out.innerHTML='<p class="bad">日期格式无效</p>';return;}
+  out.innerHTML='<div>秒级时间戳：<code>'+Math.floor(d.getTime()/1000)+'</code></div>'+
+    '<div>毫秒级时间戳：<code>'+d.getTime()+'</code></div>'+
+    '<div>UTC ISO 8601：<code>'+d.toISOString()+'</code></div>';
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-timestamp-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>

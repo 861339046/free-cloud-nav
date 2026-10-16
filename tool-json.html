@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JSON 格式化 / 校验 / 压缩 - 在线 JSON 工具 | 免费云服务导航</title>
+<meta name="description" content="在线 JSON 格式化、压缩、语法校验（错误定位）、键名排序工具。粘贴即用，纯浏览器本地运行，接口返回值不经过服务器，免费无需登录。" />
+<meta name="keywords" content="json格式化,json在线校验,json压缩,json解析,在线json工具" />
+<meta property="og:title" content="JSON 格式化 / 校验 / 压缩" />
+<meta property="og:description" content="格式化、压缩、校验、键排序，纯本地运行，数据不上传。" />
+<meta property="og:url" content="https://keting.eu.org/tool-json" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-json" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:200px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.5}
+  textarea:focus{border-color:var(--brand)}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .msg{font-size:14px;margin-top:10px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .stats{font-size:13px;color:var(--muted);margin-top:6px}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>{ } JSON 格式化 / 校验 / 压缩</h1>
+  <p class="sub">粘贴 JSON 即刻格式化、压缩、校验或按键名排序。解析错误会给出行号提示。纯本地运行，接口数据不离开浏览器。</p>
+  <nav class="toolsnav">
+    <a href="tool-cron">Cron</a>
+    <a class="on" href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码生成</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <label for="input">输入 JSON（支持粘贴接口返回值、配置文件等）</label>
+    <textarea id="input" spellcheck="false" placeholder='{"name":"示例","tags":["a","b"],"ok":true}'></textarea>
+    <div class="btns">
+      <button data-act="pretty2">格式化（2 空格）</button>
+      <button data-act="pretty4">格式化（4 空格）</button>
+      <button data-act="min">压缩</button>
+      <button data-act="sort" class="ghost">键名排序</button>
+      <button data-act="validate" class="ghost">仅校验</button>
+      <button data-act="copy" class="ghost">复制结果</button>
+      <button data-act="clear" class="ghost">清空</button>
+    </div>
+    <label for="output">输出结果</label>
+    <textarea id="output" spellcheck="false" readonly></textarea>
+    <div class="msg" id="msg"></div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <div class="doc">
+    <h2>常见报错对照</h2>
+    <ul>
+      <li><code>Unexpected token ' in JSON</code> —— 用了单引号。JSON 的字符串必须用双引号，键名也要双引号；</li>
+      <li><code>Unexpected token } / ,</code> —— 末尾多了逗号（trailing comma）。JSON 不允许最后一项后带逗号；</li>
+      <li><code>Unexpected token n</code> —— 写了 <code>NaN</code> / <code>undefined</code>。JSON 只接受 <code>null</code>；</li>
+      <li><code>Unexpected end of JSON input</code> —— 括号没配对，或复制时截断了；</li>
+      <li>中文乱码 —— 一般是上游按 GBK 编码而您按 UTF-8 解析，先确认响应头 <code>charset</code>。</li>
+    </ul>
+    <p>把接口数据格式化之后，还要找个免费数据库或免费后端来存？看看 <a href="supabase-free-tier" style="color:var(--brand)">Supabase 免费层实测</a>和 <a href="neon-postgres" style="color:var(--brand)">Neon Serverless Postgres 实测</a>。</p>
+  </div>
+</div>
+<footer>
+  <div>计算全部在浏览器本地完成，粘贴的内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var IN=document.getElementById('input'),OUT=document.getElementById('output'),MSG=document.getElementById('msg'),STATS=document.getElementById('stats');
+function sortKeys(v){
+  if(Array.isArray(v))return v.map(sortKeys);
+  if(v&&typeof v==='object'){
+    var o={};Object.keys(v).sort().forEach(function(k){o[k]=sortKeys(v[k]);});return o;
+  }
+  return v;
+}
+function setStats(){
+  var t=OUT.value;
+  if(!t){STATS.textContent='';return;}
+  var lines=t.split('\n').length;
+  STATS.textContent='输出：'+lines+' 行 · '+t.length+' 字符';
+}
+function run(act){
+  MSG.textContent='';MSG.className='msg';
+  var raw=IN.value.trim();
+  if(act==='clear'){IN.value='';OUT.value='';STATS.textContent='';return;}
+  if(!raw){MSG.textContent='请先输入 JSON';MSG.className='msg bad';return;}
+  var v;
+  try{v=JSON.parse(raw);}
+  catch(e){
+    var m=e.message;
+    var pos=m.match(/position (\d+)/);
+    if(pos){
+      var p=+pos[1];var line=raw.slice(0,p).split('\n').length;
+      var ctx=raw.slice(Math.max(0,p-20),p+20).replace(/\n/g,'⏎');
+      m+='（约第 '+line+' 行，附近内容：…'+ctx+'…）';
+    }
+    MSG.textContent='✘ 不是合法 JSON：'+m;MSG.className='msg bad';
+    return;
+  }
+  if(act==='validate'){MSG.textContent='✔ 合法 JSON';MSG.className='msg ok';setStats();return;}
+  var out;
+  try{
+    if(act==='pretty2')out=JSON.stringify(v,null,2);
+    else if(act==='pretty4')out=JSON.stringify(v,null,4);
+    else if(act==='min')out=JSON.stringify(v);
+    else if(act==='sort')out=JSON.stringify(sortKeys(v),null,2);
+  }catch(e){MSG.textContent='✘ 处理失败：'+e.message;MSG.className='msg bad';return;}
+  OUT.value=out;
+  MSG.textContent='✔ 完成';MSG.className='msg ok';
+  setStats();
+}
+document.querySelectorAll('.btns button').forEach(function(b){
+  b.addEventListener('click',function(){run(b.dataset.act);});
+});
+function copyOut(){
+  if(!OUT.value)return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(OUT.value).then(function(){MSG.textContent='✔ 已复制到剪贴板';MSG.className='msg ok';}).catch(function(){OUT.select();document.execCommand('copy');});
+  }else{OUT.select();document.execCommand('copy');}
+}
+var copyBtn=document.querySelector('[data-act=copy]');
+copyBtn.addEventListener('click',copyOut);
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-json-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>

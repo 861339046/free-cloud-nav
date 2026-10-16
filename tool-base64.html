@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Base64 / URL 在线编码解码 - 支持中文 | 免费云服务导航</title>
+<meta name="description" content="在线 Base64 与 URL 编码解码工具，完整支持中文等 UTF-8 字符（不乱码），可处理带中文的 JWT payload、接口参数。纯浏览器本地运行，免费无需登录。" />
+<meta name="keywords" content="base64在线编码解码,url编码解码,base64中文乱码,urlencode在线,在线转码工具" />
+<meta property="og:title" content="Base64 / URL 在线编码解码" />
+<meta property="og:description" content="完整支持中文 UTF-8，编码解码不乱码，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-base64" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-base64" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:130px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.5}
+  textarea:focus{border-color:var(--brand)}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔤 Base64 / URL 编码解码</h1>
+  <p class="sub">完整支持中文等 UTF-8 字符——很多在线工具解码中文会乱码，这里不会。纯本地运行，内容不经过服务器。</p>
+  <nav class="toolsnav">
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a class="on" href="tool-base64">Base64</a>
+    <a href="tool-password">密码生成</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>Base64</h2>
+    <label for="b64In">输入文本（或 Base64 串）</label>
+    <textarea id="b64In" spellcheck="false" placeholder="支持中文，例如：你好，世界"></textarea>
+    <div class="btns">
+      <button id="b64Enc">编码 → Base64</button>
+      <button id="b64Dec">解码 ← Base64</button>
+      <button id="b64EncUrl" class="ghost">编码为 URL-Safe Base64</button>
+      <button id="b64Clear" class="ghost">清空</button>
+    </div>
+    <label for="b64Out">结果</label>
+    <textarea id="b64Out" spellcheck="false"></textarea>
+    <div class="msg" id="b64Msg"></div>
+  </div>
+
+  <div class="panel">
+    <h2>URL 编码（Percent-Encoding）</h2>
+    <label for="urlIn">输入文本（或已编码的 URL 串）</label>
+    <textarea id="urlIn" spellcheck="false" placeholder="例如：https://example.com/搜索?关键词=免费"></textarea>
+    <div class="btns">
+      <button id="urlEnc">编码 → %XX</button>
+      <button id="urlEncC" class="ghost">编码（保留 URL 结构）</button>
+      <button id="urlDec">解码 ← %XX</button>
+      <button id="urlClear" class="ghost">清空</button>
+    </div>
+    <label for="urlOut">结果</label>
+    <textarea id="urlOut" spellcheck="false"></textarea>
+    <div class="msg" id="urlMsg"></div>
+  </div>
+
+  <div class="doc">
+    <h2>为什么中文 Base64 到处乱码？</h2>
+    <p>因为 <code>btoa()</code> 这类函数只认「每字符一字节」的 Latin-1。中文是 UTF-8 多字节字符，必须先 <code>TextEncoder</code> 转成字节流再编码。本工具就是按 <strong>UTF-8 → 字节 → Base64</strong> 的正确链路实现的，与 <code>atob → TextDecoder</code> 对称解码，中文、emoji 都不丢。</p>
+    <ul>
+      <li>看到 <code>%E4%BD%A0%E5%A5%BD</code> 是 URL 编码；看到 <code>5L2g5aW9</code> 是 Base64——两者底层都是同一串 UTF-8 字节；</li>
+      <li>JWT 的三段 payload 就是 URL-Safe Base64（<code>-_</code> 替代 <code>+/</code>、去 <code>=</code> 填充），用「解码 ← Base64」配合本站 JSON 工具可直接看内容（注意 JWT payload 不含签名验证，仅用于调试查看）；</li>
+      <li>Base64 不是加密，只是编码——任何人都能解码，别用来藏密码。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>计算全部在浏览器本地完成，粘贴的内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function utf8ToB64(s){
+  var bytes=new TextEncoder().encode(s);
+  var bin='';for(var i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function b64ToUtf8(s){
+  s=s.replace(/-/g,'+').replace(/_/g,'/').replace(/\s+/g,'');
+  while(s.length%4)s+='=';
+  var bin=atob(s);
+  var bytes=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+document.getElementById('b64Enc').addEventListener('click',function(){
+  try{document.getElementById('b64Out').value=utf8ToB64(document.getElementById('b64In').value);msg('b64Msg','✔ 已编码（标准 Base64，含 = 填充）',true);}
+  catch(e){msg('b64Msg','✘ 编码失败：'+e.message,false);}
+});
+document.getElementById('b64EncUrl').addEventListener('click',function(){
+  try{document.getElementById('b64Out').value=utf8ToB64(document.getElementById('b64In').value).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');msg('b64Msg','✔ 已编码（URL-Safe，适合 JWT / URL 参数）',true);}
+  catch(e){msg('b64Msg','✘ 编码失败：'+e.message,false);}
+});
+document.getElementById('b64Dec').addEventListener('click',function(){
+  try{document.getElementById('b64Out').value=b64ToUtf8(document.getElementById('b64In').value);msg('b64Msg','✔ 已解码（自动兼容 URL-Safe 变体与缺失填充）',true);}
+  catch(e){msg('b64Msg','✘ 不是合法的 Base64：'+e.message,false);}
+});
+document.getElementById('b64Clear').addEventListener('click',function(){
+  document.getElementById('b64In').value='';document.getElementById('b64Out').value='';msg('b64Msg','',true);
+});
+document.getElementById('urlEnc').addEventListener('click',function(){
+  try{document.getElementById('urlOut').value=encodeURIComponent(document.getElementById('urlIn').value);msg('urlMsg','✔ 已编码（全部特殊字符转义）',true);}
+  catch(e){msg('urlMsg','✘ 编码失败：'+e.message,false);}
+});
+document.getElementById('urlEncC').addEventListener('click',function(){
+  try{document.getElementById('urlOut').value=encodeURI(document.getElementById('urlIn').value);msg('urlMsg','✔ 已编码（保留 ://?&= 等 URL 结构符）',true);}
+  catch(e){msg('urlMsg','✘ 编码失败：'+e.message,false);}
+});
+document.getElementById('urlDec').addEventListener('click',function(){
+  try{document.getElementById('urlOut').value=decodeURIComponent(document.getElementById('urlIn').value.replace(/\+/g,'%20'));msg('urlMsg','✔ 已解码（+ 已按空格处理）',true);}
+  catch(e){msg('urlMsg','✘ 不是合法的 URL 编码串：'+e.message,false);}
+});
+document.getElementById('urlClear').addEventListener('click',function(){
+  document.getElementById('urlIn').value='';document.getElementById('urlOut').value='';msg('urlMsg','',true);
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-base64-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>
