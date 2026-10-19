@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SHA 哈希计算器在线 - SHA1/SHA256/SHA512 + HMAC · 免费 · 本地计算</title>
+<meta name="description" content="在线计算文本与文件的 SHA-1 / SHA-256 / SHA-384 / SHA-512 哈希值，支持 HMAC-SHA256 签名，十六进制与 Base64 双格式输出。基于浏览器原生 Web Crypto，文本与文件均不上传，无需登录。" />
+<meta name="keywords" content="SHA256在线计算,SHA1,SHA512,哈希计算器,文件校验,HMAC,在线加密哈希,免费工具" />
+<meta property="og:title" content="SHA 哈希计算器 · 免费 · 数据不出浏览器" />
+<meta property="og:description" content="文本 / 文件的 SHA-1/256/384/512 与 HMAC-SHA256，本地计算，可校验下载文件完整性。" />
+<meta property="og:url" content="https://keting.eu.org/tool-sha" />
+<meta property="og:type" content="website" />
+<meta name="robots" content="index,follow" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-sha" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"SHA 哈希计算器","url":"https://keting.eu.org/tool-sha","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"},"description":"在线计算文本与文件的 SHA-1/256/384/512 哈希与 HMAC-SHA256，纯浏览器本地计算。"}
+</script>
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:24px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:14px}
+  .btn{display:inline-block;margin-top:14px;padding:8px 16px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:18px}
+  .panel h2{margin:0 0 12px;font-size:16px;color:var(--brand)}
+  textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:14px;font-family:ui-monospace,Consolas,monospace;resize:vertical;background:#fff;color:var(--ink)}
+  textarea:focus{outline:2px solid var(--brand-soft);border-color:var(--brand)}
+  input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;font-family:ui-monospace,Consolas,monospace;background:#fff;color:var(--ink)}
+  label{font-size:13px;color:var(--muted);display:block;margin:10px 0 4px}
+  .hashrow{display:flex;align-items:baseline;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-top:10px;background:#fafbff;flex-wrap:wrap}
+  .hashrow b{font-size:13px;color:var(--brand);min-width:78px}
+  .hashval{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;word-break:break-all;flex:1;color:var(--ink)}
+  .copy{border:1px solid var(--line);background:#fff;color:var(--brand);border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer}
+  .copy:hover{background:var(--brand);color:#fff}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:26px;text-align:center;color:var(--muted);font-size:14px;cursor:pointer;transition:border-color .15s,background .15s}
+  .drop.over{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .drop b{color:var(--brand)}
+  #fmeta{font-size:13px;color:var(--muted);margin:10px 0 0}
+  .fmt{margin:12px 0 2px;display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+  .fmt button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:3px 12px;font-size:12px;cursor:pointer;color:var(--ink)}
+  .fmt button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .note{font-size:12.5px;color:var(--muted);background:var(--brand-soft);border-radius:10px;padding:10px 14px;margin-top:12px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+  .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔐 SHA 哈希计算器</h1>
+  <p class="sub">文本与文件的 SHA-1 / SHA-256 / SHA-384 / SHA-512，支持 HMAC-SHA256 签名。基于浏览器原生 Web Crypto 计算，<strong>文本和文件都不会上传</strong>。</p>
+  <a class="btn ghost" href="tools">← 返回工具箱</a>
+</header>
+<div class="wrap">
+
+  <div class="panel">
+    <h2>文本哈希</h2>
+    <textarea id="txt" placeholder="输入要计算哈希的文本…"></textarea>
+    <div class="fmt">输出格式：
+      <button type="button" id="fmtHex" class="on">十六进制</button>
+      <button type="button" id="fmtB64">Base64</button>
+    </div>
+    <div id="hashes"></div>
+    <div class="note">提示：SHA-1 已不推荐用于安全场景，仅作兼容校验；文件完整性校验请用 SHA-256 或更高。</div>
+  </div>
+
+  <div class="panel">
+    <h2>HMAC-SHA256 签名</h2>
+    <label for="key">密钥（Key）</label>
+    <input type="text" id="key" placeholder="输入密钥，例如：my-secret-key" />
+    <div id="hmacrow"></div>
+    <div class="note">HMAC 常用于 API 请求签名（如 Webhook 验签）。签名结果 = HMAC-SHA256(密钥, 文本)，请确认您的场景是「密钥作为 Key、报文作为消息」。</div>
+  </div>
+
+  <div class="panel">
+    <h2>文件哈希（校验下载完整性）</h2>
+    <div class="drop" id="drop">把文件拖到这里，或 <b>点击选择文件</b><br><span style="font-size:12px">文件只在浏览器内存中计算，不会上传。建议几十 MB 以内（过大受设备内存限制）。</span></div>
+    <input type="file" id="file" hidden />
+    <p id="fmeta"></p>
+    <div id="fhashes"></div>
+  </div>
+
+</div>
+<footer>
+  <div class="updated">最后更新：2026-10-19</div>
+  <div>工具由<a href="/">免费云服务导航</a>提供，计算全部在浏览器本地完成，不收集任何输入数据。</div>
+  <div style="margin-top:8px"><a href="tools">在线工具箱</a> · <a href="tutorials">实测教程</a> · <a href="privacy">隐私政策</a></div>
+</footer>
+<script>
+if(!window.crypto||!crypto.subtle){document.body.innerHTML='<p style="padding:40px;text-align:center">您的浏览器不支持 Web Crypto（需要 HTTPS 环境与较新浏览器），无法使用本工具。</p>';}
+var HEX=true;
+function toHex(buf){var a=new Uint8Array(buf),s='';for(var i=0;i<a.length;i++)s+=(a[i]<16?'0':'')+a[i].toString(16);return s;}
+function toB64(buf){var a=new Uint8Array(buf),s='';for(var i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s);}
+function fmt(buf){return HEX?toHex(buf):toB64(buf);}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function copyBtn(getter){
+  var b=document.createElement('button');b.className='copy';b.textContent='复制';
+  b.onclick=function(){var v=getter();if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(function(){b.textContent='已复制';setTimeout(function(){b.textContent='复制';},1200);});}else{var t=document.createElement('textarea');t.value=v;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();b.textContent='已复制';setTimeout(function(){b.textContent='复制';},1200);}};
+  return b;
+}
+var ALGOS=[['SHA-1','SHA-1'],['SHA-256','SHA-256'],['SHA-384','SHA-384'],['SHA-512','SHA-512']];
+async function hashText(){
+  var s=document.getElementById('txt').value;
+  var box=document.getElementById('hashes');
+  if(!s){box.innerHTML='<p style="font-size:13px;color:#94a3b8;margin:8px 0 0">输入文本后自动计算…</p>';return;}
+  var data=new TextEncoder().encode(s);
+  var html='';
+  for(var i=0;i<ALGOS.length;i++){
+    try{
+      var d=await crypto.subtle.digest(ALGOS[i][1],data);
+      var v=fmt(d);
+      html+='<div class="hashrow"><b>'+ALGOS[i][0]+'</b><span class="hashval">'+esc(v)+'</span></div>';
+    }catch(e){html+='<div class="hashrow"><b>'+ALGOS[i][0]+'</b><span class="hashval">计算失败</span></div>';}
+  }
+  box.innerHTML=html;
+  // 给最后一行补复制按钮（用事件委托太重，直接挂最后一个）
+  var rows=box.querySelectorAll('.hashrow');var last=rows[rows.length-1];
+  if(last){last.appendChild(copyBtn(function(){return fmt(data);}));}
+  // HMAC
+  var key=document.getElementById('key').value;
+  var hrow=document.getElementById('hmacrow');
+  if(!key){hrow.innerHTML='';return;}
+  try{
+    var k=await crypto.subtle.importKey('raw',new TextEncoder().encode(key),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+    var sig=await crypto.subtle.sign('HMAC',k,data);
+    hrow.innerHTML='<div class="hashrow"><b>HMAC-256</b><span class="hashval">'+esc(fmt(sig))+'</span></div>';
+  }catch(e){hrow.innerHTML='<p style="font-size:13px;color:#b91c1c;margin:8px 0 0">HMAC 计算失败：'+esc(e.message||'未知错误')+'</p>';}
+}
+var tmr=null;
+document.getElementById('txt').addEventListener('input',function(){clearTimeout(tmr);tmr=setTimeout(hashText,250);});
+document.getElementById('key').addEventListener('input',function(){clearTimeout(tmr);tmr=setTimeout(hashText,250);});
+document.getElementById('fmtHex').onclick=function(){HEX=true;this.className='on';document.getElementById('fmtB64').className='';hashText();fileHash();};
+document.getElementById('fmtB64').onclick=function(){HEX=false;this.className='on';document.getElementById('fmtHex').className='';hashText();fileHash();};
+// 文件哈希
+var fbuf=null;
+async function fileHash(){
+  var box=document.getElementById('fhashes');
+  if(!fbuf){box.innerHTML='';return;}
+  var html='';
+  for(var i=0;i<ALGOS.length;i++){
+    try{
+      var d=await crypto.subtle.digest(ALGOS[i][1],fbuf);
+      html+='<div class="hashrow"><b>'+ALGOS[i][0]+'</b><span class="hashval">'+esc(fmt(d))+'</span></div>';
+    }catch(e){html+='<div class="hashrow"><b>'+ALGOS[i][0]+'</b><span class="hashval">计算失败</span></div>';}
+  }
+  box.innerHTML=html;
+}
+var drop=document.getElementById('drop'),fileInput=document.getElementById('file');
+drop.onclick=function(){fileInput.click();};
+fileInput.onchange=function(){if(fileInput.files[0])readFile(fileInput.files[0]);};
+['dragover','dragenter'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over');});});
+['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over');});});
+drop.addEventListener('drop',function(e){var f=e.dataTransfer.files[0];if(f)readFile(f);});
+function readFile(f){
+  var meta=document.getElementById('fmeta');
+  meta.textContent='正在读取 '+f.name+'（'+(f.size/1024).toFixed(1)+' KB）…';
+  var r=new FileReader();
+  r.onload=function(){fbuf=r.result;meta.textContent=f.name+' · '+(f.size/1024).toFixed(1)+' KB · 计算完成';fileHash();};
+  r.onerror=function(){meta.textContent='文件读取失败，请重试。';};
+  r.readAsArrayBuffer(f);
+}
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-sha-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>

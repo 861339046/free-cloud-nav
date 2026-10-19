@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Markdown 在线编辑器与实时预览 · 免费 · 本地渲染</title>
+<meta name="description" content="在线 Markdown 编辑器，左侧编辑右侧实时预览，支持标题、列表、表格、代码块、引用、链接、图片语法。纯浏览器本地渲染，内容不上传，一键复制 HTML，无需登录。" />
+<meta name="keywords" content="markdown在线编辑器,markdown预览,markdown转html,md编辑器,免费markdown,在线写作" />
+<meta property="og:title" content="Markdown 在线编辑器 · 实时预览 · 数据不出浏览器" />
+<meta property="og:description" content="左侧编辑右侧实时预览，支持表格 / 代码块 / 引用，可复制 HTML，纯本地渲染。" />
+<meta property="og:url" content="https://keting.eu.org/tool-markdown" />
+<meta property="og:type" content="website" />
+<meta name="robots" content="index,follow" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-markdown" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Markdown 在线编辑器","url":"https://keting.eu.org/tool-markdown","applicationCategory":"DeveloperApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"},"description":"在线 Markdown 编辑与实时预览，纯浏览器本地渲染，支持复制 HTML。"}
+</script>
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:36px 20px 20px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:24px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:14px}
+  .btn{display:inline-block;margin-top:12px;padding:8px 16px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .toolbar button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;color:var(--ink)}
+  .toolbar button:hover{border-color:var(--brand);color:var(--brand)}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:820px){.cols{grid-template-columns:1fr}}
+  .pane{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;min-height:520px}
+  .pane h2{margin:0;padding:10px 16px;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line);font-weight:600}
+  #src{flex:1;border:0;border-radius:0 0 var(--radius) var(--radius);padding:16px;font-size:14px;font-family:ui-monospace,Consolas,monospace;resize:none;background:#fff;color:var(--ink);line-height:1.7}
+  #src:focus{outline:none}
+  #out{flex:1;padding:16px 20px;overflow:auto;font-size:14.5px}
+  /* 预览区排版 */
+  #out h1,#out h2,#out h3,#out h4{margin:18px 0 8px;line-height:1.35}
+  #out h1{font-size:22px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  #out h2{font-size:19px}
+  #out h3{font-size:16px}
+  #out p{margin:8px 0}
+  #out code{background:#eef2f7;border-radius:4px;padding:1px 6px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  #out pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:14px 16px;overflow:auto}
+  #out pre code{background:none;color:inherit;padding:0}
+  #out blockquote{margin:10px 0;padding:6px 14px;border-left:4px solid var(--brand);background:var(--brand-soft);border-radius:0 8px 8px 0;color:#374151}
+  #out table{border-collapse:collapse;margin:12px 0;width:100%}
+  #out th,#out td{border:1px solid var(--line);padding:7px 12px;font-size:13.5px;text-align:left}
+  #out th{background:#f1f5f9}
+  #out ul,#out ol{margin:8px 0;padding-left:24px}
+  #out li{margin:3px 0}
+  #out hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+  #out img{max-width:100%}
+  #out a{color:var(--brand)}
+  .note{font-size:12.5px;color:var(--muted);background:var(--brand-soft);border-radius:10px;padding:10px 14px;margin-top:14px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+  .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📝 Markdown 编辑器</h1>
+  <p class="sub">左侧编辑，右侧实时预览。支持标题 / 列表 / 表格 / 代码块 / 引用等常用语法。<strong>纯本地渲染，内容不上传</strong>，可一键复制生成的 HTML。</p>
+  <a class="btn ghost" href="tools">← 返回工具箱</a>
+</header>
+<div class="wrap">
+  <div class="toolbar">
+    <button type="button" id="btnSample">载入示例</button>
+    <button type="button" id="btnClear">清空</button>
+    <button type="button" id="btnCopyHtml">复制 HTML</button>
+    <button type="button" id="btnCopyMd">复制 Markdown</button>
+  </div>
+  <div class="cols">
+    <div class="pane">
+      <h2>Markdown 源码</h2>
+      <textarea id="src" spellcheck="false" placeholder="在这里输入 Markdown…"></textarea>
+    </div>
+    <div class="pane">
+      <h2>实时预览</h2>
+      <div id="out"></div>
+    </div>
+  </div>
+  <div class="note">安全说明：预览内容先整体转义再解析，任何输入的 HTML 标签都会以纯文本显示而不会执行；链接仅允许 http(s) / mailto / 锚点协议。图片语法支持 <code>![描述](https地址)</code>。</div>
+</div>
+<footer>
+  <div class="updated">最后更新：2026-10-19</div>
+  <div>工具由<a href="/">免费云服务导航</a>提供，渲染全部在浏览器本地完成，不收集任何输入数据。</div>
+  <div style="margin-top:8px"><a href="tools">在线工具箱</a> · <a href="tutorials">实测教程</a> · <a href="privacy">隐私政策</a></div>
+</footer>
+<script>
+/* ---------- 安全基础：先整体转义，再解析 Markdown 语法 ---------- */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+var blockSlots=[];
+function stashCode(txt){blockSlots.push('<pre><code>'+txt+'</code></pre>');return '\x00'+(blockSlots.length-1)+'\x00';}
+function inline(s){
+  inlineSlots=[];
+  s=s.replace(/`([^`\n]+)`/g,function(m,c){return stashInline(c);});
+  // 链接：协议白名单
+  s=s.replace(/\[([^\]\n]+)\]\(([^)\s]+)\)/g,function(m,t,u){
+    var clean=u.replace(/&amp;/g,'&');
+    if(/^(https?:\/\/|mailto:|#)/i.test(clean)) return '<a href="'+esc(clean)+'" target="_blank" rel="noopener">'+t+'</a>';
+    return t;
+  });
+  // 图片
+  s=s.replace(/!\[([^\]\n]*)\]\(([^)\s]+)\)/g,function(m,alt,u){
+    var clean=u.replace(/&amp;/g,'&');
+    if(/^https?:\/\//i.test(clean)) return '<img src="'+esc(clean)+'" alt="'+alt+'" loading="lazy">';
+    return alt;
+  });
+  s=s.replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>');
+  s=s.replace(/~~([^~\n]+)~~/g,'<del>$1</del>');
+  s=s.replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<em>$2</em>');
+  return s;
+}
+var inlineSlots=[];
+function stashInline(txt){inlineSlots.push('<code>'+txt+'</code>');return '\x01'+(inlineSlots.length-1)+'\x01';}
+function restore(s){
+  return s.replace(/\x00(\d+)\x00/g,function(m,i){return blockSlots[+i]||'';})
+          .replace(/\x01(\d+)\x01/g,function(m,i){return inlineSlots[+i]||'';});
+}
+/* ---------- 块级解析 ---------- */
+function render(md){
+  var lines=esc(md).split('\n');
+  var html=[],i=0;
+  function para(){var buf=[];while(i<lines.length&&lines[i].trim()!==''&&!/^(#{1,6}\s|```|&gt;|\s*[-*]\s|\s*\d+\.\s|(-{3,}|\*{3,})\s*$)/.test(lines[i])){buf.push(lines[i]);i++;}if(buf.length)html.push('<p>'+restore(buf.map(inline).join('<br>'))+'</p>');}
+  while(i<lines.length){
+    var ln=lines[i];
+    if(ln.trim()===''){i++;continue;}
+    // fenced code
+    var mFence=ln.match(/^```(\w*)\s*$/);
+    if(mFence){i++;var buf=[];while(i<lines.length&&!/^```\s*$/.test(lines[i])){buf.push(lines[i]);i++;}i++;html.push(stashCode(buf.join('\n')));continue;}
+    // heading
+    var mH=ln.match(/^(#{1,6})\s+(.*)$/);
+    if(mH){var lv=mH[1].length;html.push('<h'+lv+'>'+restore(inline(mH[2].replace(/\s+#+\s*$/,'')))+'</h'+lv+'>');i++;continue;}
+    // hr
+    if(/^(-{3,}|\*{3,})\s*$/.test(ln.trim())){html.push('<hr>');i++;continue;}
+    // blockquote
+    if(/^&gt;\s?/.test(ln)){var q=[];while(i<lines.length&&/^&gt;\s?/.test(lines[i])){q.push(lines[i].replace(/^&gt;\s?/,''));i++;}html.push('<blockquote>'+restore(q.map(inline).join('<br>'))+'</blockquote>');continue;}
+    // table
+    if(ln.indexOf('|')>=0&&i+1<lines.length&&/^\s*\|?[\s:|-]+\|?\s*$/.test(lines[i+1])&&lines[i+1].indexOf('-')>=0){
+      var cells=function(r){r=r.trim().replace(/^\|/,'').replace(/\|$/,'');return r.split('|').map(function(c){return c.trim();});};
+      var head=cells(ln);i+=2;var rows=[];
+      while(i<lines.length&&lines[i].indexOf('|')>=0&&lines[i].trim()!==''){rows.push(cells(lines[i]));i++;}
+      var t='<table><thead><tr>'+head.map(function(c){return '<th>'+restore(inline(c))+'</th>';}).join('')+'</tr></thead><tbody>';
+      rows.forEach(function(r){t+='<tr>'+r.map(function(c){return '<td>'+restore(inline(c))+'</td>';}).join('')+'</tr>';});
+      html.push(t+'</tbody></table>');continue;
+    }
+    // lists（支持一层嵌套）
+    var isUl=/^\s*[-*]\s+/.test(ln),isOl=/^\s*\d+\.\s+/.test(ln);
+    if(isUl||isOl){
+      var tag=isUl?'ul':'ol',items=[],cur=null;
+      while(i<lines.length){
+        var L=lines[i];
+        var m2=L.match(/^(\s*)([-*]|\d+\.)\s+(.*)$/);
+        if(!m2)break;
+        var indent=m2[1].length>=2,main=(!isUl&&/^\s*\d+\.\s/.test(L))||(!isOl&&/^\s*[-*]\s/.test(L));
+        if(!main)break;
+        if(indent&&cur!==null){cur.sub.push(m2[3]);i++;}
+        else{cur={txt:m2[3],sub:[]};items.push(cur);i++;}
+      }
+      var lt='<'+tag+'>'+items.map(function(it){
+        var s='<li>'+restore(inline(it.txt));
+        if(it.sub.length)s+='<'+tag+'>'+it.sub.map(function(c){return '<li>'+restore(inline(c))+'</li>';}).join('')+'</'+tag+'>';
+        return s+'</li>';
+      }).join('')+'</'+tag+'>';
+      html.push(lt);continue;
+    }
+    para();
+  }
+  return restore(html.join(''));
+}
+/* ---------- 界面 ---------- */
+var src=document.getElementById('src'),out=document.getElementById('out');
+var tmr=null;
+function doRender(){
+  blockSlots=[];inlineSlots=[];
+  try{out.innerHTML=render(src.value)||'<p style="color:#94a3b8;font-size:13px">预览将显示在这里…</p>';}
+  catch(e){out.innerHTML='<p style="color:#b91c1c;font-size:13px">解析出错：'+esc(e.message)+'</p>';}
+}
+src.addEventListener('input',function(){clearTimeout(tmr);tmr=setTimeout(doRender,200);});
+var SAMPLE='# 欢迎使用 Markdown 编辑器\n\n这是一段**加粗**、*斜体*、~~删除线~~和`行内代码`的演示。\n\n## 常用语法\n\n- 无序列表项一\n- 无序列表项二\n  - 子项支持一层嵌套\n1. 有序列表项一\n2. 有序列表项二\n\n> 引用块：左侧有蓝色竖线。\n\n### 表格\n\n| 服务 | 免费额度 | 适合 |\n| --- | --- | --- |\n| Oracle Cloud | 永久免费实例 | 常驻小服务 |\n| Supabase | 500MB 数据库 | 后端原型 |\n\n### 代码块\n\n```js\nfunction hello(name){\n  console.log(\'你好, \'+name);\n}\n```\n\n[链接到本站教程](https://keting.eu.org/tutorials)\n\n---\n\n试着在左侧修改，右侧即时更新。\n';
+document.getElementById('btnSample').onclick=function(){src.value=SAMPLE;doRender();};
+document.getElementById('btnClear').onclick=function(){src.value='';doRender();src.focus();};
+document.getElementById('btnCopyHtml').onclick=function(){
+  var h=out.innerHTML;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(h).then(function(){this.textContent='已复制';var b=this;setTimeout(function(){b.textContent='复制 HTML';},1200);}.bind(this));}
+};
+document.getElementById('btnCopyMd').onclick=function(){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(src.value).then(function(){this.textContent='已复制';var b=this;setTimeout(function(){b.textContent='复制 Markdown';},1200);}.bind(this));}
+};
+src.value=SAMPLE;doRender();
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-markdown-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>
