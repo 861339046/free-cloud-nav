@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>在线图片压缩 · 免费 · 本地压缩不上传 · JPG/PNG/WebP</title>
+<meta name="description" content="免费在线图片压缩工具：拖入图片即可压缩 JPG/PNG/WebP，可调质量、限制最大宽度，前后大小对比一目了然。全部在浏览器本地处理，图片不上传服务器，无需登录，无次数限制。" />
+<meta name="keywords" content="图片压缩,在线压缩图片,jpg压缩,png压缩,webp转换,图片变小的软件,免费图片压缩" />
+<meta property="og:title" content="在线图片压缩 · 免费 · 图片不出浏览器" />
+<meta property="og:description" content="拖入即压缩，质量可调，支持转 WebP，本地处理不上传。" />
+<meta property="og:url" content="https://keting.eu.org/tool-image" />
+<meta property="og:type" content="website" />
+<meta name="robots" content="index,follow" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-image" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"在线图片压缩","url":"https://keting.eu.org/tool-image","applicationCategory":"MultimediaApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0"},"description":"浏览器本地图片压缩，支持 JPG/PNG/WebP 与质量调节，图片不上传。"}
+</script>
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px;--ok:#059669;--warn:#b45309}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:36px 20px 20px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:24px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:14px}
+  .btn{display:inline-block;margin-top:12px;padding:8px 16px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;border:0;cursor:pointer}
+  .btn:hover{opacity:.92}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+  .wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px}
+  #drop{border:2px dashed var(--line);border-radius:var(--radius);background:var(--card);padding:44px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+  #drop:hover,#drop.over{border-color:var(--brand);background:var(--brand-soft)}
+  #drop .big{font-size:38px}
+  #drop p{margin:6px 0 0;color:var(--muted);font-size:14px}
+  #fileInput{display:none}
+  .opts{display:none;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 20px;margin-top:16px}
+  .opts label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px;font-weight:600}
+  .opts .row{display:flex;align-items:center;gap:12px}
+  .opts input[type=range]{flex:1}
+  .opts select,.opts input[type=number]{padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px}
+  .val{min-width:52px;font-size:14px;font-weight:600;color:var(--brand)}
+  .cmp{display:none;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+  @media(max-width:760px){.cmp{grid-template-columns:1fr}}
+  .pane{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center}
+  .pane h3{margin:0 0 8px;font-size:14px;color:var(--muted);font-weight:600}
+  .pane img{max-width:100%;border-radius:8px;background:repeating-conic-gradient(#f1f5f9 0% 25%, #fff 0% 50%) 50%/16px 16px}
+  .stat{font-size:13px;margin-top:8px;color:var(--ink)}
+  .stat b{color:var(--brand)}
+  .save{font-size:15px;font-weight:700;color:var(--ok);margin-top:4px}
+  .warn{font-size:13px;color:var(--warn);margin-top:4px}
+  .note{font-size:12.5px;color:var(--muted);background:var(--brand-soft);border-radius:10px;padding:10px 14px;margin-top:16px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+  .updated{color:var(--brand);margin-bottom:6px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🖼️ 在线图片压缩</h1>
+  <p class="sub">拖入图片即可压缩或转格式。<strong>全程在您的浏览器本地完成，图片不会上传到任何服务器</strong>——截图、证件照、含隐私内容的图都能放心压。</p>
+  <a class="btn ghost" href="tools">← 返回工具箱</a>
+</header>
+<div class="wrap">
+  <div id="drop">
+    <div class="big">📁</div>
+    <p><strong>点击选择或拖入图片</strong>（JPG / PNG / WebP / GIF 首帧，单张 ≤ 30MB）</p>
+    <input type="file" id="fileInput" accept="image/*" />
+  </div>
+  <div class="opts" id="opts">
+    <label for="q">压缩质量 <span class="hint">（JPEG / WebP 有效）</span></label>
+    <div class="row"><input type="range" id="q" min="10" max="100" value="75"><span class="val" id="qv">75%</span></div>
+    <label for="mw">最大宽度（像素，超出则等比缩小；0 = 不缩放）</label>
+    <div class="row"><input type="number" id="mw" min="0" step="50" value="0" style="width:120px"><span style="font-size:13px;color:var(--muted)">常用：1920（全高清）· 1280 · 800</span></div>
+    <label for="fmt">输出格式</label>
+    <div class="row">
+      <select id="fmt">
+        <option value="image/jpeg">JPEG（体积最小，通用）</option>
+        <option value="image/webp">WebP（更小，现代浏览器）</option>
+        <option value="image/png">PNG（无损，透明保留）</option>
+      </select>
+      <button class="btn" id="go">压缩</button>
+    </div>
+    <div id="res" style="display:none;margin-top:14px">
+      <div class="cmp" id="cmp">
+        <div class="pane"><h3>原图</h3><img id="imgA" alt="原图预览"><div class="stat" id="statA"></div></div>
+        <div class="pane"><h3>压缩后</h3><img id="imgB" alt="压缩后预览"><div class="stat" id="statB"></div><div class="save" id="saveTxt"></div><div class="warn" id="warnTxt" style="display:none"></div></div>
+      </div>
+      <div style="text-align:center;margin-top:12px"><button class="btn" id="dl">⬇️ 下载压缩后的图片</button></div>
+    </div>
+  </div>
+  <div class="note">说明：压缩在本地 Canvas 中完成，PNG 转 JPEG 时透明区域会填充为白色；GIF 只取第一帧；PNG 格式本身无损，选 PNG 时体积变化主要来自缩放。格式建议——网页配图选 WebP 或 JPEG，需要透明背景选 PNG。</div>
+</div>
+<footer>
+  <div class="updated">最后更新：2026-10-19</div>
+  <div>工具由<a href="/">免费云服务导航</a>提供，压缩全部在浏览器本地完成，不收集任何图片数据。</div>
+  <div style="margin-top:8px"><a href="tools">在线工具箱</a> · <a href="tutorials">实测教程</a> · <a href="privacy">隐私政策</a></div>
+</footer>
+<script>
+var drop=document.getElementById('drop'),fi=document.getElementById('fileInput'),
+    opts=document.getElementById('opts'),resEl=document.getElementById('res'),cmpEl=document.getElementById('cmp'),
+    imgA=document.getElementById('imgA'),imgB=document.getElementById('imgB'),
+    statA=document.getElementById('statA'),statB=document.getElementById('statB'),
+    saveTxt=document.getElementById('saveTxt'),warnTxt=document.getElementById('warnTxt'),
+    qEl=document.getElementById('q'),qv=document.getElementById('qv'),mwEl=document.getElementById('mw'),
+    fmtEl=document.getElementById('fmt'),dlBtn=document.getElementById('dl');
+var srcBlob=null,outBlob=null,outName='';
+function fmtSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(2)+' MB';}
+drop.onclick=function(){fi.click();};
+fi.onchange=function(){if(fi.files&&fi.files[0])load(fi.files[0]);};
+['dragover','dragenter'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over');});});
+['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over');});});
+drop.addEventListener('drop',function(e){if(e.dataTransfer.files&&e.dataTransfer.files[0])load(e.dataTransfer.files[0]);});
+qEl.oninput=function(){qv.textContent=qEl.value+'%';};
+function load(file){
+  if(!/^image\//.test(file.type)){alert('请选择图片文件');return;}
+  if(file.size>30*1048576){alert('图片超过 30MB，请先分卷或换小图');return;}
+  srcBlob=file;
+  opts.style.display='block';resEl.style.display='none';
+  if(imgA.src)URL.revokeObjectURL(imgA.src);
+  imgA.src=URL.createObjectURL(file);
+  statA.textContent=file.name+' · '+fmtSize(file.size);
+}
+document.getElementById('go').onclick=function(){
+  if(!srcBlob)return;
+  var img=new Image();
+  img.onload=function(){
+    var w=img.naturalWidth,h=img.naturalHeight,mw=parseInt(mwEl.value,10)||0;
+    if(mw>0&&w>mw){h=Math.round(h*mw/w);w=mw;}
+    var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+    var ctx=cv.getContext('2d');
+    if(fmtEl.value==='image/jpeg'){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);}
+    ctx.drawImage(img,0,0,w,h);
+    var q=parseInt(qEl.value,10)/100;
+    cv.toBlob(function(b){
+      if(!b){alert('压缩失败，请换格式重试');return;}
+      outBlob=b;
+      var ext=fmtEl.value==='image/jpeg'?'jpg':(fmtEl.value==='image/webp'?'webp':'png');
+      outName=(srcBlob.name.replace(/\.[^.]+$/,'')||'image')+'-compressed.'+ext;
+      if(imgB.src)URL.revokeObjectURL(imgB.src);
+      imgB.src=URL.createObjectURL(b);
+      statB.textContent=w+'×'+h+' px · '+fmtSize(b.size);
+      var pct=Math.round((1-b.size/srcBlob.size)*100);
+      if(pct>0){saveTxt.textContent='体积减少 '+pct+'%（'+fmtSize(srcBlob.size)+' → '+fmtSize(b.size)+'）';saveTxt.style.display='block';warnTxt.style.display='none';}
+      else{saveTxt.style.display='none';warnTxt.style.display='block';warnTxt.textContent='这个参数下没压小反而变大了（常见于已高度压缩的小图或 PNG 无损模式），试试降质量或转 WebP。';}
+      resEl.style.display='block';cmpEl.style.display='grid';
+    },fmtEl.value,q);
+  };
+  img.onerror=function(){alert('图片解码失败');};
+  img.src=imgA.src;
+};
+dlBtn.onclick=function(){
+  if(!outBlob)return;
+  var a=document.createElement('a');a.href=URL.createObjectURL(outBlob);a.download=outName;a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);},3000);
+};
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-image-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>
