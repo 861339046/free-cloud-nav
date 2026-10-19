@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>正则表达式在线测试 - 高亮匹配 / 捕获组 / 替换预览 | 免费云服务导航</title>
+<meta name="description" content="在线正则表达式测试工具：实时高亮匹配、捕获组解析、替换预览、常用正则速查（邮箱/手机号/URL/IP）。纯浏览器本地运行，内容不上传。" />
+<meta name="keywords" content="正则表达式测试,正则在线,regex测试,正则匹配高亮,常用正则表达式" />
+<meta property="og:title" content="正则表达式在线测试" />
+<meta property="og:description" content="高亮匹配、捕获组、替换预览、常用正则速查，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-regex" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-regex" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:ui-monospace,Consolas,monospace;outline:none}
+  input[type=text]:focus{border-color:var(--brand)}
+  textarea{width:100%;min-height:140px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.6}
+  textarea:focus{border-color:var(--brand)}
+  .flags{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:10px 0;font-size:14px}
+  .flags label{display:flex;align-items:center;gap:4px;margin:0;font-size:14px;color:#374151}
+  .flags input{accent-color:var(--brand)}
+  .flags .hint{color:var(--muted);font-size:12px}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .bad{color:#dc2626;font-size:14px;margin-top:8px}
+  .hl{margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f8fafc;font-family:ui-monospace,Consolas,monospace;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-all;min-height:40px}
+  mark{background:#fde68a;color:inherit;padding:0 1px;border-radius:3px}
+  .matches{margin-top:12px;font-size:13px}
+  .matches table{width:100%;border-collapse:collapse}
+  .matches th,.matches td{border:1px solid var(--line);padding:6px 8px;text-align:left;word-break:break-all}
+  .matches th{background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .stats{font-size:13px;color:var(--muted);margin-top:6px}
+  .snips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .snips button{background:#fff;color:var(--brand);border:1px solid var(--line);font-size:13px;padding:6px 12px}
+  .snips button:hover{border-color:var(--brand)}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>✂️ 正则表达式测试</h1>
+  <p class="sub">实时高亮匹配、捕获组解析、替换预览，附常用正则速查。纯本地运行，测试内容不经过服务器。</p>
+  <nav class="toolsnav">
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码生成</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a class="on" href="tool-regex">正则</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>模式与参数</h2>
+    <label for="pat">正则表达式（不用写两侧的斜杠）</label>
+    <input type="text" id="pat" spellcheck="false" placeholder="例如：\d{3}-\d{4}" />
+    <div class="flags">
+      <span style="font-size:14px;color:#374151">标志：</span>
+      <label><input type="checkbox" id="fg" checked /> g 全局</label>
+      <label><input type="checkbox" id="fi" /> i 忽略大小写</label>
+      <label><input type="checkbox" id="fm" /> m 多行</label>
+      <label><input type="checkbox" id="fs" /> s 点匹配换行</label>
+      <label><input type="checkbox" id="fu" /> u Unicode</label>
+      <span class="hint">g：找出全部匹配；不加则只匹配第一处</span>
+    </div>
+    <label for="txt">测试文本</label>
+    <textarea id="txt" spellcheck="false" placeholder="粘贴要测试的文本…"></textarea>
+    <label for="rep" style="margin-top:10px">替换为（选填，$1 $2 引用捕获组）</label>
+    <input type="text" id="rep" spellcheck="false" placeholder="例如：[$1]" />
+
+    <div class="bad" id="err" style="display:none"></div>
+    <div class="hl" id="hl">匹配高亮会显示在这里</div>
+    <div class="stats" id="stats"></div>
+    <div class="matches" id="matches"></div>
+  </div>
+
+  <div class="panel">
+    <h2>常用正则速查（点击填入，不保证覆盖所有合法场景）</h2>
+    <div class="snips">
+      <button data-p="[\w.+-]+@[\w-]+\.[\w.-]+">邮箱</button>
+      <button data-p="1[3-9]\d{9}">中国手机号</button>
+      <button data-p="https?://[^\s]+">URL</button>
+      <button data-p="((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)">IPv4</button>
+      <button data-p="\d{4}-\d{2}-\d{2}">日期 YYYY-MM-DD</button>
+      <button data-p="#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})\b">十六进制颜色</button>
+      <button data-p="[1-9]\d{4,10}">QQ 号</button>
+      <button data-p="(\d{3})\d{4}(\d{4})">手机号中间打码（配替换 $1****$2）</button>
+    </div>
+  </div>
+
+  <div class="doc">
+    <h2>三个最容易踩的正则坑</h2>
+    <ul>
+      <li><strong>忘了 g 标志</strong>：<code>/\d/</code> 只匹配第一个数字，想找全部必须加 <code>g</code>；</li>
+      <li><strong>贪婪匹配</strong>：<code>&lt;.*&gt;</code> 会一口气吃到最后一个 <code>&gt;</code>。想「就近」匹配请加 <code>?</code> 变懒惰：<code>&lt;.*?&gt;</code>；</li>
+      <li><strong>零宽死循环</strong>：模式能匹配空串时（如 <code>a*</code>），<code>replace</code> 全局替换会插满整行——本工具已做防死循环处理，但自己写代码时要注意 lastIndex 前进。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>计算全部在浏览器本地完成，测试内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function esc(s) {
+  return s.replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+var patEl = document.getElementById('pat'), txtEl = document.getElementById('txt'), repEl = document.getElementById('rep');
+var errEl = document.getElementById('err'), hlEl = document.getElementById('hl'), statsEl = document.getElementById('stats'), mEl = document.getElementById('matches');
+var timer = null;
+function getFlags() {
+  var f = '';
+  if (document.getElementById('fg').checked) f += 'g';
+  if (document.getElementById('fi').checked) f += 'i';
+  if (document.getElementById('fm').checked) f += 'm';
+  if (document.getElementById('fs').checked) f += 's';
+  if (document.getElementById('fu').checked) f += 'u';
+  return f;
+}
+function run() {
+  errEl.style.display = 'none';
+  var src = patEl.value, text = txtEl.value, flags = getFlags();
+  if (!src || !text) {
+    hlEl.innerHTML = '匹配高亮会显示在这里';
+    statsEl.textContent = ''; mEl.innerHTML = '';
+    return;
+  }
+  var re;
+  try { re = new RegExp(src, flags); }
+  catch (e) {
+    errEl.textContent = '✘ 正则语法错误：' + e.message;
+    errEl.style.display = 'block';
+    hlEl.textContent = text;
+    statsEl.textContent = ''; mEl.innerHTML = '';
+    return;
+  }
+  var ms = [], m, last = 0, guard = 0;
+  if (flags.indexOf('g') >= 0) {
+    while ((m = re.exec(text)) !== null) {
+      ms.push(m);
+      if (m[0].length === 0) { re.lastIndex++; if (re.lastIndex > text.length) break; }
+      if (++guard > 10000) break;
+    }
+  } else {
+    m = re.exec(text);
+    if (m) ms.push(m);
+  }
+  // 高亮渲染（esc 后拼接，防 XSS）
+  var html = '', pos = 0;
+  for (var i = 0; i < ms.length; i++) {
+    var s = ms[i].index, e = s + ms[i][0].length;
+    if (e === s) continue; // 零宽匹配不高亮
+    html += esc(text.slice(pos, s)) + '<mark>' + esc(text.slice(s, e)) + '</mark>';
+    pos = e;
+  }
+  html += esc(text.slice(pos));
+  hlEl.innerHTML = html || '<span style="color:var(--muted)">无匹配</span>';
+  statsEl.textContent = ms.length ? '共 ' + ms.length + ' 处匹配' : '无匹配';
+  // 匹配明细
+  if (!ms.length) { mEl.innerHTML = ''; return; }
+  var rows = '';
+  var maxGroup = 0;
+  ms.forEach(function (x) { if (x.length - 1 > maxGroup) maxGroup = x.length - 1; });
+  var head = '<tr><th>#</th><th>位置</th><th>内容</th>' + (maxGroup ? Array.apply(null, Array(maxGroup)).map(function (_, i) { return '<th>$' + (i + 1) + '</th>'; }).join('') : '') + '</tr>';
+  var lim = Math.min(ms.length, 200);
+  for (var j = 0; j < lim; j++) {
+    var x = ms[j];
+    rows += '<tr><td>' + (j + 1) + '</td><td>' + x.index + '</td><td>' + esc(x[0] || '') + '</td>';
+    for (var g = 1; g <= maxGroup; g++) rows += '<td>' + esc(x[g] === undefined ? '—' : x[g]) + '</td>';
+    rows += '</tr>';
+  }
+  mEl.innerHTML = '<table>' + head + rows + '</table>' + (ms.length > lim ? '<p style="color:var(--muted)">仅显示前 ' + lim + ' 条</p>' : '');
+  // 替换预览
+  if (repEl.value) {
+    try {
+      var repRe = new RegExp(src, flags.indexOf('g') >= 0 ? flags : flags + 'g');
+      var replaced = text.replace(repRe, repEl.value);
+      statsEl.textContent += ' · 替换结果见下方';
+      mEl.innerHTML = '<label style="margin:0 0 4px">替换预览</label><div class="hl" style="margin:0">' + esc(replaced).slice(0, 5000) + '</div>' + mEl.innerHTML;
+    } catch (e) { /* 替换出错不影响主展示 */ }
+  }
+}
+function debounced() {
+  clearTimeout(timer);
+  timer = setTimeout(run, 200);
+}
+patEl.addEventListener('input', debounced);
+txtEl.addEventListener('input', debounced);
+repEl.addEventListener('input', debounced);
+document.querySelectorAll('.flags input').forEach(function (el) { el.addEventListener('change', run); });
+document.querySelectorAll('.snips button').forEach(function (b) {
+  b.addEventListener('click', function () {
+    patEl.value = b.dataset.p;
+    run();
+  });
+});
+// 默认示例
+patEl.value = '1[3-9]\\d{9}';
+txtEl.value = '联系人：张三 13812345678\n备用：15987654321\n座机：020-12345678\n邮箱：test@example.com';
+run();
+function trackClick(id) {
+  try {
+    var body = JSON.stringify({ id: id });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })); }
+    else { fetch('/api/click', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {}); }
+  } catch (e) {}
+}
+try { trackClick('pv-tool-regex-' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+</script>
+</body>
+</html>

@@ -97,6 +97,18 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://keting.eu.org/tool-uuid</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://keting.eu.org/tool-regex</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://keting.eu.org/submit</loc>
     <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
