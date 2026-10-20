@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>文本去重排序在线工具 - 行去重/排序/清洗 | 免费云服务导航</title>
+<meta name="description" content="在线文本行处理工具：按行去重（保序/排序后）、字典序与按长度与数值排序、去行尾空白、删空行、反转行序，显示前后行数对比。纯浏览器本地运行，免费无需登录。" />
+<meta name="keywords" content="文本去重,在线去重工具,文本排序,行排序,文本清洗" />
+<meta property="og:title" content="文本去重排序在线工具" />
+<meta property="og:description" content="按行去重、多种排序、空白清洗，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-lineops" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-lineops" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:180px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.6}
+  textarea:focus{border-color:var(--brand)}
+  .opts{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px;color:#374151}
+  .opts label{display:inline-flex;align-items:center;gap:6px;margin:0;color:inherit;cursor:pointer}
+  .ops{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:8px 14px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .sep{flex-basis:100%;height:0}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧹 文本去重排序</h1>
+  <p class="sub">按行处理一批文本：去重、多种方式排序、清理空白与空行。清洗日志、整理关键词、合并清单一次到位。纯本地运行，内容不经过服务器。</p>
+  <nav class="toolsnav">
+    <a class="on" href="tool-lineops">文本去重</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-htmlescape">HTML 转义</a>
+    <a href="tool-regex">正则</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>输入文本（每行一条）</h2>
+    <label for="src">原始文本</label>
+    <textarea id="src" spellcheck="false" placeholder="一行一条，例如关键词列表、URL 清单、日志行…"></textarea>
+    <div class="opts">
+      <label><input type="checkbox" id="optCase" /> 去重时忽略大小写</label>
+      <label><input type="checkbox" id="optTrim" /> 去重前先去行两端空白</label>
+    </div>
+    <div class="ops">
+      <button data-op="dedupe">去重（保留原顺序）</button>
+      <button data-op="dedupesort">去重并排序</button>
+      <button data-op="sortaz">排序 A→Z</button>
+      <button data-op="sortza">排序 Z→A</button>
+      <button data-op="sortlen">按行长度排序</button>
+      <button data-op="sortnum">按数值排序</button>
+      <button data-op="reverse">反转行序</button>
+      <span class="sep"></span>
+      <button data-op="trimlines" class="ghost">去掉每行首尾空白</button>
+      <button data-op="rmblank" class="ghost">删除空行</button>
+      <button data-op="clear" class="ghost">清空结果</button>
+    </div>
+    <label for="out">结果（可直接全选复制）</label>
+    <textarea id="out" spellcheck="false"></textarea>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="doc">
+    <h2>操作说明</h2>
+    <ul>
+      <li>所有操作都按「行」处理，换行兼容 Windows（CRLF）与 Unix（LF）；</li>
+      <li><strong>去重（保留原顺序）</strong>：同一行内容多次出现只留第一次的位置；勾选「忽略大小写」时 <code>Apple</code> 与 <code>apple</code> 视为重复（保留先出现的那种写法）；</li>
+      <li><strong>按数值排序</strong>：提取每行开头的数字比较（如 <code>3 苹果</code>、<code>10 香蕉</code> 按 3、10 排），不是数字开头的行统一排在最后且保持原有相对顺序；</li>
+      <li>操作可以叠加：先「去行尾空白」再「去重」，结果框会显示每次处理前后的行数变化。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>处理全部在浏览器本地完成，粘贴的内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var MAX_LINES = 20000;
+function splitLines(text){
+  return text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+}
+function keyOf(line, opt){
+  var s = line;
+  if(opt.trimKey) s = s.trim();
+  if(opt.ignoreCase) s = s.toLowerCase();
+  return s;
+}
+// 去重，保留首次出现位置；返回 {lines, removed}
+function dedupe(lines, opt){
+  var seen = {}, out = [], removed = 0;
+  for(var i=0;i<lines.length;i++){
+    var k = keyOf(lines[i], opt);
+    if(k in seen){ removed++; continue; }
+    seen[k] = 1;
+    out.push(opt.trimKey ? lines[i].trim() : lines[i]);
+  }
+  return {lines: out, removed: removed};
+}
+function leadingNum(line){
+  var m = line.match(/^\s*-?\d+(?:\.\d+)?/);
+  return m ? parseFloat(m[0]) : null;
+}
+// 数值排序：数字开头按数值升序（稳定），其余排最后保持原相对顺序
+function sortByNum(lines){
+  var withNum = [], without = [];
+  for(var i=0;i<lines.length;i++){
+    var n = leadingNum(lines[i]);
+    if(n === null) without.push(lines[i]);
+    else withNum.push({n:n, i:i, line:lines[i]});
+  }
+  withNum.sort(function(a,b){ return a.n === b.n ? a.i - b.i : (a.n < b.n ? -1 : 1); });
+  return withNum.map(function(x){ return x.line; }).concat(without);
+}
+function sortLines(lines, mode, opt){
+  var arr = lines.slice();
+  if(mode === 'num') return sortByNum(arr);
+  var cmp;
+  if(mode === 'az') cmp = function(a,b){ return keyOf(a,opt) < keyOf(b,opt) ? -1 : keyOf(a,opt) > keyOf(b,opt) ? 1 : 0; };
+  else if(mode === 'za') cmp = function(a,b){ return keyOf(b,opt) < keyOf(a,opt) ? -1 : keyOf(b,opt) > keyOf(a,opt) ? 1 : 0; };
+  else cmp = function(a,b){ return a.length - b.length; };
+  // JS sort 现代引擎是稳定的，显式补 0 比较兜底
+  arr.sort(function(a,b){ var c = cmp(a,b); return c !== 0 ? c : 0; });
+  return arr;
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+function getOpt(){
+  return {
+    ignoreCase: document.getElementById('optCase').checked,
+    trimKey: document.getElementById('optTrim').checked
+  };
+}
+document.querySelectorAll('button[data-op]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var op = btn.getAttribute('data-op');
+    if(op === 'clear'){
+      document.getElementById('out').value = '';
+      msg('msg','',true);
+      return;
+    }
+    var raw = document.getElementById('src').value;
+    if(!raw.trim()){ msg('msg','✘ 请先粘贴文本',false); return; }
+    var lines = splitLines(raw);
+    if(lines.length > MAX_LINES){ msg('msg','✘ 超过 '+MAX_LINES+' 行，请分批处理',false); return; }
+    var opt = getOpt();
+    var before = lines.length;
+    var result;
+    if(op === 'dedupe'){ result = dedupe(lines, opt).lines; }
+    else if(op === 'dedupesort'){ result = sortLines(dedupe(lines, opt).lines, 'az', opt); }
+    else if(op === 'sortaz'){ result = sortLines(lines, 'az', opt); }
+    else if(op === 'sortza'){ result = sortLines(lines, 'za', opt); }
+    else if(op === 'sortlen'){ result = sortLines(lines, 'len', opt); }
+    else if(op === 'sortnum'){ result = sortLines(lines, 'num', opt); }
+    else if(op === 'reverse'){ result = lines.slice().reverse(); }
+    else if(op === 'trimlines'){ result = lines.map(function(l){ return l.trim(); }); }
+    else if(op === 'rmblank'){ result = lines.filter(function(l){ return l.trim() !== ''; }); }
+    document.getElementById('out').value = result.join('\n');
+    var delta = before - result.length;
+    msg('msg','✔ 处理完成：'+before+' 行 → '+result.length+' 行'+(delta>0?'（移除 '+delta+' 行）':''),true);
+  });
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-lineops-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>

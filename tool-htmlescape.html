@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HTML 实体转义在线工具 - 转义/反转义/Unicode 转义 | 免费云服务导航</title>
+<meta name="description" content="在线 HTML 实体转义工具：&amp;lt; 等基本转义、非 ASCII 全量转数字实体（防编码问题）、常见命名实体反转义（&amp;amp;amp;nbsp; 等）。网页里贴代码、防 XSS 注入必备。纯浏览器本地运行，免费无需登录。" />
+<meta name="keywords" content="html转义,html实体,在线转义工具,html反转义,unicode转义" />
+<meta property="og:title" content="HTML 实体转义在线工具" />
+<meta property="og:description" content="基本转义、全量数字实体、常见命名实体反转义，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-htmlescape" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-htmlescape" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:160px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.5}
+  textarea:focus{border-color:var(--brand)}
+  .opts{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;font-size:14px;color:#374151}
+  .opts label{display:inline-flex;align-items:center;gap:6px;margin:0;color:inherit;cursor:pointer}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🛡️ HTML 实体转义</h1>
+  <p class="sub">把代码安全地贴进网页：<code>&lt;div&gt;</code> 变 <code>&amp;lt;div&amp;gt;</code>，也能把中文转成数字实体防乱码，或把实体串还原成原文。纯本地运行，内容不经过服务器。</p>
+  <nav class="toolsnav">
+    <a href="tool-lineops">文本去重</a>
+    <a class="on" href="tool-htmlescape">HTML 转义</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-urlparam">URL 参数</a>
+    <a href="tool-markdown">Markdown</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>转义（原文 → 实体）</h2>
+    <label for="rawIn">原文（含 HTML 标签或特殊字符的文本）</label>
+    <textarea id="rawIn" spellcheck="false" placeholder="例如：<div class="box">你好 & 再见</div>"></textarea>
+    <div class="opts">
+      <label><input type="checkbox" id="fullEsc" /> 非 ASCII 字符也转成数字实体（防页面编码问题，中文变 &amp;#x4F60;）</label>
+    </div>
+    <div class="btns">
+      <button id="escBtn">转义 →</button>
+      <button id="escClear" class="ghost">清空</button>
+    </div>
+    <label for="escOut">转义结果</label>
+    <textarea id="escOut" spellcheck="false"></textarea>
+    <div class="msg" id="escMsg"></div>
+  </div>
+
+  <div class="panel">
+    <h2>反转义（实体 → 原文）</h2>
+    <label for="entIn">含 HTML 实体的文本（&amp;amp;…; 命名实体或 &amp;#…; 数字实体）</label>
+    <textarea id="entIn" spellcheck="false" placeholder="例如：&lt;p&gt;你好&amp;nbsp;&amp;lt;b&amp;gt;&#x41;&lt;/p&gt;"></textarea>
+    <div class="btns">
+      <button id="unescBtn">← 还原原文</button>
+      <button id="unescClear" class="ghost">清空</button>
+    </div>
+    <label for="unescOut">还原结果</label>
+    <textarea id="unescOut" spellcheck="false"></textarea>
+    <div class="msg" id="unescMsg"></div>
+    <div class="msg ok" id="unescWarn"></div>
+  </div>
+
+  <div class="doc">
+    <h2>什么时候用哪个？</h2>
+    <ul>
+      <li><strong>网页里展示代码</strong>：用基本转义（<code>&amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;#39;</code>），浏览器就会把标签当文字显示而不是执行；</li>
+      <li><strong>防注入思维</strong>：任何用户输入拼进 HTML 前都必须转义 <code>&amp;amp; &amp;lt; &amp;gt; " '</code> 五个字符——这是防 XSS 的第一道门；</li>
+      <li><strong>页面编码不受控</strong>（老系统、邮件模板、跨系统粘贴）：勾选「全量转数字实体」，中文变 <code>&amp;#x4F60;</code>，任何编码下打开都不会乱码，代价是文件变大、源码不可读；</li>
+      <li><strong>反转义</strong>支持常见命名实体（<code>&amp;amp;amp; &amp;amp;lt; &amp;amp;gt; &amp;amp;quot; &amp;amp;apos; &amp;amp;nbsp; &amp;amp;copy; &amp;amp;reg; &amp;amp;trade; &amp;amp;hellip; &amp;amp;mdash; &amp;amp;middot; &amp;amp;laquo; &amp;amp;raquo; &amp;amp;ldquo; &amp;amp;rdquo; &amp;amp;lsquo; &amp;amp;rsquo;</code> 等约 60 个）与全部数字实体（十进制 <code>&amp;#20320;</code> / 十六进制 <code>&amp;#x4F60;</code>）；不认识的实体保持原样并提示。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>转义与还原全部在浏览器本地完成，粘贴的内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+// 常见命名实体表（值均为原字符）
+var NAMED = {
+  amp:'&', lt:'<', gt:'>', quot:'"', apos:"'", nbsp:' ', copy:'©', reg:'®', trade:'™',
+  hellip:'…', mdash:'—', ndash:'–', middot:'·', laquo:'«', raquo:'»',
+  ldquo:'“', rdquo:'”', lsquo:'‘', rsquo:'’', times:'×', divide:'÷',
+  plusmn:'±', deg:'°', micro:'µ', para:'¶', sect:'§', dagger:'†', Dagger:'‡',
+  bull:'•', prime:'′', Prime:'″', larr:'←', rarr:'→', uarr:'↑', darr:'↓', harr:'↔',
+  euro:'€', pound:'£', yen:'¥', cent:'¢', curren:'¤',
+  alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ',
+  pi:'π', sigma:'σ', phi:'φ', omega:'ω', Omega:'Ω', inf:'∞', ne:'≠', le:'≤', ge:'≥',
+  sum:'∑', prod:'∏', radic:'√', asymp:'≈', equiv:'≡',
+  ensp:'\u2002', emsp:'\u2003', thinsp:'\u2009', zwnj:'\u200c', zwj:'\u200d', lrm:'\u200e', rlm:'\u200f',
+  shy:'\u00ad', iexcl:'¡', iquest:'¿', brvbar:'¦', uml:'¨', acute:'´', cedil:'¸',
+  ordf:'ª', ordm:'º', sup1:'¹', sup2:'²', sup3:'³', frac14:'¼', frac12:'½', frac34:'¾',
+  szlig:'ß', agrave:'à', aacute:'á', egrave:'è', eacute:'é', ecirc:'ê', ugrave:'ù',
+  uacute:'ú', ccedil:'ç', ntilde:'ñ', oacute:'ó', uuml:'ü', auml:'ä', ouml:'ö'
+};
+function escBasic(s){
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+function escFull(s){
+  var out = '';
+  for(var i=0;i<s.length;i++){
+    var c = s[i];
+    var code = s.codePointAt(i);
+    if(code > 0x7E || c === '&' || c === '<' || c === '>' || c === '"' || c === "'"){
+      if(c === '&') out += '&amp;';
+      else if(c === '<') out += '&lt;';
+      else if(c === '>') out += '&gt;';
+      else if(c === '"') out += '&quot;';
+      else if(c === "'") out += '&#39;';
+      else if(code > 0xFFFF) { out += '&#x'+code.toString(16).toUpperCase()+';'; i++; } // 代理对
+      else out += '&#x'+code.toString(16).toUpperCase()+';';
+    } else {
+      out += c;
+    }
+  }
+  return out;
+}
+function unescapeHtml(s){
+  var unknown = [];
+  var out = String(s).replace(/&(#[0-9]+|#[xX][0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);/g, function(m, body){
+    if(body[0] === '#'){
+      var code = body[1] === 'x' || body[1] === 'X' ? parseInt(body.slice(2), 16) : parseInt(body.slice(1), 10);
+      if(isNaN(code) || code < 0 || code > 0x10FFFF || (code >= 0xD800 && code <= 0xDFFF)) return m;
+      try{ return String.fromCodePoint(code); }catch(e){ return m; }
+    }
+    var ent = NAMED[body] || NAMED[body.toLowerCase()];
+    if(ent === undefined){ unknown.push(m); return m; }
+    return typeof ent === 'string' ? ent : ent.v;
+  });
+  return {text: out, unknown: unknown};
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+document.getElementById('escBtn').addEventListener('click',function(){
+  var raw = document.getElementById('rawIn').value;
+  if(!raw){ msg('escMsg','✘ 请先输入原文',false); return; }
+  document.getElementById('escOut').value = document.getElementById('fullEsc').checked ? escFull(raw) : escBasic(raw);
+  msg('escMsg','✔ 已转义（'+(document.getElementById('fullEsc').checked?'全量数字实体，任何编码不乱码':'基本五字符，可直接放进 HTML 文本区')+'）',true);
+});
+document.getElementById('escClear').addEventListener('click',function(){
+  document.getElementById('rawIn').value=''; document.getElementById('escOut').value=''; msg('escMsg','',true);
+});
+document.getElementById('unescBtn').addEventListener('click',function(){
+  var raw = document.getElementById('entIn').value;
+  if(!raw){ msg('unescMsg','✘ 请先输入含实体的文本',false); return; }
+  var r = unescapeHtml(raw);
+  document.getElementById('unescOut').value = r.text;
+  var warn = document.getElementById('unescWarn');
+  if(r.unknown.length){
+    msg('unescMsg','✔ 已还原（'+r.unknown.length+' 个不认识的实体保持原样）',true);
+    var uniq = [];
+    r.unknown.forEach(function(u){ if(uniq.indexOf(u)===-1) uniq.push(u); });
+    warn.textContent = '未识别：'+uniq.slice(0,10).join(' ')+(uniq.length>10?' 等':'')+'（已保持原样）';
+  } else {
+    msg('unescMsg','✔ 已还原',true);
+    warn.textContent = '';
+  }
+});
+document.getElementById('unescClear').addEventListener('click',function(){
+  document.getElementById('entIn').value=''; document.getElementById('unescOut').value='';
+  document.getElementById('unescWarn').textContent=''; msg('unescMsg','',true);
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-htmlescape-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>
