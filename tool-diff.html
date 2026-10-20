@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>文本差异对比在线工具 - 逐行 Diff 比较 | 免费云服务导航</title>
+<meta name="description" content="在线文本差异对比（Diff）工具，逐行比较两段文本的新增、删除与修改，支持忽略空白、忽略大小写、忽略空行，纯浏览器本地运行，免费无需登录，代码/配置/文案对比都适用。" />
+<meta name="keywords" content="文本差异对比,在线diff工具,文本比较,代码对比,配置文件对比" />
+<meta property="og:title" content="文本差异对比在线工具" />
+<meta property="og:description" content="逐行 Diff 比较，支持忽略空白/大小写/空行，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-diff" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-diff" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:700px){.cols{grid-template-columns:1fr}}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:190px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.5;white-space:pre}
+  textarea:focus{border-color:var(--brand)}
+  .opts{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;font-size:14px;color:#374151}
+  .opts label{display:inline-flex;align-items:center;gap:6px;margin:0;color:inherit;cursor:pointer}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .stats{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 10px;font-size:14px}
+  .stats b{font-weight:700}
+  .stat-add{color:#059669}
+  .stat-del{color:#dc2626}
+  .stat-same{color:var(--muted)}
+  .diffbox{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:6px}
+  .diffline{display:flex;font-family:ui-monospace,Consolas,monospace;font-size:13px;line-height:1.7}
+  .diffline .sign{flex:0 0 34px;text-align:center;color:var(--muted);user-select:none}
+  .diffline .txt{flex:1;white-space:pre-wrap;word-break:break-all;padding-right:10px}
+  .d-add{background:#ecfdf5}
+  .d-add .sign{color:#059669;font-weight:700}
+  .d-del{background:#fef2f2;text-decoration:none}
+  .d-del .sign{color:#dc2626;font-weight:700}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>📄 文本差异对比</h1>
+  <p class="sub">逐行比较两段文本，标出新增与删除的行。适合对比代码改动、配置变更、文案修订。纯本地运行，内容不经过服务器。</p>
+  <nav class="toolsnav">
+    <a href="tool-json">JSON</a>
+    <a class="on" href="tool-diff">文本对比</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-urlparam">URL 参数</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>输入两段文本</h2>
+    <div class="cols">
+      <div>
+        <label for="srcA">原文（旧版本）</label>
+        <textarea id="srcA" spellcheck="false" placeholder="粘贴旧版本的文本 / 代码 / 配置…"></textarea>
+      </div>
+      <div>
+        <label for="srcB">新文本（新版本）</label>
+        <textarea id="srcB" spellcheck="false" placeholder="粘贴新版本的文本 / 代码 / 配置…"></textarea>
+      </div>
+    </div>
+    <div class="opts">
+      <label><input type="checkbox" id="optTrail" /> 忽略行尾空白</label>
+      <label><input type="checkbox" id="optCase" /> 忽略大小写</label>
+      <label><input type="checkbox" id="optBlank" /> 忽略空行</label>
+    </div>
+    <div class="btns">
+      <button id="doDiff">开始对比</button>
+      <button id="clearAll" class="ghost">清空全部</button>
+    </div>
+    <div class="msg" id="diffMsg"></div>
+    <div class="stats" id="diffStats" style="display:none">
+      <span class="stat-add">新增 <b id="cntAdd">0</b> 行</span>
+      <span class="stat-del">删除 <b id="cntDel">0</b> 行</span>
+      <span class="stat-same">不变 <b id="cntSame">0</b> 行</span>
+    </div>
+    <div class="diffbox" id="diffBox" style="display:none"></div>
+  </div>
+
+  <div class="doc">
+    <h2>对比规则说明</h2>
+    <p>本工具按「行」做最小编辑距离（LCS 最长公共子序列）对比：两边都保留的行算不变，只在新文本出现的行标 <code>+</code> 绿色，只在原文出现的行标 <code>−</code> 红色。判断两行是否相同时可套用勾选项：</p>
+    <ul>
+      <li><strong>忽略行尾空白</strong>：行末多打（或少打）一个空格不会误报差异，适合对比从聊天窗口、网页复制来的文本；</li>
+      <li><strong>忽略大小写</strong>：<code>True</code> 与 <code>true</code> 视为相同；</li>
+      <li><strong>忽略空行</strong>：只增删空行的重排不算差异，适合对比段落调过顺序的文案。</li>
+    </ul>
+    <p>为避免浏览器卡顿，单侧文本超过 3000 行时会提示截断。对比在您的浏览器里完成，文本不会上传。</p>
+  </div>
+</div>
+<footer>
+  <div>对比全部在浏览器本地完成，粘贴的内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var MAX_LINES = 3000;
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function normalize(line, opt){
+  var s = line;
+  if(opt.trail) s = s.replace(/\s+$/,'');
+  if(opt.case) s = s.toLowerCase();
+  return s;
+}
+function splitLines(text, opt){
+  var arr = text.split(/\r\n|\r|\n/);
+  if(opt.blank){
+    var kept = [], keptIdx = [];
+    for(var i=0;i<arr.length;i++){
+      var t = normalize(arr[i], opt);
+      if(t.trim()!==''){ kept.push(arr[i]); keptIdx.push(i); }
+    }
+    return {lines:kept, idx:keptIdx};
+  }
+  var idx = [];
+  for(var j=0;j<arr.length;j++) idx.push(j);
+  return {lines:arr, idx:idx};
+}
+// 行级 LCS diff：返回 [{type:'same'|'add'|'del', aIdx, bIdx}]
+function diffLines(a, b){
+  var n = a.length, m = b.length;
+  // LCS 表（滚动数组会丢回溯路径，这里直接建全表，3000x3000 内可接受）
+  var dp = new Array((n+1)*(m+1)).fill(0);
+  var W = m+1;
+  for(var i=n-1;i>=0;i--){
+    for(var j=m-1;j>=0;j--){
+      dp[i*W+j] = (a[i].norm===b[j].norm)
+        ? dp[(i+1)*W+j+1]+1
+        : Math.max(dp[(i+1)*W+j], dp[i*W+j+1]);
+    }
+  }
+  var out = [], x=0, y=0;
+  while(x<n && y<m){
+    if(a[x].norm===b[y].norm){ out.push({type:'same',aIdx:a[x].idx,bIdx:b[y].idx}); x++; y++; }
+    else if(dp[(x+1)*W+y] >= dp[x*W+y+1]){ out.push({type:'del',aIdx:a[x].idx}); x++; }
+    else { out.push({type:'add',bIdx:b[y].idx}); y++; }
+  }
+  while(x<n){ out.push({type:'del',aIdx:a[x].idx}); x++; }
+  while(y<m){ out.push({type:'add',bIdx:b[y].idx}); y++; }
+  return out;
+}
+function renderDiff(items, rawA, rawB){
+  var box = document.getElementById('diffBox');
+  var html = '';
+  for(var k=0;k<items.length;k++){
+    var it = items[k];
+    if(it.type==='same'){
+      html += '<div class="diffline"><span class="sign"> </span><span class="txt">'+esc(rawA[it.aIdx])+'</span></div>';
+    }else if(it.type==='del'){
+      html += '<div class="diffline d-del"><span class="sign">−</span><span class="txt">'+esc(rawA[it.aIdx])+'</span></div>';
+    }else{
+      html += '<div class="diffline d-add"><span class="sign">+</span><span class="txt">'+esc(rawB[it.bIdx])+'</span></div>';
+    }
+  }
+  box.innerHTML = html;
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+document.getElementById('doDiff').addEventListener('click',function(){
+  var opt = {
+    trail: document.getElementById('optTrail').checked,
+    'case': document.getElementById('optCase').checked,
+    blank: document.getElementById('optBlank').checked
+  };
+  var rawA = document.getElementById('srcA').value.split(/\r\n|\r|\n/);
+  var rawB = document.getElementById('srcB').value.split(/\r\n|\r|\n/);
+  if(!document.getElementById('srcA').value && !document.getElementById('srcB').value){
+    msg('diffMsg','✘ 请先粘贴要对比的文本',false);return;
+  }
+  if(rawA.length>MAX_LINES || rawB.length>MAX_LINES){
+    msg('diffMsg','✘ 单侧超过 '+MAX_LINES+' 行，请截取关键段落再对比',false);return;
+  }
+  var A = splitLines(document.getElementById('srcA').value, opt);
+  var B = splitLines(document.getElementById('srcB').value, opt);
+  var normA = [];
+  for(var i=0;i<A.lines.length;i++) normA.push({idx:A.idx[i], norm:normalize(A.lines[i],opt), raw:A.lines[i]});
+  var normB = [];
+  for(var j=0;j<B.lines.length;j++) normB.push({idx:B.idx[j], norm:normalize(B.lines[j],opt), raw:B.lines[j]});
+  var items = diffLines(normA, normB);
+  var cAdd=0,cDel=0,cSame=0;
+  for(var k=0;k<items.length;k++){
+    if(items[k].type==='add')cAdd++;else if(items[k].type==='del')cDel++;else cSame++;
+  }
+  document.getElementById('cntAdd').textContent=cAdd;
+  document.getElementById('cntDel').textContent=cDel;
+  document.getElementById('cntSame').textContent=cSame;
+  document.getElementById('diffStats').style.display='flex';
+  document.getElementById('diffBox').style.display='block';
+  renderDiff(items, rawA, rawB);
+  msg('diffMsg','✔ 对比完成（'+cAdd+' 处新增 / '+cDel+' 处删除）',true);
+});
+document.getElementById('clearAll').addEventListener('click',function(){
+  document.getElementById('srcA').value='';
+  document.getElementById('srcB').value='';
+  document.getElementById('diffStats').style.display='none';
+  document.getElementById('diffBox').style.display='none';
+  msg('diffMsg','',true);
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-diff-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>

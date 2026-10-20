@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>URL 参数解析在线工具 - Query String 键值拆解 | 免费云服务导航</title>
+<meta name="description" content="在线 URL 参数解析工具，把链接的 query string 拆成键值对照表，自动解码中文与 %XX 转义，支持增删参数后一键重新生成 URL。纯浏览器本地运行，免费无需登录。" />
+<meta name="keywords" content="url参数解析,query string解析,url参数在线,链接参数提取,url拆解工具" />
+<meta property="og:title" content="URL 参数解析在线工具" />
+<meta property="og:description" content="链接 query string 拆成键值表，自动解码，可编辑重组 URL，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-urlparam" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-urlparam" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:90px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.5;word-break:break-all}
+  textarea:focus{border-color:var(--brand)}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  button.mini{padding:4px 10px;font-size:12px;border-radius:8px}
+  button.danger{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .kvhead{display:grid;grid-template-columns:1fr 1.6fr 150px;gap:8px;font-size:12px;color:var(--muted);margin-bottom:4px}
+  .kvrow{display:grid;grid-template-columns:1fr 1.6fr 150px;gap:8px;margin-bottom:6px;align-items:center}
+  .kvrow input{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:ui-monospace,Consolas,monospace;outline:none}
+  .kvrow input:focus{border-color:var(--brand)}
+  .kvops{display:flex;gap:6px}
+  .meta{background:var(--brand-soft);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:14px;word-break:break-all}
+  .meta b{color:var(--brand)}
+  table.params{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  table.params th,table.params td{border:1px solid var(--line);padding:7px 10px;text-align:left;word-break:break-all}
+  table.params th{background:#f8fafc;color:var(--muted);font-weight:600}
+  table.params td .empty{color:#94a3b8;font-style:italic}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔗 URL 参数解析</h1>
+  <p class="sub">把链接的 query string 拆成键值对照表，中文与 %XX 自动解码；改完参数还能一键重组回完整 URL。纯本地运行，内容不经过服务器。</p>
+  <nav class="toolsnav">
+    <a href="tool-base64">Base64</a>
+    <a class="on" href="tool-urlparam">URL 参数</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-timestamp">时间戳</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>① 粘贴链接进行解析</h2>
+    <label for="urlIn">完整 URL 或仅 query string（?a=1&amp;b=2 也行）</label>
+    <textarea id="urlIn" spellcheck="false" placeholder="例如：https://example.com/search?keyword=免费云服务&page=2&sort=%E6%97%B6%E9%97%B4#top"></textarea>
+    <div class="btns">
+      <button id="parseBtn">解析参数</button>
+      <button id="fillEditable" class="ghost">解析并载入下方编辑</button>
+      <button id="clearIn" class="ghost">清空</button>
+    </div>
+    <div class="msg" id="parseMsg"></div>
+    <div id="parseResult" style="display:none">
+      <div class="meta" id="urlMeta"></div>
+      <table class="params">
+        <thead><tr><th style="width:28%">参数名</th><th>解码后的值</th><th style="width:30%">原始值（编码态）</th></tr></thead>
+        <tbody id="paramBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>② 编辑参数后重组 URL</h2>
+    <div id="editArea">
+      <div class="kvhead"><span>参数名</span><span>参数值（填写原文，生成时自动编码）</span><span></span></div>
+      <div id="kvList"></div>
+    </div>
+    <div class="btns">
+      <button id="addRow" class="ghost">＋ 添加参数</button>
+      <button id="buildBtn">生成完整 URL</button>
+    </div>
+    <label for="urlOut">基础地址（协议 + 域名 + 路径，生成时拼接）</label>
+    <input type="text" id="baseUrl" placeholder="https://example.com/search" style="width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:ui-monospace,Consolas,monospace;outline:none;margin-bottom:10px" />
+    <label for="urlOut">结果 URL</label>
+    <textarea id="urlOut" spellcheck="false" style="min-height:70px"></textarea>
+    <div class="msg" id="buildMsg"></div>
+  </div>
+
+  <div class="doc">
+    <h2>和编码工具有什么区别？</h2>
+    <p>本站 <a href="tool-base64" style="color:var(--brand)">Base64 / URL 编码</a> 解决的是「这一串怎么转」；本工具解决的是「这个链接里到底带了什么、怎么改」：</p>
+    <ul>
+      <li><code>+</code> 会被当作空格解码（表单提交的惯例），<code>%E5%85%8D%E8%B4%B9</code> 这类中文转义直接还原；</li>
+      <li>锚点（<code>#</code> 后面）不是参数，会单独显示在地址信息里，不会混进参数表；</li>
+      <li>同名参数出现多次（如 <code>?tag=a&amp;tag=b</code>）会按顺序完整保留，重组时也不丢；</li>
+      <li>编辑表里填<strong>原文</strong>即可，生成时会用 <code>encodeURIComponent</code> 重新编码，中文、<code>&amp;</code>、<code>=</code> 都不会串位。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>解析与生成全部在浏览器本地完成，粘贴的链接不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function decodePart(s){
+  try{ return decodeURIComponent(String(s).replace(/\+/g,'%20')); }
+  catch(e){ return String(s); } // 非法 % 序列时保留原样
+}
+// 解析 query string（不含 ?），返回 [{k, v}]（原始编码态）
+function parseQuery(qs){
+  var out = [];
+  if(!qs) return out;
+  var parts = qs.split('&');
+  for(var i=0;i<parts.length;i++){
+    if(parts[i]==='') continue;
+    var eq = parts[i].indexOf('=');
+    if(eq===-1){ out.push({k:parts[i], v:''}); }
+    else{ out.push({k:parts[i].slice(0,eq), v:parts[i].slice(eq+1)}); }
+  }
+  return out;
+}
+function splitUrl(raw){
+  var s = String(raw).trim();
+  var query = null, base = s, hash = '';
+  var hi = s.indexOf('#');
+  if(hi!==-1){ hash = s.slice(hi+1); base = s.slice(0,hi); }
+  var qi = base.indexOf('?');
+  if(qi!==-1){ query = base.slice(qi+1); base = base.slice(0,qi); }
+  return {base:base, query:query, hash:hash};
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+function showParsed(pairs, metaHtml){
+  var body = document.getElementById('paramBody');
+  var html = '';
+  for(var i=0;i<pairs.length;i++){
+    var dv = decodePart(pairs[i].v);
+    html += '<tr><td>'+esc(decodePart(pairs[i].k))+'</td><td>'+(dv===''?'<span class="empty">（空值）</span>':esc(dv))+'</td><td style="color:#64748b">'+esc(pairs[i].v===''?'（空值）':pairs[i].v)+'</td></tr>';
+  }
+  if(!pairs.length){
+    html = '<tr><td colspan="3"><span class="empty">该链接没有携带任何参数</span></td></tr>';
+  }
+  body.innerHTML = html;
+  document.getElementById('urlMeta').innerHTML = metaHtml;
+  document.getElementById('parseResult').style.display='block';
+}
+document.getElementById('parseBtn').addEventListener('click',function(){
+  var s = splitUrl(document.getElementById('urlIn').value);
+  if(!s.base && s.query===null){
+    msg('parseMsg','✘ 请先粘贴链接或 query string',false);return;
+  }
+  var qs = s.query===null ? s.base.replace(/^\?/,'') : s.query;
+  var pairs = parseQuery(qs);
+  var meta = '地址：<b>'+esc(s.base||'（未提供）')+'</b>';
+  if(s.hash) meta += ' · 锚点：<b>#'+esc(s.hash)+'</b>';
+  showParsed(pairs, meta);
+  msg('parseMsg','✔ 解析出 '+pairs.length+' 个参数',true);
+});
+document.getElementById('fillEditable').addEventListener('click',function(){
+  var s = splitUrl(document.getElementById('urlIn').value);
+  if(!s.base && s.query===null){
+    msg('parseMsg','✘ 请先粘贴链接或 query string',false);return;
+  }
+  var qs = s.query===null ? s.base.replace(/^\?/,'') : s.query;
+  var pairs = parseQuery(qs);
+  document.getElementById('baseUrl').value = s.query===null ? '' : s.base;
+  if(s.hash) document.getElementById('baseUrl').value = s.base + '#' + s.hash;
+  renderEditRows(pairs.map(function(p){return {k:decodePart(p.k), v:decodePart(p.v)};}));
+  showParsed(pairs, '地址：<b>'+esc(s.base||'（未提供）')+'</b>'+(s.hash?' · 锚点：<b>#'+esc(s.hash)+'</b>':''));
+  msg('parseMsg','✔ 已载入编辑区，可增删改后重新生成',true);
+});
+document.getElementById('clearIn').addEventListener('click',function(){
+  document.getElementById('urlIn').value='';
+  document.getElementById('parseResult').style.display='none';
+  msg('parseMsg','',true);
+});
+function renderEditRows(rows){
+  var list = document.getElementById('kvList');
+  list.innerHTML = '';
+  for(var i=0;i<rows.length;i++) addRowEl(rows[i].k, rows[i].v);
+  if(!rows.length) addRowEl('','');
+}
+function addRowEl(k,v){
+  var row = document.createElement('div');
+  row.className = 'kvrow';
+  var ik = document.createElement('input');
+  ik.type='text'; ik.className='rk'; ik.placeholder='参数名'; ik.value=k||'';
+  var iv = document.createElement('input');
+  iv.type='text'; iv.className='rv'; iv.placeholder='参数值'; iv.value=v||'';
+  var ops = document.createElement('div'); ops.className='kvops';
+  var del = document.createElement('button');
+  del.type='button'; del.className='mini danger'; del.textContent='删除';
+  del.addEventListener('click',function(){ row.remove(); });
+  ops.appendChild(del);
+  row.appendChild(ik); row.appendChild(iv); row.appendChild(ops);
+  document.getElementById('kvList').appendChild(row);
+}
+document.getElementById('addRow').addEventListener('click',function(){ addRowEl('',''); });
+document.getElementById('buildBtn').addEventListener('click',function(){
+  var base = document.getElementById('baseUrl').value.trim();
+  var hash = '';
+  var hi = base.indexOf('#');
+  if(hi!==-1){ hash = base.slice(hi); base = base.slice(0,hi); }
+  var rows = document.querySelectorAll('#kvList .kvrow');
+  var parts = [];
+  for(var i=0;i<rows.length;i++){
+    var k = rows[i].querySelector('.rk').value;
+    var v = rows[i].querySelector('.rv').value;
+    if(k==='') continue;
+    parts.push(encodeURIComponent(k)+(v===''?'':'='+encodeURIComponent(v)));
+  }
+  var url = base;
+  if(parts.length) url += (base.indexOf('?')===-1?'?':'&') + parts.join('&');
+  url += hash;
+  document.getElementById('urlOut').value = url;
+  msg('buildMsg','✔ 已生成 URL（'+parts.length+' 个参数），点击结果框即可全选复制',true);
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-urlparam-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>
