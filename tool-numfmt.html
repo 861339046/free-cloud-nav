@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>数字千分位格式化与单位换算在线工具 | 免费云服务导航</title>
+<meta name="description" content="在线数字工具：千分位分隔格式化（逐行批量、小数位控制、一键还原）与常用单位换算（长度/重量/温度/数据容量，支持斤、海里、英尺）。纯浏览器本地运行，免费无需登录。" />
+<meta name="keywords" content="千分位,数字格式化,单位换算,在线换算工具,长度换算,温度换算" />
+<meta property="og:title" content="数字千分位格式化与单位换算" />
+<meta property="og:description" content="千分位格式化与常用单位换算，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-numfmt" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-numfmt" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:150px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.6}
+  textarea:focus{border-color:var(--brand)}
+  input[type=text],input[type=number],select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;outline:none;background:#fff}
+  input:focus,select:focus{border-color:var(--brand)}
+  .opts{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 4px;font-size:14px;color:#374151;align-items:center}
+  .opts label{display:inline-flex;align-items:center;gap:6px;margin:0;color:inherit;cursor:pointer}
+  .ops{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:8px 14px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  .row .num{width:140px}
+  .result{font-size:16px;font-weight:600;color:var(--brand);margin-top:10px;word-break:break-all}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  table.units{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+  table.units td,table.units th{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  table.units th{background:var(--brand-soft);color:#374151;font-weight:600}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔢 数字格式化与单位换算</h1>
+  <p class="sub">千分位格式化支持逐行批量处理，财务报表、数据核对直接用；单位换算覆盖长度、重量、温度、数据容量常用单位。纯本地运行，数据不经过服务器。</p>
+  <nav class="toolsnav">
+    <a class="on" href="tool-numfmt">数字格式化</a>
+    <a href="tool-radix">进制转换</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-json">JSON</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>① 千分位格式化</h2>
+    <label for="numsrc">输入数字（每行一个，支持小数与负数）</label>
+    <textarea id="numsrc" spellcheck="false" placeholder="1234567.89&#10;-9876543.21&#10;100"></textarea>
+    <div class="opts">
+      <label>小数位 <input type="number" id="numDec" min="0" max="8" value="2" style="width:64px" /></label>
+      <label>分隔符
+        <select id="numSep">
+          <option value=",">逗号 ,</option>
+          <option value=" ">空格</option>
+          <option value="">无</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="numFill" /> 小数不足时补零到指定位数</label>
+    </div>
+    <div class="ops">
+      <button id="btnFmt">格式化</button>
+      <button id="btnUnfmt" class="ghost">还原（去掉分隔符）</button>
+      <button id="btnNumClear" class="ghost">清空结果</button>
+    </div>
+    <label for="numout">结果</label>
+    <textarea id="numout" spellcheck="false"></textarea>
+    <div class="msg" id="nummsg"></div>
+  </div>
+
+  <div class="panel">
+    <h2>② 单位换算</h2>
+    <div class="row">
+      <input type="text" id="cvVal" class="num" placeholder="数值，如 3.5" value="1" />
+      <select id="cvCat">
+        <option value="len">长度</option>
+        <option value="weight">重量</option>
+        <option value="temp">温度</option>
+        <option value="data">数据容量</option>
+      </select>
+      <span style="color:var(--muted)">的</span>
+      <select id="cvFrom"></select>
+      <span style="color:var(--muted)">等于</span>
+      <select id="cvTo"></select>
+      <button id="btnCv">换算</button>
+    </div>
+    <div class="result" id="cvOut">—</div>
+    <div class="msg" id="cvmsg"></div>
+  </div>
+
+  <div class="doc">
+    <h2>说明与换算表</h2>
+    <ul>
+      <li><strong>千分位</strong>：按「数字字符串」插入分隔符，不是先转浮点数——所以 <code>12345678901234567890</code> 这类超过 JS 安全整数的大数也不会丢精度；负数、小数直接支持；</li>
+      <li>「还原」会把 <code>1,234.5</code>、<code>1 234.5</code> 去掉分隔符变回纯数字，方便粘回 Excel 或代码；</li>
+      <li><strong>长度</strong>基准米：mm、cm、m、km、英寸 in、英尺 ft、码 yd、英里 mile（=1609.344 m）、海里 nmi（=1852 m）；</li>
+      <li><strong>重量</strong>基准千克：mg、g、kg、吨 t、盎司 oz、磅 lb、斤（=0.5 kg）；</li>
+      <li><strong>温度</strong>：摄氏 °C、华氏 °F、开尔文 K，按公式换算而不是乘系数；</li>
+      <li><strong>数据容量</strong>基准字节，按二进制 1024 进制：B、KB、MB、GB、TB、PB（硬盘厂商标称的 1TB=1000GB 是十进制，会比这里显示的小约 10%）。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>换算与格式化全部在浏览器本地完成，输入的内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var NUM_RE = /^-?\d+(\.\d+)?$/;
+// 在数字字符串的整数部分插入千分位分隔符（纯字符串操作，无精度损失）
+function groupDigits(s, sep){
+  var neg = s.charAt(0) === '-';
+  var body = neg ? s.slice(1) : s;
+  var dot = body.indexOf('.');
+  var intPart = dot === -1 ? body : body.slice(0, dot);
+  var fracPart = dot === -1 ? '' : body.slice(dot);
+  if(sep){
+    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+  }
+  return (neg ? '-' : '') + intPart + fracPart;
+}
+// 格式化一个数字字符串：校验 → 限定小数位 → 加千分位。非法返回 null
+function formatNumber(raw, opt){
+  var s = String(raw).trim().replace(/,/g, '');
+  if(!NUM_RE.test(s)) return null;
+  var d = opt.decimals;
+  if(d !== null){
+    var dot = s.indexOf('.');
+    if(dot === -1){
+      if(opt.fill) s += '.' + '0'.repeat(d);
+      else if(d === 0){ /* 保持整数 */ }
+    } else {
+      var frac = s.slice(dot + 1);
+      if(frac.length > d){
+        // 按字符串四舍五入，避免浮点误差
+        var keep = s.slice(0, dot + 1 + d);
+        var next = s.charAt(dot + 1 + d);
+        var rounded = roundStr(keep, next, dot);
+        s = rounded.replace(/\.$/, ''); // 进位可能悬空小数点（0.5 → 1.）
+      } else if(opt.fill && frac.length < d){
+        s += '0'.repeat(d - frac.length);
+      } else if(d === 0){
+        s = s.slice(0, dot);
+      }
+    }
+  }
+  return groupDigits(s, opt.sep);
+}
+// keep: 保留部分（含小数点），next: 下一位数字；四舍五入进位
+function roundStr(keep, next, dotPos){
+  if(next < '5') return keep;
+  var arr = keep.split('');
+  var i = arr.length - 1;
+  while(i >= 0){
+    if(arr[i] === '.'){ i--; continue; }
+    if(arr[i] === '9'){ arr[i] = '0'; i--; continue; }
+    arr[i] = String(Number(arr[i]) + 1);
+    return arr.join('');
+  }
+  // 全部进位：如 999.99 → 1000.00
+  return '1' + arr.join('');
+}
+function unformat(raw, sep){
+  var s = String(raw).trim();
+  if(sep) s = s.split(sep).join('');
+  s = s.split(',').join('');
+  if(!NUM_RE.test(s)) return null;
+  return s;
+}
+// ---------- 单位换算 ----------
+var UNITS = {
+  len: { base: 'm', label: '长度', u: { mm:0.001, cm:0.01, m:1, km:1000, in:0.0254, ft:0.3048, yd:0.9144, mile:1609.344, nmi:1852 } },
+  weight: { base: 'kg', label: '重量', u: { mg:0.000001, g:0.001, kg:1, t:1000, oz:0.028349523125, lb:0.45359237, jin:0.5 } },
+  data: { base: 'B', label: '数据容量', u: { B:1, KB:1024, MB:1048576, GB:1073741824, TB:1099511627776, PB:1125899906842624 } }
+};
+var UNIT_NAMES = {
+  mm:'毫米 mm', cm:'厘米 cm', m:'米 m', km:'千米 km', in:'英寸 in', ft:'英尺 ft', yd:'码 yd', mile:'英里 mile', nmi:'海里 nmi',
+  mg:'毫克 mg', g:'克 g', kg:'千克 kg', t:'吨 t', oz:'盎司 oz', lb:'磅 lb', jin:'斤',
+  C:'摄氏度 °C', F:'华氏度 °F', K:'开尔文 K',
+  B:'字节 B', KB:'KB (1024B)', MB:'MB', GB:'GB', TB:'TB', PB:'PB'
+};
+// 温度按公式换算，先统一转成摄氏度
+function toCelsius(v, from){
+  if(from === 'C') return v;
+  if(from === 'F') return (v - 32) * 5 / 9;
+  return v - 273.15;
+}
+function fromCelsius(c, to){
+  if(to === 'C') return c;
+  if(to === 'F') return c * 9 / 5 + 32;
+  return c + 273.15;
+}
+// 通用换算入口：非法输入返回 NaN
+function convert(value, cat, from, to){
+  if(cat === 'temp') return fromCelsius(toCelsius(value, from), to);
+  var tbl = UNITS[cat];
+  if(!tbl || !(from in tbl.u) || !(to in tbl.u)) return NaN;
+  return value * tbl.u[from] / tbl.u[to];
+}
+// 结果显示：最多 12 位有效数字并去掉尾零
+function numToStr(x){
+  if(!isFinite(x)) return '—';
+  if(x === 0) return '0';
+  var s = Number(x.toPrecision(12));
+  return String(s);
+}
+function fillUnits(){
+  var cat = document.getElementById('cvCat').value;
+  var fromSel = document.getElementById('cvFrom');
+  var toSel = document.getElementById('cvTo');
+  var keys, prevF = fromSel.value, prevT = toSel.value;
+  if(cat === 'temp'){ keys = ['C','F','K']; }
+  else { keys = Object.keys(UNITS[cat].u); }
+  fromSel.innerHTML = keys.map(function(k){ return '<option value="'+k+'">'+UNIT_NAMES[k]+'</option>'; }).join('');
+  toSel.innerHTML = keys.map(function(k){ return '<option value="'+k+'">'+UNIT_NAMES[k]+'</option>'; }).join('');
+  if(keys.indexOf(prevF) !== -1) fromSel.value = prevF;
+  if(keys.indexOf(prevT) !== -1) toSel.value = prevT;
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+document.getElementById('btnFmt').addEventListener('click', function(){
+  var raw = document.getElementById('numsrc').value;
+  if(!raw.trim()){ msg('nummsg','✘ 请先输入数字',false); return; }
+  var dRaw = document.getElementById('numDec').value;
+  var d = parseInt(dRaw, 10);
+  if(isNaN(d) || d < 0 || d > 8){ msg('nummsg','✘ 小数位须为 0~8',false); return; }
+  var opt = { decimals: d, sep: document.getElementById('numSep').value, fill: document.getElementById('numFill').checked };
+  var lines = raw.replace(/\r\n/g,'\n').split('\n').filter(function(l){ return l.trim() !== ''; });
+  var out = [], bad = 0;
+  lines.forEach(function(l){
+    var r = formatNumber(l, opt);
+    if(r === null){ bad++; out.push('✘ ' + l.trim()); } else out.push(r);
+  });
+  document.getElementById('numout').value = out.join('\n');
+  msg('nummsg','✔ 已格式化 '+lines.length+' 行'+(bad?'，其中 '+bad+' 行不是合法数字':''), !bad);
+});
+document.getElementById('btnUnfmt').addEventListener('click', function(){
+  var raw = document.getElementById('numsrc').value;
+  if(!raw.trim()){ msg('nummsg','✘ 请先输入数字',false); return; }
+  var sep = document.getElementById('numSep').value;
+  var lines = raw.replace(/\r\n/g,'\n').split('\n').filter(function(l){ return l.trim() !== ''; });
+  var out = [], bad = 0;
+  lines.forEach(function(l){
+    var r = unformat(l, sep);
+    if(r === null){ bad++; out.push('✘ ' + l.trim()); } else out.push(r);
+  });
+  document.getElementById('numout').value = out.join('\n');
+  msg('nummsg','✔ 已还原 '+lines.length+' 行'+(bad?'，其中 '+bad+' 行不是合法数字':''), !bad);
+});
+document.getElementById('btnNumClear').addEventListener('click', function(){
+  document.getElementById('numout').value = '';
+  msg('nummsg','',true);
+});
+document.getElementById('cvCat').addEventListener('change', fillUnits);
+document.getElementById('btnCv').addEventListener('click', function(){
+  var v = parseFloat(document.getElementById('cvVal').value);
+  if(isNaN(v)){ msg('cvmsg','✘ 请输入合法数值',false); return; }
+  var cat = document.getElementById('cvCat').value;
+  var from = document.getElementById('cvFrom').value;
+  var to = document.getElementById('cvTo').value;
+  var r = convert(v, cat, from, to);
+  document.getElementById('cvOut').textContent = numToStr(r) + ' ' + UNIT_NAMES[to];
+  msg('cvmsg','',true);
+});
+fillUnits();
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-numfmt-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>

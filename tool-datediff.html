@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>日期计算器在线工具 - 日期差/日期加减天数 | 免费云服务导航</title>
+<meta name="description" content="在线日期计算：两个日期相差几天（含工作日统计）、日期加减天/周/月/年，月末日自动钳制（1月31日加1个月得2月28日），显示星期。纯浏览器本地运行，免费无需登录。" />
+<meta name="keywords" content="日期计算,日期差,天数计算,日期加减,工作日计算,在线日期工具" />
+<meta property="og:title" content="日期计算器" />
+<meta property="og:description" content="日期相差天数、加减天/周/月/年，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-datediff" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-datediff" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  input[type=date],input[type=number],select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;outline:none;background:#fff}
+  input:focus,select:focus{border-color:var(--brand)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+  button{padding:8px 14px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+  .stat{background:var(--brand-soft);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .stat .v{font-size:20px;font-weight:700;color:var(--brand)}
+  .stat .k{font-size:12px;color:var(--muted);margin-top:2px}
+  .result{font-size:16px;font-weight:600;color:var(--brand);margin-top:10px;word-break:break-all}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>📅 日期计算器</h1>
+  <p class="sub">算两个日期相差几天、工作日有几天；给某个日期加減天 / 周 / 月 / 年，月末日自动处理。项目排期、合同期限、会员到期日一算就清楚。纯本地运行。</p>
+  <nav class="toolsnav">
+    <a class="on" href="tool-datediff">日期计算</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-numfmt">数字格式化</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>① 相差几天</h2>
+    <div class="row">
+      <span><label for="dA">开始日期</label><input type="date" id="dA" /></span>
+      <span><label for="dB">结束日期</label><input type="date" id="dB" /></span>
+      <button id="btnDiff">计算</button>
+      <button id="btnSwap" class="ghost">交换</button>
+    </div>
+    <div class="grid" id="diffOut" style="display:none">
+      <div class="stat"><div class="v" id="stDays">—</div><div class="k">相差天数</div></div>
+      <div class="stat"><div class="v" id="stWeeks">—</div><div class="k">折合周数</div></div>
+      <div class="stat"><div class="v" id="stBiz">—</div><div class="k">工作日（周一至五）</div></div>
+      <div class="stat"><div class="v" id="stHours">—</div><div class="k">折合小时</div></div>
+    </div>
+    <div class="msg" id="diffmsg"></div>
+  </div>
+
+  <div class="panel">
+    <h2>② 日期加减</h2>
+    <div class="row">
+      <span><label for="dBase">基准日期</label><input type="date" id="dBase" /></span>
+      <span><label for="dDelta">加减量（可为负）</label><input type="number" id="dDelta" value="30" style="width:100px" /></span>
+      <span><label for="dUnit">单位</label>
+        <select id="dUnit">
+          <option value="day">天</option>
+          <option value="week">周</option>
+          <option value="month">月</option>
+          <option value="year">年</option>
+        </select>
+      </span>
+      <button id="btnAdd">计算</button>
+      <button id="btnToday" class="ghost">基准设为今天</button>
+    </div>
+    <div class="result" id="addOut">—</div>
+    <div class="msg" id="addmsg"></div>
+  </div>
+
+  <div class="doc">
+    <h2>计算规则</h2>
+    <ul>
+      <li><strong>相差天数</strong>按「自然日」计：从 10-01 到 10-02 算 1 天；开始晚于结束取绝对值；</li>
+      <li><strong>工作日</strong>只排除周六周日，<em>不含法定节假日调休</em>——春节国庆请另行核对；</li>
+      <li><strong>加減月 / 年</strong>遇到月末日自动钳制：1 月 31 日 + 1 个月 = 2 月 28 日（闰年 29 日）；2028-02-29 + 1 年 = 2029-02-28；</li>
+      <li>计算用 UTC 日期进行，不受本机时区与夏令时影响；两位年份（如 <code>26-10-01</code>）请写完整四位。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>计算全部在浏览器本地完成，选择的日期不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var WD = ['日','一','二','三','四','五','六'];
+// 解析 YYYY-MM-DD / YYYY/M/D，非法（如 2 月 30 日）返回 null。内部统一 UTC
+function parseDate(s){
+  var m = String(s).trim().match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/);
+  if(!m) return null;
+  var y = +m[1], mo = +m[2], d = +m[3];
+  if(mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  var t = new Date(Date.UTC(y, mo - 1, d));
+  if(t.getUTCFullYear() !== y || t.getUTCMonth() !== mo - 1 || t.getUTCDate() !== d) return null;
+  return t;
+}
+// 相差自然日：b - a（同为 UTC 零点，无时区/夏令时干扰）
+function daysBetween(a, b){
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
+function addDays(d, n){
+  var t = new Date(d.getTime());
+  t.setUTCDate(t.getUTCDate() + n);
+  return t;
+}
+// 加 n 个月，月末日钳制到目标月最后一天
+function addMonths(d, n){
+  var y = d.getUTCFullYear(), mo = d.getUTCMonth(), day = d.getUTCDate();
+  var target = new Date(Date.UTC(y, mo + n, 1));
+  var lastDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth(), Math.min(day, lastDay)));
+}
+function addYears(d, n){ return addMonths(d, n * 12); }
+// [a, b] 闭区间内的工作日数（周一至五）；a 晚于 b 时自动交换
+function countBusinessDays(a, b){
+  var lo = a <= b ? a : b, hi = a <= b ? b : a;
+  var n = 0, cur = new Date(lo.getTime());
+  var span = daysBetween(lo, hi);
+  if(span > 200000) return NaN;
+  for(var i = 0; i <= span; i++){
+    var w = cur.getUTCDay();
+    if(w !== 0 && w !== 6) n++;
+    cur.setUTCDate(cur.getUTCDate() + 1);
+  }
+  return n;
+}
+function fmtDate(d){
+  var p = function(x){ return (x < 10 ? '0' : '') + x; };
+  return d.getUTCFullYear() + '-' + p(d.getUTCMonth() + 1) + '-' + p(d.getUTCDate());
+}
+function weekdayZh(d){
+  return '星期' + WD[d.getUTCDay()];
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+document.getElementById('btnDiff').addEventListener('click', function(){
+  var a = parseDate(document.getElementById('dA').value);
+  var b = parseDate(document.getElementById('dB').value);
+  if(!a || !b){ msg('diffmsg','✘ 请选择两个有效日期',false); return; }
+  var n = Math.abs(daysBetween(a, b));
+  document.getElementById('stDays').textContent = n + ' 天';
+  document.getElementById('stWeeks').textContent = Math.floor(n / 7) + ' 周' + (n % 7 ? ' 零 ' + (n % 7) + ' 天' : ' 整');
+  document.getElementById('stBiz').textContent = countBusinessDays(a, b) + ' 天';
+  document.getElementById('stHours').textContent = (n * 24).toLocaleString('en-US') + ' 小时';
+  document.getElementById('diffOut').style.display = '';
+  msg('diffmsg','✔ ' + fmtDate(a) + '（' + weekdayZh(a) + '）到 ' + fmtDate(b) + '（' + weekdayZh(b) + '）',true);
+});
+document.getElementById('btnSwap').addEventListener('click', function(){
+  var a = document.getElementById('dA').value, b = document.getElementById('dB').value;
+  document.getElementById('dA').value = b; document.getElementById('dB').value = a;
+});
+document.getElementById('btnAdd').addEventListener('click', function(){
+  var base = parseDate(document.getElementById('dBase').value);
+  if(!base){ msg('addmsg','✘ 请选择有效的基准日期',false); return; }
+  var n = parseInt(document.getElementById('dDelta').value, 10);
+  if(isNaN(n)){ msg('addmsg','✘ 请输入加减量',false); return; }
+  var unit = document.getElementById('dUnit').value;
+  var r;
+  if(unit === 'day') r = addDays(base, n);
+  else if(unit === 'week') r = addDays(base, n * 7);
+  else if(unit === 'month') r = addMonths(base, n);
+  else r = addYears(base, n);
+  document.getElementById('addOut').textContent = fmtDate(base) + ' ' + (n >= 0 ? '+' : '') + n + ' ' + unit + ' → ' + fmtDate(r) + '（' + weekdayZh(r) + '）';
+  msg('addmsg','',true);
+});
+document.getElementById('btnToday').addEventListener('click', function(){
+  var now = new Date();
+  var p = function(x){ return (x < 10 ? '0' : '') + x; };
+  document.getElementById('dBase').value = now.getFullYear() + '-' + p(now.getMonth() + 1) + '-' + p(now.getDate());
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-datediff-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>
