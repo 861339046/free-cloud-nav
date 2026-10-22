@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SSH 密钥检查器在线工具 - 公钥解析/指纹/私钥配对 | 免费云服务导航</title>
+<meta name="description" content="在线 SSH 密钥检查：authorized_keys 公钥批量解析（类型/位数/SHA256 指纹/注释）、RSA 弱密钥告警、未加密私钥与公钥配对校验。纯浏览器本地解析，密钥不上传。" />
+<meta name="keywords" content="ssh密钥,公钥解析,ssh指纹,authorized_keys,私钥配对,在线ssh工具" />
+<meta property="og:title" content="SSH 密钥检查器" />
+<meta property="og:description" content="公钥解析、指纹计算、私钥配对校验，纯本地运行。" />
+<meta property="og:url" content="https://keting.eu.org/tool-sshkey" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-sshkey" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+  textarea{width:100%;min-height:120px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.6}
+  textarea:focus{border-color:var(--brand)}
+  .ops{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  button{padding:8px 14px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  table.res{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+  table.res th,table.res td{border:1px solid var(--line);padding:6px 10px;text-align:left;word-break:break-all}
+  table.res th{background:var(--brand-soft);color:#374151;font-weight:600}
+  .tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px}
+  .tag.ok{background:#ecfdf5;color:#059669}
+  .tag.bad{background:#fef2f2;color:#dc2626}
+  .tag.warn{background:#fffbeb;color:#b45309}
+  .fp{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+  .warn{background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:13px;color:#92400e;margin-top:10px}
+  .result{font-size:15px;font-weight:600;color:var(--brand);margin-top:10px;word-break:break-all}
+  .msg{font-size:14px;margin-top:8px}
+  .bad{color:#dc2626}
+  .ok{color:#059669}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔑 SSH 密钥检查器</h1>
+  <p class="sub">authorized_keys 公钥批量解析（类型 / 位数 / SHA256 指纹 / 注释）、RSA 弱密钥告警、未加密私钥与公钥配对校验。全部在浏览器本地解析，密钥内容不会上传到任何服务器。</p>
+  <nav class="toolsnav">
+    <a href="tools">工具箱</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-sha">SHA</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-image">图片压缩</a>
+    <a href="tool-color">颜色</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-urlparam">URL参数</a>
+    <a href="tool-jsoncsv">JSON↔CSV</a>
+    <a href="tool-radix">进制</a>
+    <a href="tool-lineops">文本去重</a>
+    <a href="tool-htmlescape">HTML转义</a>
+    <a href="tool-numfmt">数字格式</a>
+    <a href="tool-datediff">日期计算</a>
+    <a class="on" href="tool-sshkey">SSH密钥</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="warn">⚠️ 建议<strong>只粘贴公钥</strong>（<code>.pub</code> 文件内容 / 服务器上的 <code>authorized_keys</code>）。私钥匹配功能仅供校验未加密密钥是否成对，加密私钥（设了 passphrase）无法解析，页面会明确提示。</div>
+
+  <div class="panel">
+    <h2>① 公钥解析（authorized_keys 格式，可多行）</h2>
+    <label for="pubIn">粘贴公钥（每行一条，支持 # 注释与 options 前缀）</label>
+    <textarea id="pubIn" spellcheck="false" placeholder="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... user@host&#10;ssh-rsa AAAAB3NzaC1yc2EAAAADAQAB... old-key"></textarea>
+    <div class="ops">
+      <button id="btnParsePub">解析公钥</button>
+      <button id="btnPubClear" class="ghost">清空</button>
+    </div>
+    <div id="pubOut"></div>
+    <div class="msg" id="pubmsg"></div>
+  </div>
+
+  <div class="panel">
+    <h2>② 私钥与公钥配对校验</h2>
+    <label for="privIn">私钥（OpenSSH / RSA PEM / PKCS#8，仅支持未加密）</label>
+    <textarea id="privIn" spellcheck="false" placeholder="-----BEGIN OPENSSH PRIVATE KEY-----&#10;...&#10;-----END OPENSSH PRIVATE KEY-----"></textarea>
+    <label for="pubPair" style="margin-top:10px">对应的公钥（可选，用于确认是否一对）</label>
+    <textarea id="pubPair" spellcheck="false" placeholder="ssh-ed25519 AAAA... user@host" style="min-height:80px"></textarea>
+    <div class="ops">
+      <button id="btnPair">校验</button>
+      <button id="btnPairClear" class="ghost">清空</button>
+    </div>
+    <div class="result" id="pairOut">—</div>
+    <div id="pairDetail" style="font-size:13px;color:var(--muted);margin-top:6px;word-break:break-all"></div>
+    <div class="msg" id="pairmsg"></div>
+  </div>
+
+  <div class="doc">
+    <h2>说明</h2>
+    <ul>
+      <li><strong>能检查什么</strong>：公钥格式是否合法、密钥类型（ed25519 / RSA / ECDSA，含硬件密钥 sk-）、RSA 位数（&lt;2048 标红告警）、SHA256 指纹（OpenSSH 的 <code>SHA256:xxxx</code> 格式，可与 <code>ssh-keygen -lf</code> 输出对照）、注释；</li>
+      <li><strong>私钥配对</strong>：支持未加密的 OpenSSH 新格式（<code>BEGIN OPENSSH PRIVATE KEY</code>）、RSA PKCS#1（<code>BEGIN RSA PRIVATE KEY</code>）与 PKCS#8（<code>BEGIN PRIVATE KEY</code>）；加密的私钥会提示无法解析——请用 <code>ssh-keygen -y -f 私钥文件</code> 在本机导出公钥后再来比对；</li>
+      <li><strong>连接测试做不了</strong>：浏览器无法发起 SSH 协议的 TCP 连接，真实登录测试请在终端 <code>ssh -v user@host</code> 排查；</li>
+      <li><strong>隐私</strong>：解析全部在本页内存完成，无任何网络请求；校验完建议清空输入框并关闭页面。</li>
+    </ul>
+  </div>
+</div>
+<footer>
+  <div>解析全部在浏览器本地完成，密钥内容不会上传到任何服务器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var KEY_TYPES = {
+  'ssh-ed25519': { name: 'Ed25519', hw: false },
+  'sk-ssh-ed25519@openssh.com': { name: 'Ed25519 (硬件)', hw: true },
+  'ssh-rsa': { name: 'RSA', hw: false },
+  'ecdsa-sha2-nistp256': { name: 'ECDSA P-256', hw: false },
+  'ecdsa-sha2-nistp384': { name: 'ECDSA P-384', hw: false },
+  'ecdsa-sha2-nistp521': { name: 'ECDSA P-521', hw: false },
+  'sk-ecdsa-sha2-nistp256@openssh.com': { name: 'ECDSA P-256 (硬件)', hw: true }
+};
+function b64ToBytes(s){
+  s = String(s).replace(/\s+/g, '');
+  if(!/^[A-Za-z0-9+/]+={0,2}$/.test(s)) return null;
+  var bin;
+  try{ bin = atob(s); }catch(e){ return null; }
+  var out = new Array(bin.length);
+  for(var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function bytesToStr(bytes){
+  var s = '';
+  for(var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return decodeURIComponent(escape(s));
+}
+function bitLenOf(bytes){
+  var i = 0;
+  while(i < bytes.length && bytes[i] === 0) i++;
+  if(i === bytes.length) return 0;
+  var b = bytes[i], n = 0;
+  while(b){ n++; b >>= 1; }
+  return (bytes.length - i - 1) * 8 + n;
+}
+// 解析 SSH wire format 公钥 blob → {type, bits, err}
+function parseBlob(bytes){
+  var off = 0;
+  function str(){
+    if(off + 4 > bytes.length) throw new Error('truncated');
+    var len = (bytes[off] << 24 | bytes[off + 1] << 16 | bytes[off + 2] << 8 | bytes[off + 3]) >>> 0;
+    if(off + 4 + len > bytes.length) throw new Error('truncated');
+    var data = bytes.slice(off + 4, off + 4 + len);
+    off += 4 + len;
+    return data;
+  }
+  try{
+    var type = bytesToStr(str());
+    var bits = 0;
+    if(type === 'ssh-ed25519' || type === 'sk-ssh-ed25519@openssh.com'){
+      var pk = str();
+      if(pk.length !== 32) throw new Error('ed25519 key must be 32 bytes');
+      bits = 256;
+    } else if(type === 'ssh-rsa'){
+      var e = str();
+      var n = str();
+      if(e.length === 0 || n.length === 0) throw new Error('rsa params missing');
+      bits = bitLenOf(n);
+    } else if(type.indexOf('ecdsa-sha2-nistp') === 0 || type === 'sk-ecdsa-sha2-nistp256@openssh.com'){
+      var curve = bytesToStr(str());
+      var q = str();
+      if(q.length < 1) throw new Error('ecdsa point missing');
+      bits = { 'nistp256': 256, 'nistp384': 384, 'nistp521': 521 }[curve] || 0;
+      if(!bits) throw new Error('unknown curve ' + curve);
+    } else {
+      throw new Error('unsupported type ' + type);
+    }
+    return { type: type, bits: bits, end: off, total: bytes.length };
+  }catch(e){
+    return { err: e.message };
+  }
+}
+// OpenSSH 指纹：SHA256:b64nopad(blob 的 sha256)；digest 由调用方异步算好传入
+function fpFromDigest(digestBytes){
+  var s = '';
+  for(var i = 0; i < digestBytes.length; i++) s += String.fromCharCode(digestBytes[i]);
+  return 'SHA256:' + btoa(s).replace(/=+$/, '');
+}
+// 拆 authorized_keys 单行：options 字段可能含引号包裹的空格（如 command="echo hi"）
+function splitKeyLine(line){
+  var inQuote = false, i = 0, first = '';
+  for(i = 0; i < line.length; i++){
+    var c = line.charAt(i);
+    if(c === '"') inQuote = !inQuote;
+    else if(/\s/.test(c) && !inQuote) break;
+    first += c;
+  }
+  if(first.indexOf('=') === -1 && first.indexOf(',') === -1){
+    var t = line.split(/\s+/);
+    return { opts: null, type: t.shift(), b64: t.shift(), comment: t.join(' ') };
+  }
+  var rest = line.slice(i + 1);
+  var t2 = rest.split(/\s+/);
+  return { opts: first, type: t2.shift(), b64: t2.shift(), comment: t2.join(' ') };
+}
+// 解析 authorized_keys 多行文本（同步部分；指纹需异步另行计算）
+// 返回 [{raw, opts, declared, comment, blob, err}]
+function parseAuthorizedKeys(text){
+  var lines = String(text).replace(/\r\n/g, '\n').split('\n');
+  var out = [];
+  for(var i = 0; i < lines.length; i++){
+    var line = lines[i].trim();
+    if(line === '' || line.charAt(0) === '#') continue;
+    var parts = splitKeyLine(line);
+    var opts = parts.opts;
+    var declared = parts.type || '';
+    var b64 = parts.b64 || '';
+    var comment = parts.comment;
+    if(!KEY_TYPES[declared]){
+      out.push({ raw: line, opts: opts, declared: declared, comment: comment, err: '不支持的类型 ' + declared });
+      continue;
+    }
+    var bytes = b64ToBytes(b64);
+    if(!bytes){
+      out.push({ raw: line, opts: opts, declared: declared, comment: comment, err: 'base64 无效' });
+      continue;
+    }
+    var p = parseBlob(bytes);
+    if(p.err){
+      out.push({ raw: line, opts: opts, declared: declared, comment: comment, err: p.err });
+      continue;
+    }
+    if(p.type !== declared){
+      out.push({ raw: line, opts: opts, declared: declared, comment: comment, err: '内容类型 ' + p.type + ' 与声明不符' });
+      continue;
+    }
+    out.push({ raw: line, opts: opts, declared: declared, comment: comment, blob: bytes, bits: p.bits });
+  }
+  return out;
+}
+// ---------- PEM / 私钥 ----------
+function pemToBytes(text, beginMark, endMark){
+  var m = String(text).match(new RegExp(beginMark + '[\\s\\S]*?' + endMark));
+  if(!m) return null;
+  var body = m[0].replace(beginMark, '').replace(endMark, '').replace(/\s+/g, '');
+  return b64ToBytes(body);
+}
+// 最小 DER 读取器：返回 {tag, off, len, next}
+function derRead(bytes, off){
+  var tag = bytes[off];
+  var len = bytes[off + 1];
+  var idx = off + 2;
+  if(len & 0x80){
+    var n = len & 0x7f;
+    if(n > 4) throw new Error('der length too long');
+    len = 0;
+    for(var i = 0; i < n; i++) len = len * 256 + bytes[idx++];
+  }
+  return { tag: tag, off: idx, len: len, next: idx + len };
+}
+// mpint 编码：去前导零、正数高位为 1 时补 0x00
+function mpintEncode(bytes){
+  var i = 0;
+  while(i < bytes.length && bytes[i] === 0) i++;
+  var body = bytes.slice(i);
+  if(body.length === 0) return [0];
+  if(body[0] & 0x80){
+    var out = [0];
+    for(var j = 0; j < body.length; j++) out.push(body[j]);
+    return out;
+  }
+  return body;
+}
+function sshStr(bytes){
+  var len = bytes.length;
+  var out = [(len >>> 24) & 255, (len >>> 16) & 255, (len >>> 8) & 255, len & 255];
+  for(var i = 0; i < len; i++) out.push(bytes[i]);
+  return out;
+}
+function strToBytes(s){
+  var out = [];
+  for(var i = 0; i < s.length; i++) out.push(s.charCodeAt(i));
+  return out;
+}
+// RSA PKCS#1 PEM（BEGIN RSA PRIVATE KEY）→ {n, e}（字节数组）
+function parsePemRSA(text){
+  var bytes = pemToBytes(text, '-----BEGIN RSA PRIVATE KEY-----', '-----END RSA PRIVATE KEY-----');
+  if(!bytes) return null;
+  var seq = derRead(bytes, 0);
+  if(seq.tag !== 0x30) return { err: 'PEM 内容不是合法 DER 序列' };
+  var items = [];
+  var off = seq.off;
+  while(off < seq.off + seq.len){
+    var tlv = derRead(bytes, off);
+    items.push(bytes.slice(tlv.off, tlv.off + tlv.len));
+    off = tlv.next;
+  }
+  if(items.length < 3) return { err: 'RSA 私钥字段缺失' };
+  return { n: items[1], e: items[2] };
+}
+// PKCS#8 PEM（BEGIN PRIVATE KEY）→ 识别 RSA / Ed25519
+var OID_RSA = [42, 134, 72, 134, 247, 13, 1, 1, 1];
+var OID_ED25519 = [43, 101, 112];
+function parsePemPKCS8(text){
+  var bytes = pemToBytes(text, '-----BEGIN PRIVATE KEY-----', '-----END PRIVATE KEY-----');
+  if(!bytes) return null;
+  try{
+    var seq = derRead(bytes, 0);
+    var ver = derRead(bytes, seq.off);
+    var alg = derRead(bytes, ver.next);
+    if(alg.tag !== 0x30) return { err: 'PKCS#8 结构异常' };
+    var oid = derRead(bytes, alg.off);
+    var oidBytes = bytes.slice(oid.off, oid.off + oid.len);
+    var priv = derRead(bytes, alg.next);
+    var privBytes = bytes.slice(priv.off, priv.off + priv.len);
+    var isRsa = oidBytes.length === OID_RSA.length && oidBytes.every(function(b, i){ return b === OID_RSA[i]; });
+    var isEd = oidBytes.length === OID_ED25519.length && oidBytes.every(function(b, i){ return b === OID_ED25519[i]; });
+    if(isRsa){
+      var inner = derRead(privBytes, 0);
+      var items = [];
+      var off = inner.off;
+      while(off < inner.off + inner.len){
+        var tlv = derRead(privBytes, off);
+        items.push(privBytes.slice(tlv.off, tlv.off + tlv.len));
+        off = tlv.next;
+      }
+      if(items.length < 3) return { err: 'PKCS#8 内层 RSA 字段缺失' };
+      return { kind: 'rsa', n: items[1], e: items[2] };
+    }
+    if(isEd){
+      // CurvePrivateKey ::= OCTET STRING，PKCS#8 里再 DER 包了一层
+      var os = derRead(privBytes, 0);
+      var raw = privBytes.slice(os.off, os.off + os.len);
+      if(raw.length !== 32) return { err: 'Ed25519 种子长度异常' };
+      // 注意：PKCS#8 里是私钥种子，公钥=种子做曲线标量乘的产物，浏览器无 API 重建 → noPubRebuild
+      return { kind: 'ed25519', seed: raw, noPubRebuild: true };
+    }
+    return { err: '不支持的 PKCS#8 算法' };
+  }catch(e){
+    return { err: e.message };
+  }
+}
+// OpenSSH 私钥（BEGIN OPENSSH PRIVATE KEY）→ {kind, pubBlob, comment?, encrypted}
+function parseOpenSSHPriv(text){
+  var bytes = pemToBytes(text, '-----BEGIN OPENSSH PRIVATE KEY-----', '-----END OPENSSH PRIVATE KEY-----');
+  if(!bytes) return null;
+  var magic = 'openssh-key-v1\u0000';
+  for(var i = 0; i < magic.length; i++){
+    if(bytes[i] !== magic.charCodeAt(i)) return { err: '不是合法的 OpenSSH 私钥容器' };
+  }
+  var off = magic.length;
+  function str(){
+    var len = (bytes[off] << 24 | bytes[off + 1] << 16 | bytes[off + 2] << 8 | bytes[off + 3]) >>> 0;
+    var data = bytes.slice(off + 4, off + 4 + len);
+    off += 4 + len;
+    return data;
+  }
+  var cipher = bytesToStr(str());
+  str(); // kdf
+  str(); // kdfopts
+  var nkeys = (bytes[off] << 24 | bytes[off + 1] << 16 | bytes[off + 2] << 8 | bytes[off + 3]) >>> 0;
+  off += 4;
+  var pubBlob = str();
+  if(nkeys !== 1) return { err: '仅支持单密钥容器' };
+  if(cipher !== 'none'){
+    return { kind: 'openssh', encrypted: true, pubBlob: pubBlob };
+  }
+  // 未加密：私段是独立 string（4 字节长度 + 内容），先整体读出再解析
+  var comment = '';
+  try{
+    var priv = str();
+    var poff = 0;
+    function pstr(){
+      var len = (priv[poff] << 24 | priv[poff + 1] << 16 | priv[poff + 2] << 8 | priv[poff + 3]) >>> 0;
+      var data = priv.slice(poff + 4, poff + 4 + len);
+      poff += 4 + len;
+      return data;
+    }
+    var check1 = (priv[0] << 24 | priv[1] << 16 | priv[2] << 8 | priv[3]) >>> 0;
+    var check2 = (priv[4] << 24 | priv[5] << 16 | priv[6] << 8 | priv[7]) >>> 0;
+    poff = 8;
+    if(check1 !== check2) return { kind: 'openssh', encrypted: false, pubBlob: pubBlob, comment: '' };
+    pstr(); // keytype
+    // 类型名按 blob 自带的长度字段读取，不要硬编码下标
+    var tlen = (pubBlob[0] << 24 | pubBlob[1] << 16 | pubBlob[2] << 8 | pubBlob[3]) >>> 0;
+    var t = bytesToStr(pubBlob.slice(4, 4 + tlen));
+    if(t === 'ssh-ed25519'){ pstr(); pstr(); }
+    else if(t === 'ssh-rsa'){ pstr(); pstr(); pstr(); pstr(); pstr(); pstr(); }
+    else if(t.indexOf('ecdsa') === 0){ pstr(); pstr(); pstr(); }
+    comment = bytesToStr(pstr());
+  }catch(e){ /* 注释解析失败不影响匹配 */ }
+  return { kind: 'openssh', encrypted: false, pubBlob: pubBlob, comment: comment };
+}
+// 由私钥参数重建公钥 blob（与公钥输入逐字节比对即配对）
+function rsaPubBlob(n, e){
+  return strToBytes('ssh-rsa').length === 7
+    ? sshStr(strToBytes('ssh-rsa')).concat(sshStr(mpintEncode(e)), sshStr(mpintEncode(n)))
+    : null;
+}
+function sameBytes(a, b){
+  if(!a || !b || a.length !== b.length) return false;
+  for(var i = 0; i < a.length; i++){
+    if(a[i] !== b[i]) return false;
+  }
+  return true;
+}
+// 异步 SHA-256（Web Crypto），返回字节
+function sha256Bytes(bytes){
+  var u8 = new Uint8Array(bytes);
+  return crypto.subtle.digest('SHA-256', u8).then(function(buf){
+    return new Uint8Array(buf);
+  });
+}
+function msg(id,txt,ok){var el=document.getElementById(id);el.textContent=txt;el.className='msg '+(ok?'ok':'bad');}
+function esc(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+document.getElementById('btnParsePub').addEventListener('click', function(){
+  var raw = document.getElementById('pubIn').value;
+  if(!raw.trim()){ msg('pubmsg','✘ 请先粘贴公钥',false); return; }
+  var rows = parseAuthorizedKeys(raw);
+  if(rows.length === 0){ msg('pubmsg','✘ 没有找到有效的公钥行',false); return; }
+  var html = '<table class="res"><tr><th>#</th><th>状态</th><th>类型</th><th>位数</th><th>SHA256 指纹</th><th>注释</th><th>说明</th></tr>';
+  var okCount = 0;
+  var pending = [];
+  rows.forEach(function(r, i){
+    if(r.err){
+      html += '<tr><td>' + (i + 1) + '</td><td><span class="tag bad">✘</span></td><td colspan="5">' + esc(r.err) + '（' + esc(r.raw.slice(0, 40)) + '…）</td></tr>';
+      return;
+    }
+    okCount++;
+    var weak = r.declared === 'ssh-rsa' && r.bits < 2048;
+    var tag = weak ? '<span class="tag warn">弱密钥</span>' : '<span class="tag ok">OK</span>';
+    html += '<tr><td>' + (i + 1) + '</td><td>' + tag + '</td><td>' + esc(KEY_TYPES[r.declared].name) + '</td><td>' + r.bits + '</td><td class="fp" data-row="' + i + '">计算中…</td><td>' + esc(r.comment || (r.opts ? 'options: ' + r.opts : '—')) + '</td><td>' + (weak ? 'RSA 少于 2048 位，建议更换' : '—') + '</td></tr>';
+    pending.push({ i: i, blob: r.blob });
+  });
+  html += '</table>';
+  document.getElementById('pubOut').innerHTML = html;
+  var chain = Promise.resolve();
+  pending.forEach(function(p){
+    chain = chain.then(function(){
+      return sha256Bytes(p.blob).then(function(d){
+        var el = document.querySelector('.fp[data-row="' + p.i + '"]');
+        if(el) el.textContent = fpFromDigest(d);
+      });
+    });
+  });
+  msg('pubmsg','✔ 解析完成：' + okCount + ' 条有效 / ' + rows.length + ' 条输入', true);
+});
+document.getElementById('btnPubClear').addEventListener('click', function(){
+  document.getElementById('pubIn').value = '';
+  document.getElementById('pubOut').innerHTML = '';
+  msg('pubmsg','',true);
+});
+document.getElementById('btnPair').addEventListener('click', function(){
+  var privRaw = document.getElementById('privIn').value;
+  var pubRaw = document.getElementById('pubPair').value;
+  if(!privRaw.trim()){ msg('pairmsg','✘ 请先粘贴私钥',false); return; }
+  var priv, detail = '';
+  if(privRaw.indexOf('BEGIN OPENSSH PRIVATE KEY') !== -1){
+    priv = parseOpenSSHPriv(privRaw);
+    if(priv && priv.encrypted){
+      document.getElementById('pairOut').textContent = '私钥已加密（设置了 passphrase），无法在此校验';
+      detail = '请在本机执行 ssh-keygen -y -f 私钥文件 导出公钥，再把导出结果与公钥一起粘贴到①解析比对。';
+      document.getElementById('pairDetail').textContent = detail;
+      msg('pairmsg','',true);
+      return;
+    }
+    if(priv && !priv.err && priv.kind === 'openssh'){
+      var probe = parseBlob(priv.pubBlob);
+      detail = '私钥类型：' + (KEY_TYPES[probe.type] ? KEY_TYPES[probe.type].name : probe.type) + ' / ' + probe.bits + ' 位' + (priv.comment ? ' / 注释：' + priv.comment : '');
+      priv.blob = priv.pubBlob;
+    } else if(priv && priv.err){
+      document.getElementById('pairOut').textContent = '✘ ' + priv.err;
+      document.getElementById('pairDetail').textContent = '';
+      msg('pairmsg','✘ 解析失败',false);
+      return;
+    }
+  } else if(privRaw.indexOf('BEGIN RSA PRIVATE KEY') !== -1){
+    if(privRaw.indexOf('Proc-Type: 4,ENCRYPTED') !== -1){
+      document.getElementById('pairOut').textContent = '私钥已加密（PEM 传统加密），无法在此校验';
+      document.getElementById('pairDetail').textContent = '';
+      msg('pairmsg','',true);
+      return;
+    }
+    priv = parsePemRSA(privRaw);
+    if(priv && !priv.err){
+      priv.blob = rsaPubBlob(priv.n, priv.e);
+      detail = '私钥类型：RSA / ' + bitLenOf(priv.n) + ' 位' + (bitLenOf(priv.n) < 2048 ? '（弱密钥！）' : '');
+    } else if(priv && priv.err){
+      document.getElementById('pairOut').textContent = '✘ ' + priv.err;
+      document.getElementById('pairDetail').textContent = '';
+      msg('pairmsg','✘ 解析失败',false);
+      return;
+    }
+  } else if(privRaw.indexOf('BEGIN PRIVATE KEY') !== -1){
+    priv = parsePemPKCS8(privRaw);
+    if(priv && !priv.err){
+      if(priv.kind === 'rsa') priv.blob = rsaPubBlob(priv.n, priv.e);
+      else if(priv.noPubRebuild){
+        document.getElementById('pairOut').textContent = '✔ 已识别为 Ed25519 PKCS#8 私钥（只能识别，无法配对）';
+        document.getElementById('pairDetail').textContent = 'PKCS#8 格式的 Ed25519 私钥里只有种子，浏览器无法从种子重建公钥。请改用 OpenSSH 格式私钥（ssh-keygen 默认生成，容器内自带公钥），或在本机执行 ssh-keygen -y -f 私钥文件 导出公钥后到①比对。';
+        msg('pairmsg','',true);
+        return;
+      }
+      detail = '私钥类型：' + (priv.kind === 'rsa' ? 'RSA / ' + bitLenOf(priv.n) + ' 位' : 'Ed25519');
+    } else if(priv && priv.err){
+      document.getElementById('pairOut').textContent = '✘ ' + priv.err;
+      document.getElementById('pairDetail').textContent = '';
+      msg('pairmsg','✘ 解析失败',false);
+      return;
+    }
+  } else {
+    document.getElementById('pairOut').textContent = '✘ 未识别的私钥格式（支持 OPENSSH / RSA PRIVATE KEY / PRIVATE KEY 三种 PEM 头）';
+    document.getElementById('pairDetail').textContent = '';
+    msg('pairmsg','✘ 解析失败',false);
+    return;
+  }
+  if(!priv || !priv.blob){
+    document.getElementById('pairOut').textContent = '✘ 私钥解析失败';
+    document.getElementById('pairDetail').textContent = '';
+    msg('pairmsg','✘ 解析失败',false);
+    return;
+  }
+  if(!pubRaw.trim()){
+    document.getElementById('pairOut').textContent = '✔ 私钥解析成功';
+    document.getElementById('pairDetail').textContent = detail + '。粘贴对应公钥即可确认是否一对。';
+    msg('pairmsg','',true);
+    return;
+  }
+  var pubRows = parseAuthorizedKeys(pubRaw);
+  var pub = pubRows.filter(function(r){ return r.blob; })[0];
+  if(!pub){
+    document.getElementById('pairOut').textContent = '✘ 公钥格式无效，无法比对';
+    document.getElementById('pairDetail').textContent = detail;
+    msg('pairmsg','✘ 比对失败',false);
+    return;
+  }
+  if(sameBytes(priv.blob, pub.blob)){
+    document.getElementById('pairOut').textContent = '✔ 匹配：私钥与公钥是一对';
+    document.getElementById('pairDetail').textContent = detail;
+    msg('pairmsg','',true);
+  } else {
+    document.getElementById('pairOut').textContent = '✘ 不匹配：私钥与公钥不是一对';
+    document.getElementById('pairDetail').textContent = detail + '（公钥：' + (KEY_TYPES[pub.declared] ? KEY_TYPES[pub.declared].name : pub.declared) + ' / ' + pub.bits + ' 位）';
+    msg('pairmsg','✘ 不匹配',false);
+  }
+});
+document.getElementById('btnPairClear').addEventListener('click', function(){
+  document.getElementById('privIn').value = '';
+  document.getElementById('pubPair').value = '';
+  document.getElementById('pairOut').textContent = '—';
+  document.getElementById('pairDetail').textContent = '';
+  msg('pairmsg','',true);
+});
+function trackClick(id){
+  try{
+    var body=JSON.stringify({id:id});
+    if(navigator.sendBeacon){navigator.sendBeacon('/api/click',new Blob([body],{type:'application/json'}));}
+    else{fetch('/api/click',{method:'POST',body:body,keepalive:true,headers:{'Content-Type':'application/json'}}).catch(function(){});}
+  }catch(e){}
+}
+try{trackClick('pv-tool-sshkey-'+new Date().toISOString().slice(0,10));}catch(e){}
+</script>
+</body>
+</html>
