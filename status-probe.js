@@ -14,9 +14,10 @@ const TARGETS = [
   { name: 'Supabase', url: 'https://supabase.com/' },
   { name: 'Neon', url: 'https://neon.com/' },
   { name: 'Vercel', url: 'https://vercel.com/' },
-  // 注意：不要用 github.com 首页——Akamai 会间歇性按 IP 段返回 403（误报宕机）。
-  // api.github.com 是开放式 API 入口，任何 UA 都稳定 200，且语义上就是「服务可用」。
-  { name: 'GitHub', url: 'https://api.github.com/' },
+  // 注意：github.com 首页与 api.github.com 都不可靠——Akamai 对数据中心/Workers 出口 IP
+  // 间歇性 403（api 未认证额度还是按共享 IP 计时，60 次/小时极易被别的租户耗尽）。
+  // githubstatus.com 是 GitHub 官方状态页（statuspage.io 托管，不拦机房 IP），语义上也最权威。
+  { name: 'GitHub', url: 'https://www.githubstatus.com/' },
   { name: 'Render', url: 'https://render.com/' },
   { name: 'Fly.io', url: 'https://fly.io/' },
   { name: 'Railway', url: 'https://railway.com/' },
