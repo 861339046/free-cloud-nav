@@ -1,5 +1,0 @@
-add: ok
-commit: ok
-push attempt 1 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
-push attempt 2 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
-push attempt 3 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
