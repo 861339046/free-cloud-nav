@@ -1,0 +1,35 @@
+name: status-probe
+
+# 状态监测定时任务：每 30 分钟调用站点的 /api/cron-probe 接口，
+# 由接口内完成 12 个免费服务的探测并写入 Cloudflare KV。
+# 说明：
+#   - GitHub Actions 的 cron 按 UTC 执行，*/30 * * * * 即每 30 分钟一次；
+#   - 公开仓库免费；私有仓库也在每月 2000 分钟免费额度内（单次运行 <10 秒）；
+#   - 仓库连续 60 天无活动时 GitHub 会暂停定时任务，有推送即自动恢复；
+#   - 调度偶尔延迟几分钟属正常现象，不影响 30 分钟级的状态看板；
+#   - 需要改频率时改下面 cron 表达式即可，无需动站点代码。
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch: {}   # 支持在 Actions 页面手动点 "Run workflow" 立即测试
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 触发状态探测
+        run: |
+          for i in 1 2 3; do
+            if curl -fsS -m 90 -X POST \
+              -H "x-cron-token: ${{ secrets.CRON_SECRET }}" \
+              https://keting.eu.org/api/cron-probe; then
+              echo "probe ok (attempt $i)"
+              exit 0
+            fi
+            echo "probe failed (attempt $i), retrying in 15s"
+            sleep 15
+          done
+          echo "probe failed after 3 attempts"
+          exit 1
