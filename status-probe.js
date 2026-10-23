@@ -14,7 +14,9 @@ const TARGETS = [
   { name: 'Supabase', url: 'https://supabase.com/' },
   { name: 'Neon', url: 'https://neon.com/' },
   { name: 'Vercel', url: 'https://vercel.com/' },
-  { name: 'GitHub', url: 'https://github.com/' },
+  // 注意：不要用 github.com 首页——Akamai 会间歇性按 IP 段返回 403（误报宕机）。
+  // api.github.com 是开放式 API 入口，任何 UA 都稳定 200，且语义上就是「服务可用」。
+  { name: 'GitHub', url: 'https://api.github.com/' },
   { name: 'Render', url: 'https://render.com/' },
   { name: 'Fly.io', url: 'https://fly.io/' },
   { name: 'Railway', url: 'https://railway.com/' },
