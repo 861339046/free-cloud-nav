@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>免费服务状态监测 - 免费云服务可用性实时查询 | 免费云服务导航</title>
+<meta name="description" content="免费云服务可用性监测：定时探测 Oracle Cloud、Cloudflare、Supabase、Neon、Vercel 等常用免费服务官网响应状态，异常服务置顶提醒。数据由 Cloudflare Workers 定时采集。" />
+<meta name="keywords" content="免费服务状态,云服务可用性,服务监测,oracle cloud状态,cloudflare状态" />
+<meta property="og:title" content="免费服务状态监测" />
+<meta property="og:description" content="常用免费云服务的定时探测状态看板。" />
+<meta property="og:url" content="https://keting.eu.org/status" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/status" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px;--ok:#059669;--bad:#dc2626;--warn:#d97706}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line);font-size:14px}
+  .row:last-child{border-bottom:none}
+  .dot{width:10px;height:10px;border-radius:50%;flex:none}
+  .dot.ok{background:var(--ok)}
+  .dot.bad{background:var(--bad)}
+  .name{font-weight:600;min-width:120px}
+  .meta{color:var(--muted);font-size:13px;margin-left:auto;text-align:right}
+  .code{font-family:ui-monospace,Consolas,monospace;color:var(--muted);font-size:13px}
+  .banner{border-radius:10px;padding:12px 16px;font-size:14px;margin-top:16px;background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>📶 免费服务状态</h1>
+  <p class="sub">常用免费云服务官网的定时探测结果：异常服务置顶，响应时间与探测时间一目了然。</p>
+</header>
+<div class="wrap">
+  <div class="panel" id="panel">
+    <div id="list"><p style="color:var(--muted);font-size:14px">正在加载探测数据……</p></div>
+    <div class="banner" id="banner" style="display:none"></div>
+  </div>
+</div>
+<div class="doc">
+  <h2>这个页面测的是什么？</h2>
+  <ul>
+    <li>每 30 分钟由 Cloudflare Workers 定时任务对各服务<strong>官网首页</strong>发起一次 GET 请求，记录 HTTP 状态码与耗时；</li>
+    <li>「异常」只代表官网首页当时不可达或返回非 2xx/3xx——<strong>不代表你的实例出问题</strong>。实例级排查请用各服务的控制台与 <code>ssh -v</code>；</li>
+    <li>探测节点位于 Cloudflare 边缘，国内访问这些服务还可能受本地网络与跨境链路影响；</li>
+    <li>免费层政策的变动（缩水、取消）不在探测范围内，请关注本站<a href="tutorials">实测教程</a>的更新。</li>
+  </ul>
+</div>
+<footer>
+  <div>状态数据由定时任务写入 Cloudflare KV 后公开读取。</div>
+  <div style="margin-top:8px"><a href="/">免费云服务导航</a> · <a href="tools">工具箱</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function pad(n){ return (n<10?'0':'')+n; }
+function fmtTs(ts){
+  if(!ts) return '—';
+  var d = new Date(ts);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+}
+function render(items){
+  var box = document.getElementById('list');
+  if(!items.length){
+    box.innerHTML = '<p style="color:var(--muted);font-size:14px">暂无探测数据。状态监测需要站点配置定时任务，稍后再来看看。</p>';
+    return;
+  }
+  var html = '';
+  var badCount = 0;
+  for(var i = 0; i < items.length; i++){
+    var r = items[i];
+    if(!r.ok) badCount++;
+    html += '<div class="row">'
+      + '<span class="dot ' + (r.ok ? 'ok' : 'bad') + '"></span>'
+      + '<span class="name">' + r.name + '</span>'
+      + '<span class="code">' + (r.code ? 'HTTP ' + r.code : '超时/连接失败') + '</span>'
+      + '<span class="meta">' + r.ms + ' ms · ' + fmtTs(r.ts) + '</span>'
+      + '</div>';
+  }
+  box.innerHTML = html;
+  var banner = document.getElementById('banner');
+  if(badCount > 0){
+    banner.style.display = 'block';
+    banner.textContent = '⚠ 当前有 ' + badCount + ' 个服务探测异常，可能与网络波动或对方维护有关，建议稍后复查或访问官网确认。';
+  }
+}
+fetch('/api/status').then(function(r){ return r.json(); }).then(function(d){
+  if(d && d.ok) render(d.items || []);
+  else render([]);
+}).catch(function(){ render([]); });
+</script>
+</body>
+</html>

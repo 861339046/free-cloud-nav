@@ -1,0 +1,19 @@
+{
+  "name": "免费云服务导航 · 开发者工具箱",
+  "short_name": "keting 工具箱",
+  "description": "零成本上云实测教程 + 29 个纯本地在线开发工具，数据不出浏览器。",
+  "start_url": "/tools",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f7f9fc",
+  "theme_color": "#2563eb",
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

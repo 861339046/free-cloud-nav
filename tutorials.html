@@ -36,6 +36,9 @@
   footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
   footer .updated{color:var(--brand);margin-bottom:6px}
 </style>
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link rel="alternate" type="application/rss+xml" title="keting.eu.org 更新订阅" href="/feed.xml" />
 </head>
 <body>
 <header>
@@ -103,5 +106,6 @@ try {
   }
 } catch (e) { /* 统计失败不影响页面 */ }
 </script>
+<script src="assets/fav.js" defer></script>
 </body>
 </html>

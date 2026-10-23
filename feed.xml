@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>免费云服务导航 · keting.eu.org</title>
+    <link>https://keting.eu.org/</link>
+    <description>零成本上云实测：免费云服务器、数据库、对象存储与 Serverless 的注册部署教程，附 29 个纯本地在线开发工具。数据不出浏览器。</description>
+    <language>zh-CN</language>
+    <atom:link href="https://keting.eu.org/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>工具箱更新：字数统计 / JWT 解码 / HTTP 状态码 / Emoji / Lorem / 图片水印 / 房贷计算 / 番茄钟上线（共 29 个）</title>
+      <link>https://keting.eu.org/tools</link>
+      <guid isPermaLink="true">https://keting.eu.org/tools</guid>
+      <pubDate>Fri, 23 Oct 2026 08:00:00 +0000</pubDate>
+      <description>工具箱新增 8 个纯本地工具：中英混排字数统计、JWT 三段解码与过期判断、HTTP 状态码速查、Emoji 分类检索、Lorem 假文生成、图片文字水印与 WebP 转换、等额本息/本金房贷对比、番茄钟计时器。全部浏览器本地运行。</description>
+    </item>
+    <item>
+      <title>新工具：SSH 密钥检查器——公钥解析、SHA256 指纹、弱密钥告警与私钥配对</title>
+      <link>https://keting.eu.org/tool-sshkey</link>
+      <guid isPermaLink="true">https://keting.eu.org/tool-sshkey</guid>
+      <pubDate>Wed, 22 Oct 2026 08:00:00 +0000</pubDate>
+      <description>authorized_keys 批量解析（类型/位数/指纹/注释）、RSA 少于 2048 位告警、OpenSSH 与 PKCS#8 私钥配对校验。纯本地，密钥不上传。</description>
+    </item>
+    <item>
+      <title>实测：Oracle Cloud 永久免费 4 核 ARM 实例申请与使用</title>
+      <link>https://keting.eu.org/oracle-free-instance</link>
+      <guid isPermaLink="true">https://keting.eu.org/oracle-free-instance</guid>
+      <pubDate>Sun, 19 Oct 2026 08:00:00 +0000</pubDate>
+      <description>Oracle Cloud Always Free 套餐实测：注册、区域选择、ARM 实例创建、SSH 连接与保活注意事项。</description>
+    </item>
+    <item>
+      <title>实测：腾讯云轻量应用服务器部署与使用</title>
+      <link>https://keting.eu.org/tencent-lighthouse</link>
+      <guid isPermaLink="true">https://keting.eu.org/tencent-lighthouse</guid>
+      <pubDate>Sat, 18 Oct 2026 08:00:00 +0000</pubDate>
+      <description>腾讯云轻量服务器购买、镜像选择、防火墙放通与远程连接全流程。</description>
+    </item>
+    <item>
+      <title>实测：Cloudflare Workers 免费部署 Serverless 应用</title>
+      <link>https://keting.eu.org/cloudflare-workers</link>
+      <guid isPermaLink="true">https://keting.eu.org/cloudflare-workers</guid>
+      <pubDate>Fri, 17 Oct 2026 08:00:00 +0000</pubDate>
+      <description>Cloudflare Workers 免费额度、wrangler 部署与自定义域名绑定。</description>
+    </item>
+    <item>
+      <title>实测：Cloudflare R2 免费图床搭建（S3 兼容 API）</title>
+      <link>https://keting.eu.org/cloudflare-r2-image-hosting</link>
+      <guid isPermaLink="true">https://keting.eu.org/cloudflare-r2-image-hosting</guid>
+      <pubDate>Thu, 16 Oct 2026 08:00:00 +0000</pubDate>
+      <description>R2 免费 10GB 存储、零出口费用，配合 PicGo 与自定义域名做图床。</description>
+    </item>
+    <item>
+      <title>实测：Neon Serverless Postgres 免费额度与使用</title>
+      <link>https://keting.eu.org/neon-postgres</link>
+      <guid isPermaLink="true">https://keting.eu.org/neon-postgres</guid>
+      <pubDate>Wed, 15 Oct 2026 08:00:00 +0000</pubDate>
+      <description>Neon 免费层项目创建、连接串获取与分支功能体验。</description>
+    </item>
+    <item>
+      <title>实测：Vercel 免费部署 AI 应用</title>
+      <link>https://keting.eu.org/vercel-ai-app</link>
+      <guid isPermaLink="true">https://keting.eu.org/vercel-ai-app</guid>
+      <pubDate>Tue, 14 Oct 2026 08:00:00 +0000</pubDate>
+      <description>Vercel 免费部署 Next.js AI 应用，环境变量与 Edge Runtime 注意事项。</description>
+    </item>
+    <item>
+      <title>实测：Supabase 免费层（Postgres + Auth + Storage）</title>
+      <link>https://keting.eu.org/supabase-free-tier</link>
+      <guid isPermaLink="true">https://keting.eu.org/supabase-free-tier</guid>
+      <pubDate>Mon, 13 Oct 2026 08:00:00 +0000</pubDate>
+      <description>Supabase 免费项目额度、表结构与 RLS 行级安全策略配置。</description>
+    </item>
+  </channel>
+</rss>

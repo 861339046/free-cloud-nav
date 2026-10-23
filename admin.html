@@ -76,8 +76,26 @@
       <button class="chip" data-f="all">全部</button>
       <span class="cnt" id="cnt"></span>
     </div>
-    <div class="hint">安全提醒：本页已 noindex 不进搜索引擎；<code>service_role</code> 密钥只存在服务端环境变量，前端拿不到。</div>
-    <div id="list"></div>
+  <div class="hint">安全提醒：本页已 noindex 不进搜索引擎；<code>service_role</code> 密钥只存在服务端环境变量，前端拿不到。</div>
+  <div class="bar" style="margin-top:14px">
+    <button class="chip on" data-tab="subs">收录申请</button>
+    <button class="chip" data-tab="stats">流量统计</button>
+  </div>
+  <div id="statsPanel" style="display:none">
+    <div class="bar" style="margin-bottom:12px">
+      <span class="cnt" id="statsSummary"></span>
+      <button class="chip" id="statsRefresh">刷新</button>
+    </div>
+    <div class="row" style="padding:14px 16px">
+      <div class="head"><span class="name">按页面 PV（Top 50）</span></div>
+      <div id="statsTop" style="margin-top:8px;font-size:14px"></div>
+    </div>
+    <div class="row" style="padding:14px 16px">
+      <div class="head"><span class="name">按日期 PV（近 30 天）</span></div>
+      <div id="statsDays" style="margin-top:8px;font-size:14px"></div>
+    </div>
+  </div>
+  <div id="list"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -152,10 +170,36 @@ window.del = async (id) => {
 };
 window.toggleCode = (id) => { const el=document.getElementById('sn-'+id); el.style.display = el.style.display==='block'?'none':'block'; };
 
-document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
-  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+document.querySelectorAll('.chip[data-f]').forEach(c=>c.addEventListener('click',()=>{
+  document.querySelectorAll('.chip[data-f]').forEach(x=>x.classList.remove('on'));
   c.classList.add('on'); filter=c.dataset.f; load();
 }));
+
+// ---- 流量统计 tab ----
+async function loadStats(){
+  const { data } = await api('/api/stats');
+  if(!data.ok){ $('#statsSummary').textContent = '统计不可用：' + (data.message || data.reason || '未知'); $('#statsTop').textContent=''; $('#statsDays').textContent=''; return; }
+  $('#statsSummary').textContent = `累计 ${data.total} 次点击 · ${data.keys} 个计数键`;
+  const rows = data.topIds || [];
+  $('#statsTop').innerHTML = rows.length
+    ? rows.map(r=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line)"><span style="word-break:break-all">${esc(r.id)}</span><b>${r.count}</b></div>`).join('')
+    : '<span style="color:var(--sub)">暂无数据</span>';
+  const days = data.byDate || [];
+  $('#statsDays').innerHTML = days.length
+    ? days.map(d=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line)"><span>${d.date}</span><b>${d.pv}</b></div>`).join('')
+    : '<span style="color:var(--sub)">暂无数据</span>';
+}
+document.querySelectorAll('.chip[data-tab]').forEach(c=>c.addEventListener('click',()=>{
+  document.querySelectorAll('.chip[data-tab]').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on');
+  const t = c.dataset.tab;
+  $('#statsPanel').style.display = t==='stats' ? '' : 'none';
+  document.querySelector('#list').style.display = t==='subs' ? '' : 'none';
+  document.querySelectorAll('#panel > .bar:not([data-tab])').forEach(el=>{ el.style.display = t==='subs' ? '' : 'none'; });
+  document.querySelectorAll('#panel > h1, #panel > .sub, #panel > .hint').forEach(el=>{ el.style.display = t==='subs' ? '' : 'none'; });
+  if(t==='stats') loadStats();
+}));
+document.getElementById('statsRefresh').addEventListener('click', loadStats);
 
 async function enter(pwd){
   TOKEN = pwd;

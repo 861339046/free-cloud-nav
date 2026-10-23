@@ -1,1 +1,10 @@
-feat: 工具箱扩至29个——字数统计/JWT解码/HTTP状态码/Emoji/Lorem/图片水印WebP/房贷计算/番茄钟上线，全量工具条同步29项
+feat: 站点功能三件套上线——工具收藏/最近使用、近7天热门榜、RSS订阅、PWA离线可用；轻后端三件套——admin流量统计、免费服务状态监测、留言板
+
+- 收藏与最近使用：assets/fav.js localStorage 实现，32 页注入，当前页收藏按钮+收藏夹+最近用过横条
+- 热门榜：functions/api/popular.js 聚合 KV pv-tool-* 近 7 天，tools.html 首屏展示
+- RSS：feed.xml + 全站 rel=alternate 引入
+- PWA：manifest.json + sw.js（页面网络优先/静态缓存优先，API 不走 SW）+ icon.svg
+- admin.html 新增流量统计 tab（/api/stats，x-admin-token 校验 ADMIN_SECRET）
+- 服务状态监测：functions/_scheduled.js 定时探测 12 个免费服务官网写 KV，status.html 公开状态页
+- 留言板：functions/api/messages.js + board.html（蜜罐+剥尖括号+限长），建表 SQL 见 supabase-messages.sql
+- sitemap/payload 43 条同步；修复 tool-qrcode 页 document.write 模板内误注入脚本导致 script 撑破的问题

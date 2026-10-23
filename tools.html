@@ -39,10 +39,19 @@
   .why h2{margin:0 0 10px;font-size:19px;color:var(--brand)}
   .why p,.why li{font-size:14px;color:#374151}
   .why ul{margin:10px 0;padding-left:20px}
+  .hot{margin:0 0 20px;padding:16px 20px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);display:none}
+  .hot h2{margin:0 0 10px;font-size:16px;color:var(--brand)}
+  .hot .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .hot .chips a{padding:6px 14px;border:1px solid var(--line);background:var(--brand-soft);border-radius:999px;font-size:13px;color:var(--brand);text-decoration:none}
+  .hot .chips a:hover{border-color:var(--brand)}
+  .hot .chips a b{font-weight:600;margin-left:4px;color:var(--muted);font-size:12px}
   footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
   footer .updated{color:var(--brand);margin-bottom:6px}
   footer a{color:var(--brand);text-decoration:none}
 </style>
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link rel="alternate" type="application/rss+xml" title="keting.eu.org 更新订阅" href="/feed.xml" />
 </head>
 <body>
 <header>
@@ -51,6 +60,10 @@
   <a class="btn ghost" href="/">← 返回导航首页</a>
 </header>
 <div class="wrap">
+  <div class="hot" id="hotBox">
+    <h2>🔥 近 7 天大家都在用</h2>
+    <div class="chips" id="hotChips"></div>
+  </div>
   <div class="grid">
     <a class="card" href="tool-cron">
       <span class="icon">⏰</span>
@@ -245,9 +258,9 @@
   </section>
 </div>
 <footer>
-  <div class="updated">最后更新：2026-10-19</div>
+  <div class="updated">最后更新：2026-10-23</div>
   <div>工具由本站提供，计算全部在浏览器本地完成，不收集任何输入数据。</div>
-  <div style="margin-top:8px"><a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a> · <a href="privacy">隐私政策</a></div>
+  <div style="margin-top:8px"><a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a> · <a href="privacy">隐私政策</a> · <a href="feed.xml">RSS 订阅</a></div>
 </footer>
 <script>
 function trackClick(id){
@@ -258,6 +271,30 @@ function trackClick(id){
   }catch(e){}
 }
 try{trackClick('pv-tools-'+new Date().toISOString().slice(0,10));}catch(e){}
+// 近 7 天热门榜（KV 聚合，无数据时隐藏模块）
+(function(){
+  var NAMES={
+    'tool-cron':'Cron','tool-json':'JSON','tool-timestamp':'时间戳','tool-base64':'Base64','tool-password':'密码',
+    'tool-qrcode':'二维码','tool-uuid':'UUID','tool-regex':'正则','tool-sha':'SHA','tool-markdown':'Markdown',
+    'tool-image':'图片压缩','tool-color':'颜色','tool-diff':'文本对比','tool-urlparam':'URL参数','tool-jsoncsv':'JSON↔CSV',
+    'tool-radix':'进制','tool-lineops':'文本去重','tool-htmlescape':'HTML转义','tool-numfmt':'数字格式','tool-datediff':'日期计算',
+    'tool-sshkey':'SSH密钥','tool-count':'字数统计','tool-jwt':'JWT解码','tool-httpcode':'状态码','tool-emoji':'Emoji',
+    'tool-lorem':'Lorem','tool-watermark':'水印/WebP','tool-loan':'房贷','tool-pomodoro':'番茄钟'
+  };
+  fetch('/api/popular?days=7&top=8').then(function(r){return r.json();}).then(function(d){
+    if(!d || !d.ok || !d.items || !d.items.length) return;
+    var box=document.getElementById('hotBox');
+    var chips=document.getElementById('hotChips');
+    var html='';
+    d.items.forEach(function(it){
+      var label=NAMES[it.tool]||it.tool.replace(/^tool-/,'');
+      html+='<a href="'+it.tool+'">'+label+'<b>'+it.pv+' 次</b></a>';
+    });
+    chips.innerHTML=html;
+    box.style.display='block';
+  }).catch(function(){});
+})();
 </script>
+<script src="assets/fav.js" defer></script>
 </body>
 </html>

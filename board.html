@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>工具箱留言板 - 反馈与许愿 | 免费云服务导航</title>
+<meta name="description" content="工具箱留言板：反馈 Bug、许愿新工具、聊聊使用体验。匿名即可留言，数据经 Cloudflare 中转存入 Supabase。" />
+<meta property="og:title" content="工具箱留言板" />
+<meta property="og:description" content="反馈 Bug、许愿新工具，匿名即可留言。" />
+<meta property="og:url" content="https://keting.eu.org/board" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/board" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+  input[type=text],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;outline:none}
+  input[type=text]:focus,textarea:focus{border-color:var(--brand)}
+  textarea{min-height:96px;resize:vertical}
+  .btns{margin-top:12px;display:flex;gap:8px;align-items:center}
+  button{padding:9px 18px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  .msg{font-size:13px;color:var(--muted)}
+  .msg.ok{color:#059669}
+  .msg.bad{color:#dc2626}
+  .m{padding:12px 4px;border-bottom:1px solid var(--line)}
+  .m:last-child{border-bottom:none}
+  .m .head{display:flex;gap:8px;align-items:baseline;font-size:13px;color:var(--muted)}
+  .m .head b{color:var(--brand);font-size:14px}
+  .m .head .tool{background:var(--brand-soft);border-radius:6px;padding:0 8px;color:var(--brand)}
+  .m .body{margin-top:4px;font-size:14px;overflow-wrap:anywhere}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:24px 0}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>📮 工具箱留言板</h1>
+  <p class="sub">反馈 Bug、许愿新工具、聊聊使用体验。匿名即可留言，文明发言，广告与敏感内容会被清理。</p>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>写留言</h2>
+    <form id="form">
+      <label for="nick">昵称（可留空，默认「匿名访客」，限 20 字）</label>
+      <input type="text" id="nick" maxlength="20" placeholder="匿名访客" autocomplete="off" />
+      <label for="content">留言内容（2–300 字）</label>
+      <textarea id="content" maxlength="300" placeholder="比如：希望加一个 XXX 工具 / XXX 页面在 XX浏览器下有问题……"></textarea>
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
+      <div class="btns">
+        <button type="submit" id="send">发表留言</button>
+        <span class="msg" id="formMsg"></span>
+      </div>
+    </form>
+  </div>
+  <div class="panel">
+    <h2>最新留言</h2>
+    <div id="list"><p class="empty">正在加载……</p></div>
+  </div>
+</div>
+<footer>
+  <div>留言经 Cloudflare 中转存入 Supabase，前端不直接接触数据库密钥。</div>
+  <div style="margin-top:8px"><a href="/">免费云服务导航</a> · <a href="tools">工具箱</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function fmtTime(ts){
+  try{
+    var d = new Date(ts);
+    function p(n){ return (n<10?'0':'')+n; }
+    return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+  }catch(e){ return ''; }
+}
+function slug(){
+  var m = location.pathname.match(/\/?(tool-[a-z0-9-]+)\/?$/i);
+  return m ? m[1] : '';
+}
+function currentTool(){
+  var s = slug();
+  if(!s) return '';
+  var a = document.querySelector('.toolsnav a[href="'+s+'"]');
+  return a ? a.textContent.trim() : s;
+}
+function load(){
+  fetch('/api/messages?limit=50').then(function(r){ return r.json(); }).then(function(d){
+    var box = document.getElementById('list');
+    if(!d || !d.ok || !d.rows || !d.rows.length){
+      box.innerHTML = '<p class="empty">还没有留言，来抢沙发。</p>';
+      return;
+    }
+    var html = '';
+    d.rows.forEach(function(r){
+      html += '<div class="m">'
+        + '<div class="head"><b>' + esc(r.nickname) + '</b>'
+        + (r.tool ? '<span class="tool">' + esc(r.tool) + '</span>' : '')
+        + '<span style="margin-left:auto">' + fmtTime(r.created_at) + '</span></div>'
+        + '<div class="body">' + esc(r.content) + '</div></div>';
+    });
+    box.innerHTML = html;
+  }).catch(function(){
+    document.getElementById('list').innerHTML = '<p class="empty">留言加载失败，稍后刷新试试。</p>';
+  });
+}
+document.getElementById('form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var msg = document.getElementById('formMsg');
+  var content = document.getElementById('content').value.trim();
+  if(content.length < 2){ msg.className = 'msg bad'; msg.textContent = '留言至少 2 个字'; return; }
+  if(content.length > 300){ msg.className = 'msg bad'; msg.textContent = '留言不超过 300 字'; return; }
+  msg.className = 'msg'; msg.textContent = '正在提交……';
+  fetch('/api/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nickname: document.getElementById('nick').value.trim(),
+      content: content,
+      tool: currentTool(),
+      website: document.getElementById('website').value
+    })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if(d && d.ok){
+      msg.className = 'msg ok';
+      msg.textContent = '✔ 留言已发表，感谢反馈！';
+      document.getElementById('content').value = '';
+      load();
+    } else {
+      msg.className = 'msg bad';
+      msg.textContent = (d && d.message) || '提交失败，稍后再试';
+    }
+  }).catch(function(){
+    msg.className = 'msg bad';
+    msg.textContent = '网络异常，提交失败';
+  });
+});
+load();
+</script>
+</body>
+</html>
