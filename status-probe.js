@@ -7,7 +7,9 @@
 // 免费 Workers 每日 10 万次请求额度；每 30 分钟 × 12 个目标 ≈ 576 次/天，远低于额度。
 
 const TARGETS = [
-  { name: 'Oracle Cloud', url: 'https://www.oracle.com/cloud/' },
+  // 注意：不要用 www.oracle.com/cloud/ 营销页——Akamai 会按 IP 段返回 403（误报宕机）。
+  // ocistatus 是 Oracle 官方状态页，语义上也更适合做可用性监控。
+  { name: 'Oracle Cloud', url: 'https://ocistatus.oraclecloud.com/' },
   { name: 'Cloudflare', url: 'https://www.cloudflare.com/' },
   { name: 'Supabase', url: 'https://supabase.com/' },
   { name: 'Neon', url: 'https://neon.com/' },
