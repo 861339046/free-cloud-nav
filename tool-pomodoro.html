@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>番茄钟在线 - 25分钟专注计时器与任务统计 | 免费云服务导航</title>
+<meta name="description" content="在线番茄钟：25 分钟专注 + 5 分钟休息的标准番茄工作法计时器，可自定义时长，支持任务清单与当日完成统计。纯本地运行，打开即用，无需安装。" />
+<meta name="keywords" content="番茄钟,在线计时器,专注计时,pomodoro,番茄工作法" />
+<meta property="og:title" content="番茄钟在线" />
+<meta property="og:description" content="标准番茄工作法计时器，任务清单 + 完成统计。" />
+<meta property="og:url" content="https://keting.eu.org/tool-pomodoro" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-pomodoro" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-top:20px;text-align:center}
+  .mode{display:inline-flex;gap:6px;background:var(--brand-soft);border-radius:999px;padding:4px}
+  .mode button{border:none;background:transparent;padding:7px 16px;border-radius:999px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
+  .mode button.on{background:var(--brand);color:#fff}
+  .clock{font-size:64px;font-weight:700;font-variant-numeric:tabular-nums;margin:22px 0 6px;color:var(--brand)}
+  .bar{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin:14px auto 4px;max-width:420px}
+  .bar i{display:block;height:100%;background:var(--brand);border-radius:999px;transition:width .4s linear}
+  .phase{font-size:14px;color:var(--muted)}
+  .btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  button{padding:10px 22px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .stats{display:flex;gap:14px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  .stat{background:var(--brand-soft);border-radius:10px;padding:10px 18px;font-size:13px;color:var(--muted)}
+  .stat b{display:block;font-size:20px;color:var(--brand)}
+  .panel h2{margin:0 0 12px;font-size:17px;text-align:left}
+  .task{display:flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px;margin-top:8px;font-size:14px}
+  .task .t{flex:1;text-align:left}
+  .task.done .t{text-decoration:line-through;color:var(--muted)}
+  .task button{padding:4px 10px;font-size:12px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:8px}
+  .task button:hover{color:var(--brand);border-color:var(--brand)}
+  .addrow{display:flex;gap:8px;margin-top:10px}
+  .addrow input{flex:1;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;outline:none}
+  .addrow input:focus{border-color:var(--brand)}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🍅 番茄钟</h1>
+  <p class="sub">25 分钟专注 + 5 分钟休息的番茄工作法计时器，带任务清单与当日统计。本地运行，打开即用。</p>
+  <nav class="toolsnav">
+    <a href="tools">工具箱</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-sha">SHA</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-image">图片压缩</a>
+    <a href="tool-color">颜色</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-urlparam">URL参数</a>
+    <a href="tool-jsoncsv">JSON↔CSV</a>
+    <a href="tool-radix">进制</a>
+    <a href="tool-lineops">文本去重</a>
+    <a href="tool-htmlescape">HTML转义</a>
+    <a href="tool-numfmt">数字格式</a>
+    <a href="tool-datediff">日期计算</a>
+    <a href="tool-sshkey">SSH密钥</a>
+    <a href="tool-count">字数统计</a>
+    <a href="tool-jwt">JWT解码</a>
+    <a href="tool-httpcode">状态码</a>
+    <a href="tool-emoji">Emoji</a>
+    <a href="tool-lorem">Lorem</a>
+    <a href="tool-watermark">水印/WebP</a>
+    <a href="tool-loan">房贷</a>
+    <a class="on" href="tool-pomodoro">番茄钟</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <div class="mode">
+      <button data-m="focus" class="on">专注</button>
+      <button data-m="short">短休息</button>
+      <button data-m="long">长休息</button>
+    </div>
+    <div class="clock" id="clock">25:00</div>
+    <div class="bar"><i id="fill" style="width:0%"></i></div>
+    <div class="phase" id="phase">准备开始第 1 个番茄</div>
+    <div class="btns">
+      <button id="toggle">开始</button>
+      <button id="reset" class="ghost">重置</button>
+      <button id="skip" class="ghost">跳过本段</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="doneCount">0</b>今日完成番茄</div>
+      <div class="stat"><b id="focusMin">0</b>专注分钟</div>
+      <div class="stat"><b id="taskLeft">0</b>待办任务</div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>任务清单</h2>
+    <div class="addrow">
+      <input type="text" id="taskInput" placeholder="添加任务，回车确认" maxlength="80" />
+      <button id="addTask">添加</button>
+    </div>
+    <div id="tasks"></div>
+  </div>
+</div>
+<div class="doc">
+  <h2>番茄工作法要点</h2>
+  <ul>
+    <li>一个番茄 = 25 分钟<strong>不间断专注</strong> + 5 分钟休息；每 4 个番茄来一次 15–30 分钟长休息；</li>
+    <li>计时中<strong>被打断</strong>（微信、查资料、临时消息）就作废重来——番茄钟的意义正是暴露「你以为能多任务」的幻觉；</li>
+    <li>任务拆到「一个番茄能做完」的粒度；做不完就在任务后追加一个番茄，而不是硬撑；</li>
+    <li>休息时<strong>离开屏幕</strong>：喝水、远眺、起身走两步，比刷手机恢复效果好得多。</li>
+  </ul>
+</div>
+<footer>
+  <div>计时与任务都在本页完成，数据仅存于本浏览器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var DURATIONS = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+var PHASE_LABEL = { focus: '专注', short: '短休息', long: '长休息' };
+var state = {
+  mode: 'focus',
+  remaining: DURATIONS.focus,
+  running: false,
+  completed: 0,
+  tasks: []
+};
+var timer = null;
+function pad(n) {
+  return (n < 10 ? '0' : '') + n;
+}
+function fmtClock(sec) {
+  var m = Math.floor(sec / 60);
+  var s = sec % 60;
+  return pad(m) + ':' + pad(s);
+}
+function totalFocusSec() {
+  return state.completed * 25;
+}
+function render() {
+  document.getElementById('clock').textContent = fmtClock(state.remaining);
+  var total = DURATIONS[state.mode];
+  var pct = Math.round((1 - state.remaining / total) * 100);
+  document.getElementById('fill').style.width = pct + '%';
+  document.getElementById('phase').textContent = state.running
+    ? PHASE_LABEL[state.mode] + '中……'
+    : (state.remaining === total ? '准备开始' + PHASE_LABEL[state.mode] : '已暂停');
+  document.getElementById('toggle').textContent = state.running ? '暂停' : '开始';
+  document.getElementById('doneCount').textContent = state.completed;
+  document.getElementById('focusMin').textContent = Math.round(totalFocusSec() / 60);
+  var left = 0;
+  for (var i = 0; i < state.tasks.length; i++) if (!state.tasks[i].done) left++;
+  document.getElementById('taskLeft').textContent = left;
+  renderTasks();
+}
+function renderTasks() {
+  var box = document.getElementById('tasks');
+  if (!state.tasks.length) {
+    box.innerHTML = '<div style="font-size:13px;color:var(--muted);margin-top:10px">还没有任务，先加一条试试。</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < state.tasks.length; i++) {
+    var t = state.tasks[i];
+    html += '<div class="task' + (t.done ? ' done' : '') + '" data-i="' + i + '">'
+      + '<label style="display:flex;align-items:center;gap:6px;margin:0"><input type="checkbox" class="chk" ' + (t.done ? 'checked' : '') + ' /></label>'
+      + '<span class="t">' + t.text + '</span>'
+      + '<button class="del">删除</button></div>';
+  }
+  box.innerHTML = html;
+  var chks = box.querySelectorAll('.chk');
+  for (var a = 0; a < chks.length; a++) {
+    chks[a].addEventListener('change', function () {
+      var i = parseInt(this.closest('.task').getAttribute('data-i'), 10);
+      state.tasks[i].done = this.checked;
+      render();
+    });
+  }
+  var dels = box.querySelectorAll('.del');
+  for (var b = 0; b < dels.length; b++) {
+    dels[b].addEventListener('click', function () {
+      var i = parseInt(this.closest('.task').getAttribute('data-i'), 10);
+      state.tasks.splice(i, 1);
+      render();
+    });
+  }
+}
+function addTask() {
+  var v = document.getElementById('taskInput').value.trim();
+  if (!v) return;
+  state.tasks.push({ text: v, done: false });
+  document.getElementById('taskInput').value = '';
+  render();
+}
+function setMode(m) {
+  state.mode = m;
+  state.remaining = DURATIONS[m];
+  stopTimer();
+  var btns = document.querySelectorAll('.mode button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].className = btns[i].getAttribute('data-m') === m ? 'on' : '';
+  }
+  render();
+}
+function tick() {
+  state.remaining--;
+  if (state.remaining <= 0) {
+    state.remaining = 0;
+    complete();
+    return;
+  }
+  render();
+}
+function complete() {
+  stopTimer();
+  if (state.mode === 'focus') {
+    state.completed++;
+    // 4 个番茄后长休息
+    setMode(state.completed % 4 === 0 ? 'long' : 'short');
+  } else {
+    setMode('focus');
+  }
+  beep();
+}
+function beep() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var o = ctx.createOscillator();
+    var g = ctx.createGain();
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    o.start();
+    o.stop(ctx.currentTime + 0.65);
+    setTimeout(function () { ctx.close(); }, 1200);
+  } catch (e) {}
+}
+function startTimer() {
+  if (state.running) return;
+  state.running = true;
+  timer = setInterval(tick, 1000);
+  render();
+}
+function stopTimer() {
+  state.running = false;
+  if (timer) { clearInterval(timer); timer = null; }
+}
+document.getElementById('toggle').addEventListener('click', function () {
+  if (state.running) { stopTimer(); render(); }
+  else startTimer();
+});
+document.getElementById('reset').addEventListener('click', function () {
+  state.remaining = DURATIONS[state.mode];
+  stopTimer();
+  render();
+});
+document.getElementById('skip').addEventListener('click', function () {
+  state.remaining = 0;
+  complete();
+});
+var modeBtns = document.querySelectorAll('.mode button');
+for (var i = 0; i < modeBtns.length; i++) {
+  modeBtns[i].addEventListener('click', function () { setMode(this.getAttribute('data-m')); });
+}
+document.getElementById('addTask').addEventListener('click', addTask);
+document.getElementById('taskInput').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') addTask();
+});
+render();
+function trackClick(id) {
+  try {
+    var body = JSON.stringify({ id: id });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })); }
+    else { fetch('/api/click', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {}); }
+  } catch (e) {}
+}
+try { trackClick('pv-tool-pomodoro-' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+</script>
+</body>
+</html>

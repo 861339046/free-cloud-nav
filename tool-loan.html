@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>房贷计算器 - 等额本息/等额本金月供与总利息对比 | 免费云服务导航</title>
+<meta name="description" content="在线房贷计算器：输入贷款金额、年限、利率，分别计算等额本息与等额本金的月供、首月还款、总利息与还款总额，逐月还款明细可查。支持商业贷/公积金利率参考。纯本地计算。" />
+<meta name="keywords" content="房贷计算器,等额本息,等额本金,月供计算,贷款计算器,提前还款" />
+<meta property="og:title" content="房贷计算器" />
+<meta property="og:description" content="等额本息 vs 等额本金，月供与总利息一目了然。" />
+<meta property="og:url" content="https://keting.eu.org/tool-loan" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-loan" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .f label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+  .f input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;outline:none}
+  .f input:focus{border-color:var(--brand)}
+  .presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .presets button{padding:6px 12px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit}
+  .presets button:hover{border-color:var(--brand);color:var(--brand)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px}
+  .card{border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card h3{margin:0 0 10px;font-size:15px;color:var(--brand)}
+  .row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .row:last-child{border-bottom:none}
+  .row b{font-family:ui-monospace,Consolas,monospace}
+  .row .big{font-size:18px;color:var(--brand)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:center}
+  th{background:var(--brand-soft);font-weight:600}
+  .scrolly{max-height:320px;overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:10px}
+  .msg{font-size:13px;color:var(--muted);margin-top:8px}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏠 房贷计算器</h1>
+  <p class="sub">等额本息 vs 等额本金，月供、总利息、还款总额一次算清。本地计算，无广告无套路。</p>
+  <nav class="toolsnav">
+    <a href="tools">工具箱</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-sha">SHA</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-image">图片压缩</a>
+    <a href="tool-color">颜色</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-urlparam">URL参数</a>
+    <a href="tool-jsoncsv">JSON↔CSV</a>
+    <a href="tool-radix">进制</a>
+    <a href="tool-lineops">文本去重</a>
+    <a href="tool-htmlescape">HTML转义</a>
+    <a href="tool-numfmt">数字格式</a>
+    <a href="tool-datediff">日期计算</a>
+    <a href="tool-sshkey">SSH密钥</a>
+    <a href="tool-count">字数统计</a>
+    <a href="tool-jwt">JWT解码</a>
+    <a href="tool-httpcode">状态码</a>
+    <a href="tool-emoji">Emoji</a>
+    <a href="tool-lorem">Lorem</a>
+    <a href="tool-watermark">水印/WebP</a>
+    <a class="on" href="tool-loan">房贷</a>
+    <a href="tool-pomodoro">番茄钟</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>贷款信息</h2>
+    <div class="fields">
+      <div class="f"><label>贷款总额（万元）</label><input type="number" id="amount" value="100" min="1" step="1" /></div>
+      <div class="f"><label>贷款年限（年）</label><input type="number" id="years" value="30" min="1" max="30" step="1" /></div>
+      <div class="f"><label>年利率（%）</label><input type="number" id="rate" value="3.0" min="0" max="20" step="0.01" /></div>
+    </div>
+    <div class="presets">
+      <button data-a="100" data-y="30" data-r="3.0">商贷参考 3.0%</button>
+      <button data-a="60" data-y="30" data-r="2.85">首套参考 2.85%</button>
+      <button data-a="120" data-y="30" data-r="3.55">二套参考 3.55%</button>
+      <button data-a="80" data-y="30" data-r="2.35">公积金参考 2.35%</button>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>两种还款方式对比</h2>
+    <div class="cards" id="cards"></div>
+  </div>
+  <div class="panel">
+    <h2>还款明细（等额本息）</h2>
+    <div class="scrolly"><table id="detail"></table></div>
+    <div class="msg">利率为名义年利率，按月复利计息（银行标准算法）。结果为估算，实际以贷款合同为准。</div>
+  </div>
+</div>
+<div class="doc">
+  <h2>等额本息 vs 等额本金，怎么选？</h2>
+  <ul>
+    <li><strong>等额本息</strong>：月供固定。前期利息占比高，适合追求现金流稳定、每月预算敏感的人；</li>
+    <li><strong>等额本金</strong>：月供递减（首月最高，逐月变少）。总利息明显低于等额本息，但前期压力大，适合收入处于上升期或计划提前还款的人；</li>
+    <li><strong>提前还款</strong>：等额本金已还的利息占比低，若打算若干年内提前还清，等额本金通常更省；只还三五年就换房的话，两者差距有限；</li>
+    <li>利率参考值为近年常见水平，签约前以银行当期执行利率为准；LPR 重定价日按合同约定（多为每年 1 月 1 日或放款对应日）。</li>
+  </ul>
+</div>
+<footer>
+  <div>计算在本页本地完成。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function round2(n) {
+  return Math.round(n * 100) / 100;
+}
+function monthlyPayment(principal, months, monthlyRate) {
+  // 等额本息月供公式
+  if (monthlyRate === 0) return principal / months;
+  var f = Math.pow(1 + monthlyRate, months);
+  return principal * monthlyRate * f / (f - 1);
+}
+function calcEqualInstallment(principal, months, monthlyRate) {
+  var m = monthlyPayment(principal, months, monthlyRate);
+  var rows = [];
+  var remain = principal;
+  var totalInterest = 0;
+  for (var i = 1; i <= months; i++) {
+    var interest = remain * monthlyRate;
+    var principalPart = m - interest;
+    if (i === months) principalPart = remain;
+    remain -= principalPart;
+    if (remain < 0) remain = 0;
+    totalInterest += interest;
+    rows.push({ i: i, payment: round2(principalPart + interest), principal: round2(principalPart), interest: round2(interest), remain: round2(remain) });
+  }
+  return { monthly: round2(m), totalInterest: round2(totalInterest), total: round2(principal + totalInterest), rows: rows };
+}
+function calcEqualPrincipal(principal, months, monthlyRate) {
+  var principalPerMonth = principal / months;
+  var rows = [];
+  var remain = principal;
+  var totalInterest = 0;
+  for (var i = 1; i <= months; i++) {
+    var interest = remain * monthlyRate;
+    remain -= principalPerMonth;
+    if (remain < 0) remain = 0;
+    totalInterest += interest;
+    rows.push({ i: i, payment: round2(principalPerMonth + interest), principal: round2(principalPerMonth), interest: round2(interest), remain: round2(remain) });
+  }
+  return { first: round2(principalPerMonth + principal * monthlyRate), last: round2(principalPerMonth + principalPerMonth * monthlyRate), totalInterest: round2(totalInterest), total: round2(principal + totalInterest), rows: rows };
+}
+function fmtMoney(n) {
+  return n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtWan(n) {
+  return (n / 10000).toLocaleString('zh-CN', { maximumFractionDigits: 1 }) + ' 万';
+}
+function render() {
+  var amount = parseFloat(document.getElementById('amount').value) * 10000;
+  var years = parseInt(document.getElementById('years').value, 10);
+  var rate = parseFloat(document.getElementById('rate').value);
+  if (!isFinite(amount) || amount <= 0 || !isFinite(years) || years < 1 || !isFinite(rate) || rate < 0) {
+    document.getElementById('cards').innerHTML = '<div class="msg">请输入有效的贷款信息</div>';
+    document.getElementById('detail').innerHTML = '';
+    return;
+  }
+  var months = years * 12;
+  var mr = rate / 100 / 12;
+  var ei = calcEqualInstallment(amount, months, mr);
+  var ep = calcEqualPrincipal(amount, months, mr);
+  var html = '';
+  html += '<div class="card"><h3>等额本息</h3>';
+  html += '<div class="row"><span>每月月供</span><b class="big">' + fmtMoney(ei.monthly) + '</b></div>';
+  html += '<div class="row"><span>支付利息总额</span><b>' + fmtWan(ei.totalInterest) + '</b></div>';
+  html += '<div class="row"><span>还款总额</span><b>' + fmtWan(ei.total) + '</b></div></div>';
+  html += '<div class="card"><h3>等额本金</h3>';
+  html += '<div class="row"><span>首月月供</span><b class="big">' + fmtMoney(ep.first) + '</b></div>';
+  html += '<div class="row"><span>末月月供</span><b>' + fmtMoney(ep.last) + '</b></div>';
+  html += '<div class="row"><span>支付利息总额</span><b>' + fmtWan(ep.totalInterest) + '</b></div>';
+  html += '<div class="row"><span>还款总额</span><b>' + fmtWan(ep.total) + '</b></div></div>';
+  document.getElementById('cards').innerHTML = html;
+  // 明细表：首年逐月 + 其余按年汇总
+  var rows = ei.rows;
+  var t = '<tr><th>期数</th><th>月供</th><th>本金</th><th>利息</th><th>剩余本金</th></tr>';
+  for (var i = 0; i < 12 && i < rows.length; i++) {
+    t += '<tr><td>' + rows[i].i + '</td><td>' + fmtMoney(rows[i].payment) + '</td><td>' + fmtMoney(rows[i].principal) + '</td><td>' + fmtMoney(rows[i].interest) + '</td><td>' + fmtMoney(rows[i].remain) + '</td></tr>';
+  }
+  if (rows.length > 12) {
+    for (var y = 2; y <= years; y++) {
+      var start = (y - 1) * 12;
+      var end = Math.min(y * 12, rows.length);
+      var pSum = 0, iSum = 0;
+      for (var j = start; j < end; j++) { pSum += rows[j].principal; iSum += rows[j].interest; }
+      t += '<tr style="background:var(--brand-soft)"><td>第 ' + y + ' 年</td><td>—</td><td>' + fmtMoney(round2(pSum)) + '</td><td>' + fmtMoney(round2(iSum)) + '</td><td>' + fmtMoney(rows[end - 1].remain) + '</td></tr>';
+    }
+  }
+  document.getElementById('detail').innerHTML = t;
+}
+var inputs = ['amount', 'years', 'rate'];
+for (var i = 0; i < inputs.length; i++) {
+  document.getElementById(inputs[i]).addEventListener('input', render);
+}
+var presets = document.querySelectorAll('.presets button');
+for (var k = 0; k < presets.length; k++) {
+  presets[k].addEventListener('click', function () {
+    document.getElementById('amount').value = this.getAttribute('data-a');
+    document.getElementById('years').value = this.getAttribute('data-y');
+    document.getElementById('rate').value = this.getAttribute('data-r');
+    render();
+  });
+}
+render();
+function trackClick(id) {
+  try {
+    var body = JSON.stringify({ id: id });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })); }
+    else { fetch('/api/click', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {}); }
+  } catch (e) {}
+}
+try { trackClick('pv-tool-loan-' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+</script>
+</body>
+</html>

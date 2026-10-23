@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Emoji 速查表 - 分类查找 Emoji 符号与 Unicode | 免费云服务导航</title>
+<meta name="description" content="Emoji 速查表：按表情、手势、动物、食物、交通、符号等分类查找常用 Emoji，中英文关键词搜索，点击即复制。附 Unicode 码位与 Emoji 组合小知识。" />
+<meta name="keywords" content="emoji,emoji速查,emoji大全,表情符号,emoji复制" />
+<meta property="og:title" content="Emoji 速查表" />
+<meta property="og:description" content="分类浏览 + 搜索，点击即复制。" />
+<meta property="og:url" content="https://keting.eu.org/tool-emoji" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-emoji" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px 40px}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:20px}
+  .toolbar input[type=search]{flex:1;min-width:220px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:inherit;outline:none}
+  .toolbar input[type=search]:focus{border-color:var(--brand)}
+  .toolbar button{padding:8px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
+  .toolbar button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .cat{margin-top:18px;font-size:15px;font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:10px}
+  .cell{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 4px;text-align:center;cursor:pointer;user-select:none;position:relative}
+  .cell:hover{border-color:var(--brand)}
+  .cell .e{font-size:26px;line-height:1.2}
+  .cell .t{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cell.copied{border-color:#059669;background:#f0fdf4}
+  .cell.copied::after{content:'已复制';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#059669;background:#f0fdf4;border-radius:12px}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>😀 Emoji 速查表</h1>
+  <p class="sub">按分类浏览常用 Emoji，中英文关键词搜索，点击即复制。附 Unicode 小知识。</p>
+  <nav class="toolsnav">
+    <a href="tools">工具箱</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-sha">SHA</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-image">图片压缩</a>
+    <a href="tool-color">颜色</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-urlparam">URL参数</a>
+    <a href="tool-jsoncsv">JSON↔CSV</a>
+    <a href="tool-radix">进制</a>
+    <a href="tool-lineops">文本去重</a>
+    <a href="tool-htmlescape">HTML转义</a>
+    <a href="tool-numfmt">数字格式</a>
+    <a href="tool-datediff">日期计算</a>
+    <a href="tool-sshkey">SSH密钥</a>
+    <a href="tool-count">字数统计</a>
+    <a href="tool-jwt">JWT解码</a>
+    <a href="tool-httpcode">状态码</a>
+    <a class="on" href="tool-emoji">Emoji</a>
+    <a href="tool-lorem">Lorem</a>
+    <a href="tool-watermark">水印/WebP</a>
+    <a href="tool-loan">房贷</a>
+    <a href="tool-pomodoro">番茄钟</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="搜索 emoji 或关键词，如 笑 / heart / 加油……" />
+    <button data-c="all" class="on">全部</button>
+    <button data-c="表情">表情</button>
+    <button data-c="手势">手势</button>
+    <button data-c="动物">动物</button>
+    <button data-c="食物">食物</button>
+    <button data-c="符号">符号</button>
+  </div>
+  <div id="list"></div>
+</div>
+<div class="doc">
+  <h2>Emoji 小知识</h2>
+  <ul>
+    <li>「家庭」「情侣」类 emoji 是<strong>用 ZWJ（零宽连接符）拼接</strong>出来的，不是单码位——所以复制到不支持 ZWJ 的老系统会散架；</li>
+    <li>肤色修饰符（👍🏻）是独立的码位，紧跟主体 emoji；</li>
+    <li>同一个 emoji 在不同平台（苹果/安卓/Windows）样式不同，这是字体差异，不是乱码；</li>
+    <li>写代码注释、commit message 用 emoji 可以增加可读性，但正式合同、论文别用。</li>
+  </ul>
+</div>
+<footer>
+  <div>本页离线可用，点击即复制到剪贴板。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function buildData() {
+  return [
+    { cat: '表情', items: [
+      ['😀', '开心'], ['😂', '笑哭'], ['🥰', '喜爱'], ['😍', '色'], ['🤔', '思考'], ['😴', '睡觉'],
+      ['😭', '大哭'], ['😡', '生气'], ['🥳', '庆祝'], ['😎', '墨镜'], ['🤯', '炸了'], ['😇', '天使'],
+      ['🙃', '阴阳脸'], ['😱', '尖叫'], ['🤗', '拥抱'], ['😷', '口罩'], ['🤒', '生病'], ['💀', '骷髅']
+    ] },
+    { cat: '手势', items: [
+      ['👍', '点赞'], ['👎', '点踩'], ['👏', '鼓掌'], ['🙏', '拜托'], ['🤝', '握手'], ['✌️', '胜利'],
+      ['👌', 'OK'], ['🤞', '祈愿'], ['👋', '再见'], ['💪', '加油'], ['🫡', '致敬'], ['🤙', '打电话']
+    ] },
+    { cat: '动物', items: [
+      ['🐶', '狗'], ['🐱', '猫'], ['🐭', '老鼠'], ['🐰', '兔子'], ['🦊', '狐狸'], ['🐻', '熊'],
+      ['🐼', '熊猫'], ['🐨', '考拉'], ['🐯', '老虎'], ['🦁', '狮子'], ['🐮', '牛'], ['🐷', '猪'],
+      ['🐸', '青蛙'], ['🐵', '猴子'], ['🐔', '鸡'], ['🐧', '企鹅'], ['🐦', '鸟'], ['🦆', '鸭子'],
+      ['🦋', '蝴蝶'], ['🐝', '蜜蜂'], ['🐢', '乌龟'], ['🐍', '蛇'], ['🐙', '章鱼'], ['🐬', '海豚'], ['🐳', '鲸鱼']
+    ] },
+    { cat: '食物', items: [
+      ['🍎', '苹果'], ['🍌', '香蕉'], ['🍇', '葡萄'], ['🍉', '西瓜'], ['🍓', '草莓'], ['🍑', '桃子'],
+      ['🍔', '汉堡'], ['🍟', '薯条'], ['🍕', '披萨'], ['🍜', '拉面'], ['🍚', '米饭'], ['🍱', '便当'],
+      ['🍺', '啤酒'], ['🍵', '茶'], ['☕', '咖啡'], ['🧋', '奶茶'], ['🍰', '蛋糕'], ['🍦', '冰淇淋']
+    ] },
+    { cat: '符号', items: [
+      ['❤️', '爱心'], ['💔', '心碎'], ['⭐', '星星'], ['✨', '闪光'], ['🔥', '火'], ['💯', '满分'],
+      ['🎉', '彩炮'], ['🎊', '彩球'], ['🏆', '奖杯'], ['⚡', '闪电'], ['💡', '灯泡'], ['🚀', '火箭'],
+      ['✅', '完成'], ['❌', '错误'], ['⚠️', '警告'], ['❓', '疑问'], ['♻️', '循环'], ['🔔', '铃铛'],
+      ['🔒', '锁'], ['🔑', '钥匙'], ['🧩', '拼图'], ['📍', '定位'], ['📌', '图钉'], ['🕐', '时间']
+    ] }
+  ];
+}
+function render() {
+  var kw = document.getElementById('q').value.trim().toLowerCase();
+  var cat = document.querySelector('.toolbar button.on').getAttribute('data-c');
+  var data = buildData();
+  var html = '';
+  for (var i = 0; i < data.length; i++) {
+    var g = data[i];
+    if (cat !== 'all' && g.cat !== cat) continue;
+    var cells = '';
+    for (var j = 0; j < g.items.length; j++) {
+      var e = g.items[j][0];
+      var t = g.items[j][1];
+      if (kw && e.toLowerCase().indexOf(kw) === -1 && t.toLowerCase().indexOf(kw) === -1) continue;
+      cells += '<div class="cell" data-e="' + e + '"><div class="e">' + e + '</div><div class="t">' + t + '</div></div>';
+    }
+    if (cells) html += '<div class="cat">' + g.cat + '</div><div class="grid">' + cells + '</div>';
+  }
+  document.getElementById('list').innerHTML = html || '<p style="color:var(--muted);font-size:14px;margin-top:16px">没有匹配的 emoji，换个关键词试试。</p>';
+}
+function copyEmoji(e) {
+  function done() {
+    var cells = document.querySelectorAll('.cell[data-e="' + e + '"]');
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].classList.add('copied');
+      (function (el) {
+        setTimeout(function () { el.classList.remove('copied'); }, 900);
+      })(cells[i]);
+    }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(e).then(done);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = e;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (err) {}
+    document.body.removeChild(ta);
+    done();
+  }
+}
+document.getElementById('q').addEventListener('input', render);
+document.getElementById('list').addEventListener('click', function (ev) {
+  var cell = ev.target.closest ? ev.target.closest('.cell') : null;
+  if (cell && cell.getAttribute('data-e')) copyEmoji(cell.getAttribute('data-e'));
+});
+var btns = document.querySelectorAll('.toolbar button');
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener('click', function () {
+    var all = document.querySelectorAll('.toolbar button');
+    for (var j = 0; j < all.length; j++) all[j].className = '';
+    this.className = 'on';
+    render();
+  });
+}
+render();
+function trackClick(id) {
+  try {
+    var body = JSON.stringify({ id: id });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })); }
+    else { fetch('/api/click', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {}); }
+  } catch (e) {}
+}
+try { trackClick('pv-tool-emoji-' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+</script>
+</body>
+</html>

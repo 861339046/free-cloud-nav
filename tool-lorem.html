@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lorem Ipsum 占位文本生成器 - 假文填充设计稿 | 免费云服务导航</title>
+<meta name="description" content="Lorem Ipsum 占位文本生成器：生成段落/句子/列表/标题形式的填充文字，可设置段落数与每段句数，一键复制。设计稿排版测试专用，本地生成。" />
+<meta name="keywords" content="lorem ipsum,占位文本,假文生成,填充文字,中文占位文本" />
+<meta property="og:title" content="Lorem Ipsum 生成器" />
+<meta property="og:description" content="设计稿填充假文，段落/句子数量可控。" />
+<meta property="og:url" content="https://keting.eu.org/tool-lorem" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-lorem" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  .opts{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .grp{display:flex;gap:8px;align-items:center;font-size:14px}
+  .grp label{display:flex;align-items:center;gap:4px;margin:0;font-size:14px;color:#374151}
+  input[type=radio],input[type=checkbox]{accent-color:var(--brand)}
+  input[type=number]{width:72px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit}
+  select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  .out{margin-top:14px}
+  textarea{width:100%;min-height:240px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.8}
+  textarea:focus{border-color:var(--brand)}
+  .msg{font-size:13px;color:var(--muted);margin-top:6px}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>📜 Lorem Ipsum 生成器</h1>
+  <p class="sub">生成设计稿填充用的占位假文：段落 / 句子 / 列表 / 标题，数量可控，一键复制。本地生成。</p>
+  <nav class="toolsnav">
+    <a href="tools">工具箱</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-sha">SHA</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-image">图片压缩</a>
+    <a href="tool-color">颜色</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-urlparam">URL参数</a>
+    <a href="tool-jsoncsv">JSON↔CSV</a>
+    <a href="tool-radix">进制</a>
+    <a href="tool-lineops">文本去重</a>
+    <a href="tool-htmlescape">HTML转义</a>
+    <a href="tool-numfmt">数字格式</a>
+    <a href="tool-datediff">日期计算</a>
+    <a href="tool-sshkey">SSH密钥</a>
+    <a href="tool-count">字数统计</a>
+    <a href="tool-jwt">JWT解码</a>
+    <a href="tool-httpcode">状态码</a>
+    <a href="tool-emoji">Emoji</a>
+    <a class="on" href="tool-lorem">Lorem</a>
+    <a href="tool-watermark">水印/WebP</a>
+    <a href="tool-loan">房贷</a>
+    <a href="tool-pomodoro">番茄钟</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <div class="opts">
+      <div class="grp"><span>形式</span>
+        <label><input type="radio" name="form" value="paragraph" checked /> 段落</label>
+        <label><input type="radio" name="form" value="sentence" /> 句子</label>
+        <label><input type="radio" name="form" value="list" /> 列表</label>
+        <label><input type="radio" name="form" value="title" /> 标题</label>
+      </div>
+    </div>
+    <div class="opts" style="margin-top:12px">
+      <div class="grp"><span>段落数</span><input type="number" id="paras" min="1" max="20" value="3" /></div>
+      <div class="grp"><span>每段句数</span><input type="number" id="spara" min="1" max="20" value="5" /></div>
+      <div class="grp"><span>语料</span>
+        <select id="corpus">
+          <option value="latin" selected>拉丁 Lorem（国际通用）</option>
+          <option value="zh">中文假文（古风句库）</option>
+        </select>
+      </div>
+    </div>
+    <div class="btns">
+      <button id="gen">生成</button>
+      <button id="copy" class="ghost">复制全部</button>
+    </div>
+    <div class="out">
+      <textarea id="out" readonly spellcheck="false"></textarea>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+  <div class="doc">
+    <h2>为什么用 Lorem Ipsum？</h2>
+    <p>设计稿里直接贴「测试文字」的问题有两个：①评审的人会不自觉去读内容，忽略排版本身；②中文「测试」两字笔画密度跟真实长文差很远，估不出真实排版效果。Lorem Ipsum 来自西塞罗著作的改写片段，字母分布接近自然语言，能暴露真实的换行、行高、对齐问题。</p>
+    <p>中文设计场景也可以用「随机古文句」做填充——词长分布与中文文章更接近。两种语料本工具都内置了。</p>
+  </div>
+</div>
+<footer>
+  <div>本地生成，无网络请求。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var LATIN = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum';
+var ZH = ['山川异域', '风月同天', '寄诸佛子', '共结来缘', '云山苍苍', '江水泱泱', '先生之风', '山高水长', '桃李春风', '一杯酒', '江湖夜雨', '十年灯', '大鹏一日', '同风起', '扶摇直上', '九万里', '海内存知己', '天涯若比邻', '落霞与孤鹜齐飞', '秋水共长天一色'];
+function pick(arr, rnd) {
+  return arr[Math.floor(rnd() * arr.length)];
+}
+function randFactory() {
+  // 不依赖 crypto 的轻量随机（占位文本无安全需求）
+  var seed = Date.now() ^ (Math.random() * 0xffffffff);
+  return function () {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    return seed / 0x7fffffff;
+  };
+}
+function latinSentence(rnd) {
+  var words = LATIN.split(' ');
+  var n = 6 + Math.floor(rnd() * 8);
+  var out = [];
+  for (var i = 0; i < n; i++) out.push(pick(words, rnd));
+  var s = out.join(' ');
+  return s.charAt(0).toUpperCase() + s.slice(1) + '.';
+}
+function zhSentence(rnd) {
+  var n = 8 + Math.floor(rnd() * 10);
+  var out = [];
+  for (var i = 0; i < n; i++) out.push(pick(ZH, rnd));
+  return out.join('，') + '。';
+}
+function genSentence(corpus, rnd) {
+  return corpus === 'zh' ? zhSentence(rnd) : latinSentence(rnd);
+}
+function genParagraph(corpus, rnd, sentences) {
+  var out = [];
+  for (var i = 0; i < sentences; i++) out.push(genSentence(corpus, rnd));
+  return out.join(corpus === 'zh' ? '' : ' ');
+}
+function genList(corpus, rnd, n) {
+  var out = [];
+  for (var i = 0; i < n; i++) out.push('- ' + genSentence(corpus, rnd));
+  return out.join('\n');
+}
+function genTitle(corpus, rnd, n) {
+  var out = [];
+  for (var i = 0; i < n; i++) {
+    var words = corpus === 'zh' ? ZH : LATIN.split(' ');
+    var t = [];
+    var k = 2 + Math.floor(rnd() * 2);
+    for (var j = 0; j < k; j++) t.push(pick(words, rnd));
+    var s = t.join(' ');
+    out.push(s.charAt(0).toUpperCase() + s.slice(1));
+  }
+  return out.join('\n');
+}
+function generate() {
+  var form = document.querySelector('input[name=form]:checked').value;
+  var corpus = document.getElementById('corpus').value;
+  var paras = Math.max(1, Math.min(20, parseInt(document.getElementById('paras').value, 10) || 3));
+  var spara = Math.max(1, Math.min(20, parseInt(document.getElementById('spara').value, 10) || 5));
+  document.getElementById('paras').value = paras;
+  document.getElementById('spara').value = spara;
+  var rnd = randFactory();
+  var text = '';
+  if (form === 'paragraph') {
+    var ps = [];
+    for (var i = 0; i < paras; i++) ps.push(genParagraph(corpus, rnd, spara));
+    text = ps.join(corpus === 'zh' ? '\n\n' : '\n\n');
+  } else if (form === 'sentence') {
+    var ss = [];
+    for (var j = 0; j < spara; j++) ss.push(genSentence(corpus, rnd));
+    text = ss.join(corpus === 'zh' ? '' : ' ');
+  } else if (form === 'list') {
+    text = genList(corpus, rnd, paras);
+  } else {
+    text = genTitle(corpus, rnd, paras);
+  }
+  document.getElementById('out').value = text;
+  document.getElementById('msg').textContent = '已生成 ' + text.length + ' 字符';
+}
+document.getElementById('gen').addEventListener('click', generate);
+document.querySelectorAll('input[name=form]').forEach(function (el) { el.addEventListener('change', generate); });
+document.getElementById('corpus').addEventListener('change', generate);
+document.getElementById('paras').addEventListener('change', generate);
+document.getElementById('spara').addEventListener('change', generate);
+document.getElementById('copy').addEventListener('click', function () {
+  var t = document.getElementById('out').value;
+  if (!t) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(function () { document.getElementById('msg').textContent = '✔ 已复制全部'; });
+  } else {
+    document.getElementById('out').select();
+    document.execCommand('copy');
+  }
+});
+generate();
+function trackClick(id) {
+  try {
+    var body = JSON.stringify({ id: id });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })); }
+    else { fetch('/api/click', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {}); }
+  } catch (e) {}
+}
+try { trackClick('pv-tool-lorem-' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+</script>
+</body>
+</html>

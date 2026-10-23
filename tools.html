@@ -4,10 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>开发者在线工具箱 · 免费 · 无需登录 · 数据不出浏览器</title>
-<meta name="description" content="免费在线开发者工具箱：Cron 表达式、JSON 格式化、时间戳转换、Base64 编解码、密码生成、二维码、UUID、正则测试、SHA 哈希、Markdown、图片压缩、颜色工具、文本 Diff、URL 参数解析、JSON↔CSV 互转、进制转换、文本去重排序、HTML 实体转义、数字格式化与单位换算、日期计算器、SSH 密钥检查等 21 个工具。全部在浏览器本地运行，数据不上传，无需登录。" />
+<meta name="description" content="免费在线开发者工具箱：Cron 表达式、JSON 格式化、时间戳转换、Base64 编解码、密码生成、二维码、UUID、正则测试、SHA 哈希、Markdown、图片压缩、颜色工具、文本 Diff、URL 参数解析、JSON↔CSV 互转、进制转换、文本去重排序、HTML 实体转义、数字格式化与单位换算、日期计算器、SSH 密钥检查、字数统计、JWT 解码、HTTP 状态码、Emoji 速查、Lorem 假文、图片水印、房贷计算、番茄钟等 29 个工具。全部在浏览器本地运行，数据不上传，无需登录。" />
 <meta name="keywords" content="在线工具,开发者工具,cron表达式生成器,JSON格式化,时间戳转换,base64编码解码,随机密码生成器,免费工具" />
 <meta property="og:title" content="开发者在线工具箱 · 免费 · 数据不出浏览器" />
-<meta property="og:description" content="21 个开发者小工具，全部本地运行，隐私安全。" />
+<meta property="og:description" content="29 个开发者小工具，全部本地运行，隐私安全。" />
 <meta property="og:url" content="https://keting.eu.org/tools" />
 <meta property="og:type" content="website" />
 <meta name="theme-color" content="#2563eb" />
@@ -178,10 +178,58 @@
       <p class="desc">authorized_keys 公钥批量解析（类型 / 位数 / SHA256 指纹 / 注释）、RSA 弱密钥告警、未加密私钥与公钥配对校验。纯本地解析，密钥不上传。</p>
       <span class="go">打开工具 →</span>
     </a>
+    <a class="card" href="tool-count">
+      <span class="icon">📝</span>
+      <h3>字数统计</h3>
+      <p class="desc">中英文混排实时统计：字数、字符、单词、句子、段落与阅读时长。作文投稿、文案校对一贴即算。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-jwt">
+      <span class="icon">🔑</span>
+      <h3>JWT 解码器</h3>
+      <p class="desc">解析 JWT 三段结构，iat / exp / nbf 时间字段人性化显示，自动判断是否过期、是否缺签名。纯本地解码。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-httpcode">
+      <span class="icon">📡</span>
+      <h3>HTTP 状态码速查</h3>
+      <p class="desc">1xx–5xx 常用状态码含义、触发原因与排错建议，分类筛选 + 关键词搜索。403 伪装、502/504 分辨一文说清。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-emoji">
+      <span class="icon">😀</span>
+      <h3>Emoji 速查表</h3>
+      <p class="desc">表情 / 手势 / 动物 / 食物 / 符号五大类常用 Emoji，中英文关键词搜索，点击即复制。附 ZWJ 组合小知识。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-lorem">
+      <span class="icon">📜</span>
+      <h3>Lorem 生成器</h3>
+      <p class="desc">设计稿填充假文：段落 / 句子 / 列表 / 标题，数量可控，内置拉丁 Lorem 与中文古风句库两种语料。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-watermark">
+      <span class="icon">🖼️</span>
+      <h3>图片加水印 / 转 WebP</h3>
+      <p class="desc">文字水印位置 / 透明度 / 字号可调，支持平铺；一键转 WebP 瘦身。纯 Canvas 本地处理，图片不上传。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-loan">
+      <span class="icon">🏠</span>
+      <h3>房贷计算器</h3>
+      <p class="desc">等额本息 vs 等额本金：月供、首末月供、总利息、还款总额对比，逐月还款明细。附利率参考与提前还款建议。</p>
+      <span class="go">打开工具 →</span>
+    </a>
+    <a class="card" href="tool-pomodoro">
+      <span class="icon">🍅</span>
+      <h3>番茄钟</h3>
+      <p class="desc">25 分钟专注 + 5 分钟休息的标准番茄工作法计时器，带任务清单与当日完成统计，本地运行打开即用。</p>
+      <span class="go">打开工具 →</span>
+    </a>
     <div class="card soon">
       <span class="icon">🛠️</span>
       <h3>更多工具筹备中</h3>
-      <p class="desc">字数统计等。有想用的工具欢迎在<a href="submit" style="color:var(--brand)">提交页</a>留言。</p>
+      <p class="desc">留言板、服务状态监测等。有想用的工具欢迎在<a href="submit" style="color:var(--brand)">提交页</a>留言。</p>
       <span class="go">敬请期待</span>
     </div>
   </div>

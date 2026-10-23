@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>图片加水印 / 转 WebP - 本地文字水印与格式转换 | 免费云服务导航</title>
+<meta name="description" content="在线图片加水印与格式转换：给图片添加可调位置/透明度/大小的文字水印，或转换为 WebP 减小体积。纯 Canvas 本地处理，图片不上传服务器。" />
+<meta name="keywords" content="图片加水印,文字水印,webp转换,图片格式转换,本地图片处理" />
+<meta property="og:title" content="图片加水印 / 转 WebP" />
+<meta property="og:description" content="文字水印位置/透明度可调，WebP 一键转换，本地处理不上传。" />
+<meta property="og:url" content="https://keting.eu.org/tool-watermark" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-watermark" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:36px 16px;text-align:center;color:var(--muted);font-size:14px;cursor:pointer}
+  .drop:hover,.drop.over{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+  .opts{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .grp{display:flex;gap:8px;align-items:center;font-size:14px}
+  .grp label{display:flex;align-items:center;gap:4px;margin:0;font-size:14px;color:#374151}
+  input[type=radio],input[type=checkbox],input[type=color]{accent-color:var(--brand)}
+  input[type=text]{padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;width:200px}
+  input[type=range]{width:120px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  button{padding:9px 16px;background:var(--brand);color:#fff;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{opacity:.92}
+  button.ghost{background:var(--brand-soft);color:var(--brand);border:1px solid var(--line)}
+  canvas{max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;margin-top:14px;background:#fff}
+  .msg{font-size:13px;color:var(--muted);margin-top:8px}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🖼️ 图片加水印 / 转 WebP</h1>
+  <p class="sub">给图片加可调文字水印，或直接转 WebP 瘦身。纯 Canvas 本地处理，图片不上传。</p>
+  <nav class="toolsnav">
+    <a href="tools">工具箱</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-sha">SHA</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-image">图片压缩</a>
+    <a href="tool-color">颜色</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-urlparam">URL参数</a>
+    <a href="tool-jsoncsv">JSON↔CSV</a>
+    <a href="tool-radix">进制</a>
+    <a href="tool-lineops">文本去重</a>
+    <a href="tool-htmlescape">HTML转义</a>
+    <a href="tool-numfmt">数字格式</a>
+    <a href="tool-datediff">日期计算</a>
+    <a href="tool-sshkey">SSH密钥</a>
+    <a href="tool-count">字数统计</a>
+    <a href="tool-jwt">JWT解码</a>
+    <a href="tool-httpcode">状态码</a>
+    <a href="tool-emoji">Emoji</a>
+    <a href="tool-lorem">Lorem</a>
+    <a class="on" href="tool-watermark">水印/WebP</a>
+    <a href="tool-loan">房贷</a>
+    <a href="tool-pomodoro">番茄钟</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>① 选择图片</h2>
+    <div class="drop" id="drop">点击选择图片，或把图片拖到这里（JPG / PNG / WebP，≤ 20MB）</div>
+    <input type="file" id="file" accept="image/*" style="display:none" />
+  </div>
+  <div class="panel" id="optPanel" style="display:none">
+    <h2>② 水印与输出设置</h2>
+    <div class="opts">
+      <div class="grp"><span>水印文字</span><input type="text" id="wmText" value="© keting.eu.org" maxlength="60" /></div>
+      <div class="grp"><span>颜色</span><input type="color" id="wmColor" value="#ffffff" /></div>
+      <div class="grp"><span>透明度</span><input type="range" id="wmAlpha" min="10" max="100" value="60" /><span id="wmAlphaV" style="font-size:13px;color:var(--muted)">60%</span></div>
+      <div class="grp"><span>字号</span><input type="range" id="wmSize" min="8" max="120" value="32" /><span id="wmSizeV" style="font-size:13px;color:var(--muted)">32px</span></div>
+      <div class="grp"><span>位置</span>
+        <label><input type="radio" name="wmPos" value="se" checked /> 右下</label>
+        <label><input type="radio" name="wmPos" value="sw" /> 左下</label>
+        <label><input type="radio" name="wmPos" value="ne" /> 右上</label>
+        <label><input type="radio" name="wmPos" value="nw" /> 左上</label>
+        <label><input type="radio" name="wmPos" value="center" /> 平铺</label>
+      </div>
+      <div class="grp"><label><input type="checkbox" id="wmShadow" checked /> 描边阴影（浅底也清晰）</label></div>
+    </div>
+    <div class="btns" style="margin-top:14px">
+      <button id="dlWebp">下载 WebP</button>
+      <button id="dlPng" class="ghost">下载 PNG</button>
+      <button id="dlJpg" class="ghost">下载 JPG</button>
+      <span style="font-size:13px;color:var(--muted)" id="sizeInfo"></span>
+    </div>
+  </div>
+  <div class="panel" id="previewPanel" style="display:none">
+    <h2>预览</h2>
+    <canvas id="cv"></canvas>
+    <div class="msg" id="msg"></div>
+  </div>
+</div>
+<div class="doc">
+  <h2>使用说明</h2>
+  <ul>
+    <li>水印只是<strong>像素级覆盖</strong>，能防随手转载，不能防裁切或 AI 去除——真正的版权保护还得靠显式声明与取证；</li>
+    <li><strong>WebP</strong> 同画质体积通常比 JPG 小 25–40%，浏览器支持率已 97%+；发公众号/旧系统不认的场景用 JPG；</li>
+    <li>图片处理全部在本页 Canvas 完成，<strong>不经过任何服务器</strong>——私密照片也可放心用；</li>
+    <li>水印「平铺」适合整图宣示主权，「右下角小字」适合克制标注。</li>
+  </ul>
+</div>
+<footer>
+  <div>本地处理，图片不离开浏览器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+var img = null;
+var origName = 'image';
+function fmtSize(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1024 / 1024).toFixed(2) + ' MB';
+}
+function wmAlphaVal() {
+  return parseInt(document.getElementById('wmAlpha').value, 10) / 100;
+}
+function wmSizeVal() {
+  return parseInt(document.getElementById('wmSize').value, 10);
+}
+function wmPosVal() {
+  var el = document.querySelector('input[name=wmPos]:checked');
+  return el ? el.value : 'se';
+}
+function drawWatermark(canvas, text, color, alpha, size, pos, shadow) {
+  var ctx = canvas.getContext('2d');
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.font = '600 ' + size + 'px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textBaseline = 'middle';
+  if (shadow) {
+    ctx.shadowColor = 'rgba(0,0,0,.45)';
+    ctx.shadowBlur = Math.max(2, size / 8);
+    ctx.shadowOffsetY = 1;
+  }
+  var pad = Math.max(10, size / 2);
+  var w = canvas.width;
+  var h = canvas.height;
+  var m = ctx.measureText(text).width;
+  if (pos === 'center') {
+    // 平铺
+    var cols = Math.ceil(w / (m + size * 2)) + 1;
+    var rows = Math.ceil(h / (size * 3)) + 1;
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var x = c * (m + size * 2) - (r % 2 ? (m + size * 2) / 2 : 0);
+        var y = r * size * 3 + size;
+        if (x > -m && x < w + m) ctx.fillText(text, x, y);
+      }
+    }
+  } else {
+    var tx, ty;
+    var th = size;
+    if (pos === 'se') { tx = w - m - pad; ty = h - pad; }
+    else if (pos === 'sw') { tx = pad; ty = h - pad; }
+    else if (pos === 'ne') { tx = w - m - pad; ty = pad + th / 2; }
+    else { tx = pad; ty = pad + th / 2; }
+    ctx.fillText(text, tx, ty);
+  }
+  ctx.restore();
+}
+function render() {
+  if (!img) return;
+  var cv = document.getElementById('cv');
+  cv.width = img.naturalWidth;
+  cv.height = img.naturalHeight;
+  var ctx = cv.getContext('2d');
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.drawImage(img, 0, 0);
+  var text = document.getElementById('wmText').value.trim();
+  if (text) {
+    drawWatermark(cv, text, document.getElementById('wmColor').value, wmAlphaVal(), wmSizeVal(), wmPosVal(), document.getElementById('wmShadow').checked);
+  }
+  document.getElementById('sizeInfo').textContent = '原图 ' + img.naturalWidth + '×' + img.naturalHeight;
+}
+function loadFile(f) {
+  if (!f || !/^image\//.test(f.type)) { setMsg('请选择图片文件'); return; }
+  if (f.size > 20 * 1024 * 1024) { setMsg('图片超过 20MB，请先压缩'); return; }
+  origName = f.name.replace(/\.[^.]+$/, '') || 'image';
+  var reader = new FileReader();
+  reader.onload = function () {
+    var im = new Image();
+    im.onload = function () {
+      img = im;
+      document.getElementById('optPanel').style.display = 'block';
+      document.getElementById('previewPanel').style.display = 'block';
+      setMsg('已加载：' + origName + '（' + fmtSize(f.size) + '）');
+      render();
+    };
+    im.onerror = function () { setMsg('图片解码失败，文件可能损坏'); };
+    im.src = reader.result;
+  };
+  reader.readAsDataURL(f);
+}
+function setMsg(s) {
+  document.getElementById('msg').textContent = s;
+}
+function download(type) {
+  if (!img) { setMsg('请先选择图片'); return; }
+  var cv = document.getElementById('cv');
+  var mime = type === 'png' ? 'image/png' : type === 'jpg' ? 'image/jpeg' : 'image/webp';
+  var q = type === 'png' ? undefined : 0.92;
+  if (cv.toBlob) {
+    cv.toBlob(function (blob) {
+      if (!blob) { setMsg('当前浏览器不支持导出 ' + type.toUpperCase()); return; }
+      saveBlob(blob, origName + '-wm.' + (type === 'jpg' ? 'jpg' : type));
+    }, mime, q);
+  } else {
+    setMsg('当前浏览器不支持导出');
+  }
+}
+function saveBlob(blob, name) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); document.body.removeChild(a); }, 500);
+  setMsg('已导出 ' + name + '（' + fmtSize(blob.size) + '）');
+}
+document.getElementById('drop').addEventListener('click', function () { document.getElementById('file').click(); });
+document.getElementById('file').addEventListener('change', function () { loadFile(this.files[0]); });
+var drop = document.getElementById('drop');
+drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', function () { drop.classList.remove('over'); });
+drop.addEventListener('drop', function (e) {
+  e.preventDefault();
+  drop.classList.remove('over');
+  if (e.dataTransfer.files && e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+document.getElementById('wmText').addEventListener('input', render);
+document.getElementById('wmColor').addEventListener('input', render);
+document.getElementById('wmAlpha').addEventListener('input', function () { document.getElementById('wmAlphaV').textContent = this.value + '%'; render(); });
+document.getElementById('wmSize').addEventListener('input', function () { document.getElementById('wmSizeV').textContent = this.value + 'px'; render(); });
+document.getElementById('wmShadow').addEventListener('change', render);
+var posRadios = document.querySelectorAll('input[name=wmPos]');
+for (var i = 0; i < posRadios.length; i++) posRadios[i].addEventListener('change', render);
+document.getElementById('dlWebp').addEventListener('click', function () { download('webp'); });
+document.getElementById('dlPng').addEventListener('click', function () { download('png'); });
+document.getElementById('dlJpg').addEventListener('click', function () { download('jpg'); });
+function trackClick(id) {
+  try {
+    var body = JSON.stringify({ id: id });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })); }
+    else { fetch('/api/click', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {}); }
+  } catch (e) {}
+}
+try { trackClick('pv-tool-watermark-' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+</script>
+</body>
+</html>

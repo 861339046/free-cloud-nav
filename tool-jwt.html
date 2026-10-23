@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JWT 解码器在线 - JWT 解析查看 Header/Payload/过期时间 | 免费云服务导航</title>
+<meta name="description" content="在线 JWT 解码器：粘贴 JSON Web Token 立即解析 Header 与 Payload，识别 exp/iat/nbf 时间字段，显示是否过期、签发者与受众。纯本地解码，不验签不上传。" />
+<meta name="keywords" content="jwt解码,jwt解析,jwt在线,jwt查看,jwt过期时间" />
+<meta property="og:title" content="JWT 解码器在线" />
+<meta property="og:description" content="解析 JWT 三段结构，时间字段自动人性化显示。" />
+<meta property="og:url" content="https://keting.eu.org/tool-jwt" />
+<meta property="og:type" content="website" />
+<meta name="theme-color" content="#2563eb" />
+<link rel="canonical" href="https://keting.eu.org/tool-jwt" />
+<style>
+  :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  header{padding:40px 20px 22px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .toolsnav{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .toolsnav a{padding:6px 14px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;color:var(--muted);text-decoration:none}
+  .toolsnav a:hover{border-color:var(--brand);color:var(--brand)}
+  .toolsnav a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px 40px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:20px}
+  .panel h2{margin:0 0 12px;font-size:17px}
+  textarea{width:100%;min-height:110px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-family:ui-monospace,Consolas,monospace;outline:none;resize:vertical;line-height:1.6}
+  textarea:focus{border-color:var(--brand)}
+  pre{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px;overflow:auto;font-size:13px;font-family:ui-monospace,Consolas,monospace;line-height:1.6;margin:0}
+  .banner{border-radius:10px;padding:10px 14px;font-size:14px;margin-top:14px}
+  .banner.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+  .banner.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+  .banner.bad{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+  .kv{display:flex;gap:8px;font-size:13px;margin-top:6px}
+  .kv b{color:var(--brand);white-space:nowrap}
+  .msg{font-size:13px;color:var(--muted);margin-top:8px}
+  .doc{margin:30px 0 0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+  .doc h2{margin:0 0 10px;font-size:18px;color:var(--brand)}
+  .doc p,.doc li{font-size:14px;color:#374151}
+  code{background:var(--brand-soft);padding:1px 6px;border-radius:5px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer a{color:var(--brand);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔑 JWT 解码器</h1>
+  <p class="sub">粘贴 JSON Web Token，立即拆解 Header / Payload，时间字段自动人性化显示，判断是否过期。本地解码，不验签、不上传。</p>
+  <nav class="toolsnav">
+    <a href="tools">工具箱</a>
+    <a href="tool-cron">Cron</a>
+    <a href="tool-json">JSON</a>
+    <a href="tool-timestamp">时间戳</a>
+    <a href="tool-base64">Base64</a>
+    <a href="tool-password">密码</a>
+    <a href="tool-qrcode">二维码</a>
+    <a href="tool-uuid">UUID</a>
+    <a href="tool-regex">正则</a>
+    <a href="tool-sha">SHA</a>
+    <a href="tool-markdown">Markdown</a>
+    <a href="tool-image">图片压缩</a>
+    <a href="tool-color">颜色</a>
+    <a href="tool-diff">文本对比</a>
+    <a href="tool-urlparam">URL参数</a>
+    <a href="tool-jsoncsv">JSON↔CSV</a>
+    <a href="tool-radix">进制</a>
+    <a href="tool-lineops">文本去重</a>
+    <a href="tool-htmlescape">HTML转义</a>
+    <a href="tool-numfmt">数字格式</a>
+    <a href="tool-datediff">日期计算</a>
+    <a href="tool-sshkey">SSH密钥</a>
+    <a href="tool-count">字数统计</a>
+    <a class="on" href="tool-jwt">JWT解码</a>
+    <a href="tool-httpcode">状态码</a>
+    <a href="tool-emoji">Emoji</a>
+    <a href="tool-lorem">Lorem</a>
+    <a href="tool-watermark">水印/WebP</a>
+    <a href="tool-loan">房贷</a>
+    <a href="tool-pomodoro">番茄钟</a>
+  </nav>
+</header>
+<div class="wrap">
+  <div class="panel">
+    <h2>Token</h2>
+    <textarea id="jwt" spellcheck="false" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0IiwibmFtZSI6IuW5v+S4nCJ9.xxx"></textarea>
+    <div class="banner" id="status" style="display:none"></div>
+  </div>
+  <div class="panel">
+    <h2>Header</h2>
+    <pre id="hdr"></pre>
+  </div>
+  <div class="panel">
+    <h2>Payload</h2>
+    <pre id="pl"></pre>
+  </div>
+</div>
+<div class="doc">
+  <h2>说明</h2>
+  <ul>
+    <li>JWT 是三段 Base64URL 串（Header.Payload.Signature），本工具只<strong>解码前两段</strong>并人性化显示时间字段（<code>exp</code> 过期 / <code>iat</code> 签发 / <code>nbf</code> 生效前）；</li>
+    <li><strong>本工具不验证签名</strong>——验签需要服务端密钥。Token 合法不等于可信，解码结果仅供排查参考；</li>
+    <li>JWT 的 Payload 只是 Base64 编码，<strong>不是加密</strong>——任何人都能读取，切勿把密码等敏感信息放进 Payload；</li>
+    <li>解码全部在浏览器本地完成，Token 不会发送到任何服务器。</li>
+  </ul>
+</div>
+<footer>
+  <div>本地解码，Token 不离开浏览器。</div>
+  <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
+</footer>
+<script>
+function b64urlDecode(s) {
+  s = s.replace(/-/g, '+').replace(/_/g, '/');
+  while (s.length % 4) s += '=';
+  var bin = atob(s);
+  var bytes = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  var out = '';
+  var chunk = 0x8000;
+  for (var j = 0; j < bytes.length; j += chunk) {
+    out += String.fromCharCode.apply(null, bytes.subarray(j, j + chunk));
+  }
+  // UTF-8 解码
+  try { return decodeURIComponent(escape(out)); }
+  catch (e) { return out; }
+}
+function parseJwt(token) {
+  var parts = String(token).trim().split('.');
+  if (parts.length < 2) return { err: 'JWT 应至少包含两段（header.payload），当前 ' + parts.length + ' 段' };
+  if (parts.length > 3) return { err: 'JWT 最多三段，当前 ' + parts.length + ' 段' };
+  if (parts.some(function (p) { return p === ''; })) return { err: 'JWT 存在空段，请检查是否粘贴完整' };
+  try {
+    var header = JSON.parse(b64urlDecode(parts[0]));
+    var payload = JSON.parse(b64urlDecode(parts[1]));
+    if (typeof header !== 'object' || header === null) return { err: 'Header 不是合法 JSON 对象' };
+    if (typeof payload !== 'object' || payload === null) return { err: 'Payload 不是合法 JSON 对象' };
+    return { header: header, payload: payload, hasSig: parts.length === 3 && parts[2] !== '' };
+  } catch (e) {
+    return { err: 'Base64URL 或 JSON 解析失败：' + (e && e.message ? e.message : String(e)) };
+  }
+}
+function humanTime(sec) {
+  if (typeof sec !== 'number' || !isFinite(sec)) return null;
+  // JWT 时间字段是 Unix UTC 秒，必须用 UTC 系列展示
+  var d = new Date(sec * 1000);
+  function p(n) { return (n < 10 ? '0' : '') + n; }
+  return d.getUTCFullYear() + '-' + p(d.getUTCMonth() + 1) + '-' + p(d.getUTCDate()) + ' ' + p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ':' + p(d.getUTCSeconds());
+}
+function timeFields(payload) {
+  // 返回 [{label, key, value, human}]
+  var defs = [
+    ['签发时间', 'iat'],
+    ['生效时间', 'nbf'],
+    ['过期时间', 'exp']
+  ];
+  var out = [];
+  for (var i = 0; i < defs.length; i++) {
+    var v = payload[defs[i][1]];
+    if (typeof v === 'number') {
+      out.push({ label: defs[i][0], key: defs[i][1], value: v, human: humanTime(v) });
+    }
+  }
+  return out;
+}
+function fmtJson(obj) {
+  var seen = [];
+  var s = JSON.stringify(obj, function (k, v) {
+    if (typeof v === 'object' && v !== null) {
+      if (seen.indexOf(v) !== -1) return '[循环引用]';
+      seen.push(v);
+    }
+    return v;
+  }, 2);
+  seen = null;
+  return s;
+}
+function decode() {
+  var token = document.getElementById('jwt').value.trim();
+  var st = document.getElementById('status');
+  st.style.display = 'none';
+  document.getElementById('hdr').textContent = '';
+  document.getElementById('pl').textContent = '';
+  if (!token) return;
+  var r = parseJwt(token);
+  if (r.err) {
+    st.style.display = 'block';
+    st.className = 'banner bad';
+    st.textContent = '✖ ' + r.err;
+    return;
+  }
+  document.getElementById('hdr').textContent = fmtJson(r.header);
+  var lines = fmtJson(r.payload);
+  var tfs = timeFields(r.payload);
+  if (tfs.length) {
+    lines += '\n\n—— 时间字段 ——';
+    for (var i = 0; i < tfs.length; i++) {
+      lines += '\n' + tfs[i].label + '（' + tfs[i].key + '）：' + tfs[i].human + '（' + tfs[i].value + '）';
+    }
+  }
+  document.getElementById('pl').textContent = lines;
+  // 状态判断
+  var now = Math.floor(Date.now() / 1000);
+  var exp = r.payload.exp;
+  var nbf = r.payload.nbf;
+  st.style.display = 'block';
+  if (typeof exp === 'number' && exp < now) {
+    st.className = 'banner bad';
+    st.textContent = '✖ 该 Token 已过期（UTC ' + humanTime(exp) + '，已过期 ' + Math.floor((now - exp) / 60) + ' 分钟）';
+  } else if (typeof nbf === 'number' && nbf > now) {
+    st.className = 'banner warn';
+    st.textContent = '⏳ 该 Token 尚未生效（UTC ' + humanTime(nbf) + ' 生效）';
+  } else if (typeof exp === 'number') {
+    st.className = 'banner ok';
+    st.textContent = '✔ Token 在有效期内（UTC ' + humanTime(exp) + ' 过期，剩余 ' + Math.floor((exp - now) / 60) + ' 分钟）';
+  } else {
+    st.className = 'banner warn';
+    st.textContent = 'ℹ Payload 中未声明 exp 字段，此 Token 无过期时间，永久有效——请确认这是有意的设计';
+  }
+  if (!r.hasSig) {
+    st.textContent += '；⚠ 缺少签名段（alg=none 场景），任何拿到它的人都能伪造';
+  }
+}
+document.getElementById('jwt').addEventListener('input', decode);
+function trackClick(id) {
+  try {
+    var body = JSON.stringify({ id: id });
+    if (navigator.sendBeacon) { navigator.sendBeacon('/api/click', new Blob([body], { type: 'application/json' })); }
+    else { fetch('/api/click', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(function () {}); }
+  } catch (e) {}
+}
+try { trackClick('pv-tool-jwt-' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+</script>
+</body>
+</html>
