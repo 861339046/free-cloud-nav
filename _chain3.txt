@@ -1,0 +1,12 @@
+push attempt 1 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
+push attempt 2 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
+push attempt 3 status=0 To https://github.com/861339046/free-cloud-nav.git
+PUSH_OK
+2026-10-23T11:28:02.399Z watch 1 live_new_version=true
+--- FULL CHAIN VERIFY (deployed=true) ---
+static has ocistatus: true
+cron-probe no token: HTTP_403
+cron-probe with token: {"ok":true,"total":12,"written":12,"healthy":11}|HTTP_200
+api/status: {"ok":true,"items":[{"name":"GitHub","url":"https://github.com/","ok":false,"code":403,"ms":135,"ts":1792754899420},{"name":"腾讯云","url":"https://cloud.tencent.com/","ok":true,"code":200,"ms":851,"ts":1792754900136},{"name":"Fly.io","url":"https://fly.io/","ok":true,"code":200,"ms":626,"ts":1792754899911},{"name":"Backblaze","url":"https://www.backblaze.com/","ok":true,"code":200,"ms":543,"ts":1792754899828},{"name":"Render","url":"https://render.com/","ok":true,"code":200,"ms":506,"ts":1792754899791},{"name":"Railway","url":"https://railway.com/","ok":true,"code":200,"ms":382,"ts":1792754899667},{"name":"keting.eu.org","url":"https://keting.eu.org/","ok":true,"code":200,"ms":332,"ts":1792754899617},{"name":"Oracle Cloud","url":"https://ocistatus.oraclecloud.com/","ok":true,"code":200,"ms":236,"ts":1792754899521},{"name":"Cloudflare","url":"https://www.cloudflare.com/","ok":true,"code":200,"ms":232,"ts":1792754899517},{"name":"Neon","url":"https://neon.com/","ok":true,"code":200,"ms":232,"ts":1792754899517},{"name":"Vercel","url":"https://vercel.com/","ok":true,"code":200,"ms":143,"ts":1792754899428},{"name":"Supabase","url":"https://supabase.com/","ok":true,"code":200,"ms":92,"ts":
+actions runs total=0
+CHAIN3_DONE

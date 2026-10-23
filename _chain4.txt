@@ -1,0 +1,7 @@
+add status=0 commit status=0 [main 19e48f5] fix: GitHub 探测目标改用 api.github.com（首页被间歇性 403，会误报宕机）
+push attempt 1 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
+push attempt 2 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
+push attempt 3 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
+push attempt 4 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
+push attempt 5 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT
+push attempt 6 status=128 fatal: unable to access 'https://github.com/861339046/free-cloud-nav.git/': Received HTTP code 502 from proxy after CONNECT

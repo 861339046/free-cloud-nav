@@ -1,0 +1,17 @@
+{
+  "total_count": 1,
+  "workflows": [
+    {
+      "id": 393906413,
+      "node_id": "W_kwDOU0UavM4Xeojt",
+      "name": "status-probe",
+      "path": ".github/workflows/status-probe.yml",
+      "state": "active",
+      "created_at": "2026-10-23T10:19:20.000Z",
+      "updated_at": "2026-10-23T10:19:20.000Z",
+      "url": "https://api.github.com/repos/861339046/free-cloud-nav/actions/workflows/393906413",
+      "html_url": "https://github.com/861339046/free-cloud-nav/blob/main/.github/workflows/status-probe.yml",
+      "badge_url": "https://github.com/861339046/free-cloud-nav/workflows/status-probe/badge.svg"
+    }
+  ]
+}
