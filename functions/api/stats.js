@@ -22,8 +22,11 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   if (!env.CLICKS) return json({ ok: false, reason: 'KV_NOT_BOUND' }, 200);
   if (!env.ADMIN_SECRET) return json({ ok: false, reason: 'ADMIN_SECRET_NOT_SET' }, 200);
-  const token = request.headers.get('x-admin-token') || '';
-  if (!safeEqual(token, env.ADMIN_SECRET)) return json({ ok: false, message: '未授权' }, 401);
+  // 与 click.js 对齐：两端都 trim 后再恒时比较，避免 ADMIN_SECRET 带意外空白时
+  // 出现「stats 恒 401 而 click 正常」的半残疾故障
+  const token = (request.headers.get('x-admin-token') || '').trim();
+  const secret = (env.ADMIN_SECRET || '').trim();
+  if (!secret || !safeEqual(token, secret)) return json({ ok: false, message: '未授权' }, 401);
 
   try {
     const list = await env.CLICKS.list({ prefix: KEY_PREFIX });

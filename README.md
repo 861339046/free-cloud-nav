@@ -19,19 +19,19 @@
 | 工具箱 | `tools.html` + `tool-*.html` | 29 个纯前端工具，数据不出浏览器；页内搜索 + 近 7 天热门榜（`/api/popular`） |
 | 实测教程 | `tutorials.html` + 7 篇文章 | Oracle / Supabase / Neon / Cloudflare Workers / R2 / Vercel / 腾讯云轻量 |
 | PWA | `manifest.json` + `sw.js` | 可安装到桌面，离线可打开工具箱；PNG 图标（含 maskable） |
-| SEO | `sitemap.xml` / `robots.txt` / OG 图 | 全站 canonical + og:image + 百度主动推送；`_headers` 下发安全响应头 |
+| SEO | `sitemap.xml` / `robots.txt` / OG 图 | 全站 canonical + og:image（百度主动推送已暂停，脚本注释待恢复）；`_headers` 下发安全响应头 |
 
 ## 二、目录结构
 
 ```
 ├── index.html / submit.html / admin.html / board.html / status.html / tools.html
+├── game.html                         # 小游戏「信仰交易录 · 万法商铺」（独立主题，不外链暗色）
 ├── tutorials.html + *.html            # 教程
 ├── tool-*.html                        # 29 个工具页（纯前端）
 ├── about.html / privacy.html / 404.html
-├── assets/                            # og.png、PWA 图标、fav.js
+├── assets/                            # og.png、PWA 图标、fav.js、dark.css（暗色）、pv.js（PV 埋点）
 ├── functions/
 │   ├── _scheduled.js                  #（保留）Pages 侧定时入口
-│   ├── status-probe.js                # 探测逻辑（被 cron-probe 调用）
 │   └── api/
 │       ├── submit.js / messages.js    # 写接口（限流 + 清洗 + 蜜罐）
 │       ├── admin.js / stats.js        # 后台（恒时比较鉴权）
@@ -41,6 +41,7 @@
 ├── .github/workflows/status-probe.yml # 每 30 分钟触发探测
 ├── _headers                           # 安全响应头 + CSP Report-Only
 ├── manifest.json / sw.js / sitemap.xml / robots.txt / feed.xml
+├── status-probe.js                    # 状态探测逻辑（被 functions/_scheduled.js 引用）
 └── supabase-setup.sql / supabase-messages.sql   # 建表 + RLS（各跑一次）
 ```
 
@@ -56,6 +57,7 @@
 | `ADMIN_SECRET` | 后台密码 + 统计接口令牌 | 审核后台 / 流量统计 |
 | `CRON_SECRET` | 状态探测接口令牌 | 状态监测 |
 | `RL_MESSAGES` / `RL_SUBMIT` / `RL_CLICK` | 覆盖默认限额（5 / 3 / 200 次每天） | 可选 |
+| `RL_CLICK_BUDGET` | 覆盖点击统计全局日预算（默认 250 次/天，保护 KV 1000 次写/天额度） | 可选 |
 
 KV 绑定：**Settings → Functions → KV namespace bindings**，变量名 `CLICKS` → 命名空间 `nav-clicks`（点击计数、状态数据、限流计数共用）。
 

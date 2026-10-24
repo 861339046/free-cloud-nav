@@ -2,8 +2,21 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>信仰交易录 · 万法商铺 (v4.0 位面商城建造时代)</title>
+<meta name="description" content="信仰交易录 · 万法商铺：免费在线经营小游戏。采集信仰、供奉神明、招募伙计、建造位面商城，纯前端运行，存档保存在本地浏览器。" />
+<link rel="canonical" href="https://keting.eu.org/game" />
+<meta property="og:title" content="信仰交易录 · 万法商铺" />
+<meta property="og:description" content="免费在线经营小游戏：采集信仰、建造位面商城，纯前端即点即玩。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://keting.eu.org/game" />
+<meta property="og:image" content="https://keting.eu.org/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://keting.eu.org/assets/og.png" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <style>
   :root{
     --faith:#f4c542; --nature:#4ec9a8; --energy:#b07bff; --karma:#e05a5a; --rep:#c98be0;
@@ -254,6 +267,7 @@
 </div>
 <div id="app">
   <header>
+    <div style="margin-bottom:6px"><a href="/" style="font-size:12px;color:var(--ink);text-decoration:none;opacity:.75">← 返回 keting.eu.org</a></div>
     <div class="stat">
       <span class="pill faith">✦信仰 <b id="s-faith">0</b></span>
       <span class="pill nature">❀自然 <b id="s-nature">0</b></span>
@@ -743,8 +757,17 @@ function defaultState(){
   };
 }
 let S = load();
+// 读档清洗：localStorage 可被手动篡改，统一剥掉字符串里的尖括号与控制字符，
+// 防止恶意存档经 innerHTML 注入（纵深防御；正常存档只含中文/数字/键名，不受影响）
+function cleanStr(s){ return String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c])).replace(/[\u0000-\u001f\u007f]/g,''); }
+function sanitizeSave(o){
+  if(typeof o==='string') return cleanStr(o);
+  if(Array.isArray(o)) return o.map(sanitizeSave);
+  if(o&&typeof o==='object'){ const r={}; for(const k in o){ if(Object.prototype.hasOwnProperty.call(o,k)) r[k]=sanitizeSave(o[k]); } return r; }
+  return o;
+}
 function load(){
-  try{ const r=localStorage.getItem(SAVE_KEY); if(r){ const d=JSON.parse(r); const base=defaultState();
+  try{ const r=localStorage.getItem(SAVE_KEY); if(r){ const d=sanitizeSave(JSON.parse(r)); const base=defaultState();
     Object.assign(base,d);
     const relics={}; BEINGS.forEach(b=>relics[b.relic]=(d.relics&&d.relics[b.relic])||0); base.relics=relics;
     const tasks={}; TUTORIAL.forEach(t=>tasks[t.id]=(d.tasks&&d.tasks[t.id])||false); base.tasks=tasks;
@@ -1438,5 +1461,6 @@ if(_splash&&_startBtn){
   boot();
 }
 </script>
+<script src="assets/pv.js" defer></script>
 </body>
 </html>
