@@ -4,9 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>隐私政策 · 免费云服务导航</title>
-<meta name="description" content="免费云服务导航站（keting.eu.org）的隐私政策：说明我们如何收集、使用与保护您的信息，以及第三方广告与 Cookie 的使用方式。">
-<meta name="robots" content="noindex">
+<meta name="description" content="免费云服务导航站（keting.eu.org）的隐私政策：说明我们如何收集、使用与保护您的信息，以及第三方服务与 Cookie 的使用方式。">
 <link rel="canonical" href="https://keting.eu.org/privacy">
+<meta property="og:image" content="https://keting.eu.org/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://keting.eu.org/assets/og.png" />
 <style>
   :root{
     --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
@@ -28,6 +32,45 @@
   footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
   footer .updated{color:var(--brand);margin-bottom:6px}
 </style>
+
+<!-- dark-mode-injected-2026-10-24 -->
+<style>
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme:dark;
+    --bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--muted:#94a3b8;
+    --brand:#3b82f6;--brand-soft:#1e3a5f;--line:#334155;
+    --ok:#34d399;--bad:#f87171;--warn:#fbbf24;--radius:14px;
+    --sub:#94a3b8;--blue:#3b82f6;
+  }
+  body{background:var(--bg)!important;color:var(--ink)!important}
+  header{background:linear-gradient(180deg,#1e293b,#0f172a)!important}
+  .card,.panel,.doc,.why,.hot,.biz,.adslot,.tag:not(.active),.navbar,.login,.search input,#search{background:var(--card)!important;color:var(--ink)!important}
+  .chip:not(.on){background:var(--card)!important;color:var(--muted)!important}
+  .toolsnav a,.favbtn,.favchip,.tpl button,.toolbar button,.btn.ghost{background:var(--card)!important;color:var(--muted)!important}
+  .hint,.snippet{background:var(--card)!important}
+  .snippet{color:#93c5fd!important}
+  .doc p,.doc li,.post p,.post li,.why p,.why li,.biz p,.biz li,.opts,.opt,.grp label,.item p,.explain,#out blockquote,table th{color:#cbd5e1!important}
+  .warn,.banner,.banner.warn,.note,.favbtn.on{background:#451a03!important;border-color:#f59e0b!important;color:#fde68a!important}
+  .tip{background:var(--brand-soft)!important;color:#bfdbfe!important}
+  input:not([type=checkbox]):not([type=radio]),textarea,select{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
+  table tr:nth-child(even) td{background:rgba(255,255,255,.03)!important}
+  pre{background:#020617!important;color:#e2e8f0!important}
+  code{background:var(--brand-soft)!important}
+  .tut-link,.msg.ok{color:var(--ok)!important}
+  .msg.bad{color:var(--bad)!important}
+  .toast{background:#020617!important;color:#f8fafc!important}
+  .op.pass{background:#059669!important}
+  .op.rej{background:#dc2626!important}
+  .op.offb{background:#b45309!important}
+  .row .head .cat{background:var(--brand-soft)!important}
+  .st.pending{background:#422006!important}
+  .st.approved{background:#052e16!important}
+  .st.rejected{background:#450a0a!important}
+  .st.off{background:#1f2937!important}
+  a{color:var(--brand)}
+}
+</style>
 </head>
 <body>
 <header>
@@ -36,48 +79,57 @@
   <a class="btn" href="/">← 返回免费云导航</a>
 </header>
 <article class="post">
-  <p class="meta">最后更新：2026-10-08</p>
+  <p class="meta">最后更新：2026-10-24</p>
 
   <div class="card">
-    <p style="margin:0">本网站为个人维护的非商业导航 / 教程站点。我们<strong>不会主动出售您的个人信息</strong>。本政策依据《个人信息保护法》及主要第三方服务（Google AdSense、Cloudflare）的要求制定。</p>
+    <p style="margin:0">本网站为个人维护的非商业导航 / 教程站点。我们<strong>不会主动出售您的个人信息</strong>。本政策依据《个人信息保护法》及主要第三方服务（Cloudflare、Supabase）的要求制定。</p>
   </div>
 
   <h2>一、我们收集的信息</h2>
   <p>本站在您仅浏览时<strong>不收集任何可识别身份的个人信息</strong>。仅在以下情况会收到您主动提供的信息：</p>
   <ul>
-    <li><strong>商务合作 / 付费收录</strong>：您通过邮件或 GitHub Issue 联系我们时，会提供您的邮箱或昵称。</li>
-    <li><strong>提交收录</strong>：您通过 GitHub Issue 提交服务信息时，内容由 GitHub 代管。</li>
+    <li><strong>提交收录申请</strong>：您通过「<a href="/submit">收录申请</a>」页提交服务名称、分类、官网链接、简介与联系邮箱时，这些内容会用于审核与展示。</li>
+    <li><strong>工具箱留言板</strong>：您通过「<a href="/board">留言板</a>」提交留言时，昵称、留言内容与所关联的工具名会公开显示在页面上。</li>
+    <li><strong>商务合作</strong>：您通过邮件联系我们时，会提供您的邮箱。</li>
   </ul>
 
-  <h2>二、Cookie 与同类技术</h2>
+  <h2>二、信息的存储位置</h2>
+  <ul>
+    <li><strong>Supabase</strong>：收录申请与留言板数据存储在 Supabase（托管数据库）中，仅站长可通过后台访问；</li>
+    <li><strong>Cloudflare KV</strong>：本站用 Cloudflare Workers KV 记录匿名点击计数（哪个服务被点了多少次），<strong>不含任何身份信息</strong>；</li>
+    <li><strong>浏览器本地存储</strong>：首页「已读/暗色模式」等偏好仅保存在您浏览器的 localStorage / sessionStorage 中，不会上传到服务器。</li>
+  </ul>
+
+  <h2>三、Cookie 与同类技术</h2>
   <p>为提升访问体验与站点运营，本站使用以下技术：</p>
   <ul>
-    <li><strong>Cloudflare Web Analytics</strong>：匿名统计访问量、来源与页面热度，<strong>不追踪个人身份</strong>。</li>
+    <li><strong>Cloudflare Web Analytics</strong>：匿名统计访问量、来源与页面热度，<strong>不追踪个人身份、不使用 Cookie</strong>。</li>
     <li><strong>百度主动推送</strong>：仅向百度站长平台上报页面 URL 以加速收录，不含个人信息。</li>
-    <li><strong>Google AdSense（即将启用）</strong>：启用后，Google 及其合作伙伴会通过 Cookie 投放与您兴趣相关的广告。您可在 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google 广告设置</a> 中关闭个性化广告。</li>
+    <li><strong>Google AdSense（计划接入，当前未启用）</strong>：若未来启用，Google 及其合作伙伴会通过 Cookie 投放与您兴趣相关的广告，您可在 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google 广告设置</a> 中关闭个性化广告；届时本政策将同步更新。</li>
   </ul>
 
-  <h2>三、第三方广告</h2>
-  <p>本站计划接入 <strong>Google AdSense</strong> 作为变现方式。AdSense 可能使用 Cookie（如 NID、IDE）基于您的过往访问行为投放个性化广告。第三方广告商可能独立收集信息，其做法受各自隐私政策约束，本站不对此负责。您可通过 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google 广告设置</a> 或 <a href="https://www.aboutads.info/" target="_blank" rel="noopener">aboutads.info</a> 管理偏好。</p>
+  <h2>四、第三方广告</h2>
+  <p>本站当前<strong>未投放任何广告</strong>。若未来接入 Google AdSense，第三方广告商可能通过 Cookie 独立收集信息，其做法受各自隐私政策约束，本站不对此负责。您可通过 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener">Google 广告设置</a> 或 <a href="https://www.aboutads.info/" target="_blank" rel="noopener">aboutads.info</a> 管理偏好。</p>
 
-  <h2>四、数据共享</h2>
+  <h2>五、数据共享</h2>
   <p>除下列情形外，我们<strong>不会与第三方共享您的个人信息</strong>：</p>
   <ul>
-    <li>为展示广告而必要的技术传递（如 AdSense 所需的 Cookie）；</li>
+    <li>为完成上述存储目的而必要的技术传递（如 Supabase、Cloudflare 作为基础设施提供服务）；</li>
     <li>法律法规要求或司法机关依法调取。</li>
   </ul>
 
-  <h2>五、您的权利</h2>
-  <p>您有权查询、更正或删除我们持有的您的个人信息。如需行使权利，请通过页脚邮箱联系我们，我们将在合理时间内响应。</p>
+  <h2>六、您的权利</h2>
+  <p>您有权查询、更正或删除我们持有的您的个人信息（如您提交的申请或留言）。如需行使权利，请通过页脚邮箱联系我们，我们将在合理时间内响应。</p>
 
-  <h2>六、联系我们</h2>
+  <h2>七、联系我们</h2>
   <p>如对本政策有疑问，或需行使上述权利，请邮件联系：<a href="mailto:861339046@qq.com">861339046@qq.com</a>。</p>
 
   <p style="margin-top:24px"><a class="btn" href="/">← 返回免费云导航</a></p>
 </article>
 <footer>
-  <div class="updated">最后更新：2026-10-08</div>
-  <div>本隐私政策可能随站点功能（如广告上线）调整，请以本页最新版本为准。</div>
-</footer>
+  <div class="updated">最后更新：2026-10-24</div>
+  <div>本隐私政策可能随站点功能调整，请以本页最新版本为准。</div>
+
+  <div style="margin-top:8px"><a href="about" style="color:var(--brand,#2563eb);text-decoration:none">关于本站</a></div></footer>
 </body>
 </html>

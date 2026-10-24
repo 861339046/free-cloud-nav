@@ -7,6 +7,11 @@
 //   SUPABASE_URL       = https://xxxx.supabase.co
 //   SUPABASE_ANON_KEY  = sb_publishable_xxx（或旧的 anon JWT）
 // 数据库表和 RLS 策略见仓库根目录 supabase-setup.sql（只需跑一次）。
+//
+// 限流：POST 每 IP 每天 3 次（KV 近似计数，可用 RL_SUBMIT 覆盖），429 拒绝；
+//       限流器 fail-open，KV 故障不会影响正常提交。
+
+import { checkRateLimit } from './_ratelimit.js';
 
 const MAX_FIELDS = {
   name: 40, category: 20, url: 200, description: 150, note: 150, email: 80
@@ -65,6 +70,10 @@ async function handleSubmit(context) {
 
   // 蜜罐：机器人填了直接假成功
   if (b.website) return json({ ok: true });
+
+  // 限流：蜜罐之后、入库之前（机器人不消耗真实访客配额）
+  const rl = await checkRateLimit(request, env, 'submit', 3);
+  if (!rl.ok) return json({ ok: false, message: rl.message }, 429);
 
   // 统一清洗后再校验（保证校验看到的就是最终落库的内容）
   const s = {

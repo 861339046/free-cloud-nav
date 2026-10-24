@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>免费服务状态监测 - 免费云服务可用性实时查询 | 免费云服务导航</title>
-<meta name="description" content="免费云服务可用性监测：定时探测 Oracle Cloud、Cloudflare、Supabase、Neon、Vercel 等常用免费服务官网响应状态，异常服务置顶提醒。数据由 Cloudflare Workers 定时采集。" />
+<meta name="description" content="免费云服务可用性监测：定时探测 Oracle Cloud、Cloudflare、Supabase、Neon、Vercel 等常用免费服务官网响应状态，异常服务置顶提醒。数据由 GitHub Actions 定时采集、写入 Cloudflare KV。" />
 <meta name="keywords" content="免费服务状态,云服务可用性,服务监测,oracle cloud状态,cloudflare状态" />
 <meta property="og:title" content="免费服务状态监测" />
 <meta property="og:description" content="常用免费云服务的定时探测状态看板。" />
@@ -12,6 +12,11 @@
 <meta property="og:type" content="website" />
 <meta name="theme-color" content="#2563eb" />
 <link rel="canonical" href="https://keting.eu.org/status" />
+<meta property="og:image" content="https://keting.eu.org/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://keting.eu.org/assets/og.png" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <style>
@@ -38,6 +43,45 @@
   footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
   footer a{color:var(--brand);text-decoration:none}
 </style>
+
+<!-- dark-mode-injected-2026-10-24 -->
+<style>
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme:dark;
+    --bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--muted:#94a3b8;
+    --brand:#3b82f6;--brand-soft:#1e3a5f;--line:#334155;
+    --ok:#34d399;--bad:#f87171;--warn:#fbbf24;--radius:14px;
+    --sub:#94a3b8;--blue:#3b82f6;
+  }
+  body{background:var(--bg)!important;color:var(--ink)!important}
+  header{background:linear-gradient(180deg,#1e293b,#0f172a)!important}
+  .card,.panel,.doc,.why,.hot,.biz,.adslot,.tag:not(.active),.navbar,.login,.search input,#search{background:var(--card)!important;color:var(--ink)!important}
+  .chip:not(.on){background:var(--card)!important;color:var(--muted)!important}
+  .toolsnav a,.favbtn,.favchip,.tpl button,.toolbar button,.btn.ghost{background:var(--card)!important;color:var(--muted)!important}
+  .hint,.snippet{background:var(--card)!important}
+  .snippet{color:#93c5fd!important}
+  .doc p,.doc li,.post p,.post li,.why p,.why li,.biz p,.biz li,.opts,.opt,.grp label,.item p,.explain,#out blockquote,table th{color:#cbd5e1!important}
+  .warn,.banner,.banner.warn,.note,.favbtn.on{background:#451a03!important;border-color:#f59e0b!important;color:#fde68a!important}
+  .tip{background:var(--brand-soft)!important;color:#bfdbfe!important}
+  input:not([type=checkbox]):not([type=radio]),textarea,select{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
+  table tr:nth-child(even) td{background:rgba(255,255,255,.03)!important}
+  pre{background:#020617!important;color:#e2e8f0!important}
+  code{background:var(--brand-soft)!important}
+  .tut-link,.msg.ok{color:var(--ok)!important}
+  .msg.bad{color:var(--bad)!important}
+  .toast{background:#020617!important;color:#f8fafc!important}
+  .op.pass{background:#059669!important}
+  .op.rej{background:#dc2626!important}
+  .op.offb{background:#b45309!important}
+  .row .head .cat{background:var(--brand-soft)!important}
+  .st.pending{background:#422006!important}
+  .st.approved{background:#052e16!important}
+  .st.rejected{background:#450a0a!important}
+  .st.off{background:#1f2937!important}
+  a{color:var(--brand)}
+}
+</style>
 </head>
 <body>
 <header>
@@ -50,10 +94,11 @@
     <div class="banner" id="banner" style="display:none"></div>
   </div>
 </div>
-<div class="doc">
+  <div class="doc">
   <h2>这个页面测的是什么？</h2>
   <ul>
-    <li>每 30 分钟由 Cloudflare Workers 定时任务对各服务<strong>官网首页</strong>发起一次 GET 请求，记录 HTTP 状态码与耗时；</li>
+    <li>每 30 分钟由 <strong>GitHub Actions 定时任务</strong>触发本站 Pages Function 对各服务<strong>官网首页</strong>发起一次 GET 请求，记录 HTTP 状态码与耗时，结果写入 Cloudflare KV；</li>
+    <li>GitHub 的 schedule 触发偶尔会有延迟，因此数据时间可能略早于当前——页面会提示数据的新鲜程度；</li>
     <li>「异常」只代表官网首页当时不可达或返回非 2xx/3xx——<strong>不代表你的实例出问题</strong>。实例级排查请用各服务的控制台与 <code>ssh -v</code>；</li>
     <li>探测节点位于 Cloudflare 边缘，国内访问这些服务还可能受本地网络与跨境链路影响；</li>
     <li>免费层政策的变动（缩水、取消）不在探测范围内，请关注本站<a href="tutorials">实测教程</a>的更新。</li>
@@ -62,13 +107,26 @@
 <footer>
   <div>状态数据由定时任务写入 Cloudflare KV 后公开读取。</div>
   <div style="margin-top:8px"><a href="/">免费云服务导航</a> · <a href="tools">工具箱</a> · <a href="tutorials">实测教程</a></div>
-</footer>
+
+  <div style="margin-top:8px"><a href="about" style="color:var(--brand,#2563eb);text-decoration:none">关于本站</a></div></footer>
 <script>
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function pad(n){ return (n<10?'0':'')+n; }
 function fmtTs(ts){
   if(!ts) return '—';
   var d = new Date(ts);
   return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+}
+function fmtAgo(ts){
+  if(!ts) return '未知';
+  var diff = Date.now() - ts;
+  if(diff < 0) return '刚刚';
+  var min = Math.floor(diff/60000);
+  if(min < 1) return '刚刚';
+  if(min < 60) return min + ' 分钟前';
+  var h = Math.floor(min/60);
+  if(h < 24) return h + ' 小时 ' + (min%60) + ' 分钟前';
+  return Math.floor(h/24) + ' 天前';
 }
 function render(items){
   var box = document.getElementById('list');
@@ -78,19 +136,26 @@ function render(items){
   }
   var html = '';
   var badCount = 0;
+  var newest = 0;
   for(var i = 0; i < items.length; i++){
     var r = items[i];
     if(!r.ok) badCount++;
+    if(r.ts && r.ts > newest) newest = r.ts;
     html += '<div class="row">'
       + '<span class="dot ' + (r.ok ? 'ok' : 'bad') + '"></span>'
-      + '<span class="name">' + r.name + '</span>'
-      + '<span class="code">' + (r.code ? 'HTTP ' + r.code : '超时/连接失败') + '</span>'
-      + '<span class="meta">' + r.ms + ' ms · ' + fmtTs(r.ts) + '</span>'
+      + '<span class="name">' + esc(r.name) + '</span>'
+      + '<span class="code">' + (r.code ? 'HTTP ' + esc(r.code) : '超时/连接失败') + '</span>'
+      + '<span class="meta">' + (r.ms==null?'—':r.ms) + ' ms · ' + fmtTs(r.ts) + '</span>'
       + '</div>';
   }
+  html += '<div class="row" style="color:var(--muted);font-size:13px"><span class="dot" style="background:var(--line)"></span><span class="name">数据时间</span><span class="code">' + fmtTs(newest) + '</span><span class="meta">更新于 ' + fmtAgo(newest) + '</span></div>';
   box.innerHTML = html;
   var banner = document.getElementById('banner');
-  if(badCount > 0){
+  // 数据超过 2 小时视为陈旧：提示访客可能是定时任务延迟或故障，而非全部服务同时异常
+  if(newest && Date.now() - newest > 2*60*60*1000){
+    banner.style.display = 'block';
+    banner.textContent = '⏱ 探测数据已陈旧（' + fmtAgo(newest) + '更新）。可能是 GitHub Actions 定时任务延迟或故障，请稍后刷新复查。';
+  } else if(badCount > 0){
     banner.style.display = 'block';
     banner.textContent = '⚠ 当前有 ' + badCount + ' 个服务探测异常，可能与网络波动或对方维护有关，建议稍后复查或访问官网确认。';
   }

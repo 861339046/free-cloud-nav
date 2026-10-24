@@ -1,0 +1,11 @@
+# Cloudflare Pages 安全响应头（仓库根目录 _headers，部署时下发到全部页面）
+# 说明：全站 38 个页面均为纯静态、无外链脚本/样式（仅 OG 图片走同源 CDN），
+# 因此 CSP 先用 Report-Only 观察，确认无违规报告后再收紧为强制。
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://static.cloudflareinsights.com; connect-src 'self' https://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains

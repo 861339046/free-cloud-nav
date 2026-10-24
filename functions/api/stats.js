@@ -3,6 +3,14 @@
 // 返回：总点击、按 id 汇总 Top、按日期 PV（含 pv-index-/pv-tool- 埋点键）
 const KEY_PREFIX = 'clicks:';
 
+// 恒时比较防时序侧信道（与 admin.js 保持一致）
+function safeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -15,7 +23,7 @@ export async function onRequestGet(context) {
   if (!env.CLICKS) return json({ ok: false, reason: 'KV_NOT_BOUND' }, 200);
   if (!env.ADMIN_SECRET) return json({ ok: false, reason: 'ADMIN_SECRET_NOT_SET' }, 200);
   const token = request.headers.get('x-admin-token') || '';
-  if (token !== env.ADMIN_SECRET) return json({ ok: false, message: '未授权' }, 401);
+  if (!safeEqual(token, env.ADMIN_SECRET)) return json({ ok: false, message: '未授权' }, 401);
 
   try {
     const list = await env.CLICKS.list({ prefix: KEY_PREFIX });

@@ -5,7 +5,10 @@
 // 设计要点：
 //   - GET：anon 可 select（RLS），返回最近 50 条，按时间倒序
 //   - POST：清洗（剥尖括号/控制字符/限长）后 insert；蜜罐字段假成功
+//   - POST 限流：每 IP 每天 5 条（KV 近似计数，可用 RL_MESSAGES 覆盖），429 拒绝
 //   - 应用层错误一律 HTTP 200 + ok:false，避免被 Cloudflare 错误页吞掉信息
+
+import { checkRateLimit } from './_ratelimit.js';
 
 const MAX = { nickname: 20, content: 300, tool: 40 };
 const URL_RE = /^https?:\/\/.+\..+/;
@@ -74,6 +77,10 @@ export async function onRequestPost(context) {
 
   // 蜜罐：机器人填了直接假成功
   if (b.website) return json({ ok: true });
+
+  // 限流：蜜罐之后、入库之前（机器人不消耗真实访客配额）
+  const rl = await checkRateLimit(request, env, 'messages', 5);
+  if (!rl.ok) return json({ ok: false, message: rl.message }, 429);
 
   const s = {
     nickname: sanitize(b.nickname, MAX.nickname),

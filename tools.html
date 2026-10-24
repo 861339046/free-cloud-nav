@@ -12,6 +12,11 @@
 <meta property="og:type" content="website" />
 <meta name="theme-color" content="#2563eb" />
 <link rel="canonical" href="https://keting.eu.org/tools" />
+<meta property="og:image" content="https://keting.eu.org/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://keting.eu.org/assets/og.png" />
 <style>
   :root{
     --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
@@ -45,6 +50,11 @@
   .hot .chips a{padding:6px 14px;border:1px solid var(--line);background:var(--brand-soft);border-radius:999px;font-size:13px;color:var(--brand);text-decoration:none}
   .hot .chips a:hover{border-color:var(--brand)}
   .hot .chips a b{font-weight:600;margin-left:4px;color:var(--muted);font-size:12px}
+  .search{max-width:520px;margin:20px auto 0;position:relative}
+  .search input{width:100%;padding:12px 18px;border:1px solid var(--line);border-radius:999px;font-size:15px;background:var(--card);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+  .search input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+  .search .hint{text-align:center;font-size:13px;color:var(--muted);margin-top:8px;min-height:1.4em}
+  .card.hide{display:none}
   footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
   footer .updated{color:var(--brand);margin-bottom:6px}
   footer a{color:var(--brand);text-decoration:none}
@@ -52,6 +62,45 @@
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <link rel="alternate" type="application/rss+xml" title="keting.eu.org 更新订阅" href="/feed.xml" />
+
+<!-- dark-mode-injected-2026-10-24 -->
+<style>
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme:dark;
+    --bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--muted:#94a3b8;
+    --brand:#3b82f6;--brand-soft:#1e3a5f;--line:#334155;
+    --ok:#34d399;--bad:#f87171;--warn:#fbbf24;--radius:14px;
+    --sub:#94a3b8;--blue:#3b82f6;
+  }
+  body{background:var(--bg)!important;color:var(--ink)!important}
+  header{background:linear-gradient(180deg,#1e293b,#0f172a)!important}
+  .card,.panel,.doc,.why,.hot,.biz,.adslot,.tag:not(.active),.navbar,.login,.search input,#search{background:var(--card)!important;color:var(--ink)!important}
+  .chip:not(.on){background:var(--card)!important;color:var(--muted)!important}
+  .toolsnav a,.favbtn,.favchip,.tpl button,.toolbar button,.btn.ghost{background:var(--card)!important;color:var(--muted)!important}
+  .hint,.snippet{background:var(--card)!important}
+  .snippet{color:#93c5fd!important}
+  .doc p,.doc li,.post p,.post li,.why p,.why li,.biz p,.biz li,.opts,.opt,.grp label,.item p,.explain,#out blockquote,table th{color:#cbd5e1!important}
+  .warn,.banner,.banner.warn,.note,.favbtn.on{background:#451a03!important;border-color:#f59e0b!important;color:#fde68a!important}
+  .tip{background:var(--brand-soft)!important;color:#bfdbfe!important}
+  input:not([type=checkbox]):not([type=radio]),textarea,select{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
+  table tr:nth-child(even) td{background:rgba(255,255,255,.03)!important}
+  pre{background:#020617!important;color:#e2e8f0!important}
+  code{background:var(--brand-soft)!important}
+  .tut-link,.msg.ok{color:var(--ok)!important}
+  .msg.bad{color:var(--bad)!important}
+  .toast{background:#020617!important;color:#f8fafc!important}
+  .op.pass{background:#059669!important}
+  .op.rej{background:#dc2626!important}
+  .op.offb{background:#b45309!important}
+  .row .head .cat{background:var(--brand-soft)!important}
+  .st.pending{background:#422006!important}
+  .st.approved{background:#052e16!important}
+  .st.rejected{background:#450a0a!important}
+  .st.off{background:#1f2937!important}
+  a{color:var(--brand)}
+}
+</style>
 </head>
 <body>
 <header>
@@ -60,6 +109,10 @@
   <a class="btn ghost" href="/">← 返回导航首页</a>
 </header>
 <div class="wrap">
+  <div class="search">
+    <input type="search" id="toolSearch" placeholder="搜索工具：如 cron、json、时间戳、base64、密码……" autocomplete="off">
+    <p class="hint" id="searchHint"></p>
+  </div>
   <div class="hot" id="hotBox">
     <h2>🔥 近 7 天大家都在用</h2>
     <div class="chips" id="hotChips"></div>
@@ -240,10 +293,10 @@
       <span class="go">打开工具 →</span>
     </a>
     <div class="card soon">
-      <span class="icon">🛠️</span>
-      <h3>更多工具筹备中</h3>
-      <p class="desc">留言板、服务状态监测等。有想用的工具欢迎在<a href="submit" style="color:var(--brand)">提交页</a>留言。</p>
-      <span class="go">敬请期待</span>
+      <span class="icon">💬</span>
+      <h3>留言板与状态监测</h3>
+      <p class="desc">想吐槽、想许愿新工具？去<a href="board" style="color:var(--brand)">留言板</a>；想知道常用免费服务此刻通不通？看<a href="status" style="color:var(--brand)">状态监测</a>。</p>
+      <span class="go">去看看 →</span>
     </div>
   </div>
 
@@ -258,10 +311,11 @@
   </section>
 </div>
 <footer>
-  <div class="updated">最后更新：2026-10-23</div>
+  <div class="updated">最后更新：2026-10-24</div>
   <div>工具由本站提供，计算全部在浏览器本地完成，不收集任何输入数据。</div>
   <div style="margin-top:8px"><a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a> · <a href="privacy">隐私政策</a> · <a href="feed.xml">RSS 订阅</a></div>
-</footer>
+
+  <div style="margin-top:8px"><a href="about" style="color:var(--brand,#2563eb);text-decoration:none">关于本站</a></div></footer>
 <script>
 function trackClick(id){
   try{
@@ -293,6 +347,24 @@ try{trackClick('pv-tools-'+new Date().toISOString().slice(0,10));}catch(e){}
     chips.innerHTML=html;
     box.style.display='block';
   }).catch(function(){});
+})();
+// 工具搜索：按卡片标题 + 描述做大小写不敏感的子串过滤
+(function(){
+  var input=document.getElementById('toolSearch');
+  var hint=document.getElementById('searchHint');
+  var cards=Array.prototype.slice.call(document.querySelectorAll('.grid .card'));
+  var total=cards.length;
+  input.addEventListener('input',function(){
+    var q=input.value.trim().toLowerCase();
+    var shown=0;
+    cards.forEach(function(c){
+      var t=(c.querySelector('h3').textContent+' '+c.querySelector('.desc').textContent).toLowerCase();
+      var ok=!q||t.indexOf(q)!==-1;
+      c.classList.toggle('hide',!ok);
+      if(ok) shown++;
+    });
+    hint.textContent=q?('找到 '+shown+' / '+total+' 个工具'):'';
+  });
 })();
 </script>
 <script src="assets/fav.js" defer></script>

@@ -12,6 +12,11 @@
 <meta property="og:type" content="website" />
 <meta name="theme-color" content="#2563eb" />
 <link rel="canonical" href="https://keting.eu.org/tool-watermark" />
+<meta property="og:image" content="https://keting.eu.org/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://keting.eu.org/assets/og.png" />
 <style>
   :root{--bg:#f7f9fc;--card:#fff;--ink:#1f2937;--muted:#64748b;--brand:#2563eb;--brand-soft:#eff6ff;--line:#e5e7eb;--radius:14px}
   *{box-sizing:border-box}
@@ -54,6 +59,45 @@
   .favchip{padding:4px 10px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:12px;color:var(--muted);text-decoration:none}
   .favchip:hover{border-color:var(--brand);color:var(--brand)}
   .favchip.recent{background:var(--brand-soft)}
+</style>
+
+<!-- dark-mode-injected-2026-10-24 -->
+<style>
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme:dark;
+    --bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--muted:#94a3b8;
+    --brand:#3b82f6;--brand-soft:#1e3a5f;--line:#334155;
+    --ok:#34d399;--bad:#f87171;--warn:#fbbf24;--radius:14px;
+    --sub:#94a3b8;--blue:#3b82f6;
+  }
+  body{background:var(--bg)!important;color:var(--ink)!important}
+  header{background:linear-gradient(180deg,#1e293b,#0f172a)!important}
+  .card,.panel,.doc,.why,.hot,.biz,.adslot,.tag:not(.active),.navbar,.login,.search input,#search{background:var(--card)!important;color:var(--ink)!important}
+  .chip:not(.on){background:var(--card)!important;color:var(--muted)!important}
+  .toolsnav a,.favbtn,.favchip,.tpl button,.toolbar button,.btn.ghost{background:var(--card)!important;color:var(--muted)!important}
+  .hint,.snippet{background:var(--card)!important}
+  .snippet{color:#93c5fd!important}
+  .doc p,.doc li,.post p,.post li,.why p,.why li,.biz p,.biz li,.opts,.opt,.grp label,.item p,.explain,#out blockquote,table th{color:#cbd5e1!important}
+  .warn,.banner,.banner.warn,.note,.favbtn.on{background:#451a03!important;border-color:#f59e0b!important;color:#fde68a!important}
+  .tip{background:var(--brand-soft)!important;color:#bfdbfe!important}
+  input:not([type=checkbox]):not([type=radio]),textarea,select{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
+  table tr:nth-child(even) td{background:rgba(255,255,255,.03)!important}
+  pre{background:#020617!important;color:#e2e8f0!important}
+  code{background:var(--brand-soft)!important}
+  .tut-link,.msg.ok{color:var(--ok)!important}
+  .msg.bad{color:var(--bad)!important}
+  .toast{background:#020617!important;color:#f8fafc!important}
+  .op.pass{background:#059669!important}
+  .op.rej{background:#dc2626!important}
+  .op.offb{background:#b45309!important}
+  .row .head .cat{background:var(--brand-soft)!important}
+  .st.pending{background:#422006!important}
+  .st.approved{background:#052e16!important}
+  .st.rejected{background:#450a0a!important}
+  .st.off{background:#1f2937!important}
+  a{color:var(--brand)}
+}
 </style>
 </head>
 <body>
@@ -140,7 +184,8 @@
 <footer>
   <div>本地处理，图片不离开浏览器。</div>
   <div style="margin-top:8px"><a href="tools">← 返回工具箱</a> · <a href="/">免费云服务导航</a> · <a href="tutorials">实测教程</a></div>
-</footer>
+
+  <div style="margin-top:8px"><a href="about" style="color:var(--brand,#2563eb);text-decoration:none">关于本站</a></div></footer>
 <script>
 var img = null;
 var origName = 'image';

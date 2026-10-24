@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关于本站 · 免费云服务导航</title>
+<meta name="description" content="免费云服务导航站（keting.eu.org）的介绍：这个站是什么、里面有什么、收录原则、技术栈与联系方式。">
+<link rel="canonical" href="https://keting.eu.org/about">
+<meta property="og:image" content="https://keting.eu.org/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://keting.eu.org/assets/og.png" />
+<style>
+  :root{
+    --bg:#f7f9fc; --card:#ffffff; --ink:#1f2937; --muted:#64748b;
+    --brand:#2563eb; --brand-soft:#eff6ff; --line:#e5e7eb; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+  header{padding:40px 20px 24px;text-align:center;background:linear-gradient(180deg,#eef4ff,#f7f9fc)}
+  h1{margin:0 0 8px;font-size:26px}
+  .sub{color:var(--muted);max-width:640px;margin:0 auto;font-size:15px}
+  .btn{display:inline-block;margin-top:14px;padding:9px 18px;background:var(--brand);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600}
+  .btn:hover{opacity:.92}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+  .post{max-width:780px;margin:0 auto;padding:32px 20px 70px}
+  .meta{color:var(--muted);font-size:13px;margin:0 0 22px}
+  .post h2{font-size:19px;margin-top:30px;border-left:4px solid var(--brand);padding-left:10px}
+  .post p,.post li{font-size:15px;color:#374151}
+  .post a{color:var(--brand)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 22px;margin:16px 0}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+  footer .updated{color:var(--brand);margin-bottom:6px}
+</style>
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+
+<!-- dark-mode-injected-2026-10-24 -->
+<style>
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme:dark;
+    --bg:#0f172a;--card:#1e293b;--ink:#e2e8f0;--muted:#94a3b8;
+    --brand:#3b82f6;--brand-soft:#1e3a5f;--line:#334155;
+    --ok:#34d399;--bad:#f87171;--warn:#fbbf24;--radius:14px;
+    --sub:#94a3b8;--blue:#3b82f6;
+  }
+  body{background:var(--bg)!important;color:var(--ink)!important}
+  header{background:linear-gradient(180deg,#1e293b,#0f172a)!important}
+  .card,.panel,.doc,.why,.hot,.biz,.adslot,.tag:not(.active),.navbar,.login,.search input,#search{background:var(--card)!important;color:var(--ink)!important}
+  .chip:not(.on){background:var(--card)!important;color:var(--muted)!important}
+  .toolsnav a,.favbtn,.favchip,.tpl button,.toolbar button,.btn.ghost{background:var(--card)!important;color:var(--muted)!important}
+  .hint,.snippet{background:var(--card)!important}
+  .snippet{color:#93c5fd!important}
+  .doc p,.doc li,.post p,.post li,.why p,.why li,.biz p,.biz li,.opts,.opt,.grp label,.item p,.explain,#out blockquote,table th{color:#cbd5e1!important}
+  .warn,.banner,.banner.warn,.note,.favbtn.on{background:#451a03!important;border-color:#f59e0b!important;color:#fde68a!important}
+  .tip{background:var(--brand-soft)!important;color:#bfdbfe!important}
+  input:not([type=checkbox]):not([type=radio]),textarea,select{background:var(--bg)!important;color:var(--ink)!important;border-color:var(--line)!important}
+  table tr:nth-child(even) td{background:rgba(255,255,255,.03)!important}
+  pre{background:#020617!important;color:#e2e8f0!important}
+  code{background:var(--brand-soft)!important}
+  .tut-link,.msg.ok{color:var(--ok)!important}
+  .msg.bad{color:var(--bad)!important}
+  .toast{background:#020617!important;color:#f8fafc!important}
+  .op.pass{background:#059669!important}
+  .op.rej{background:#dc2626!important}
+  .op.offb{background:#b45309!important}
+  .row .head .cat{background:var(--brand-soft)!important}
+  .st.pending{background:#422006!important}
+  .st.approved{background:#052e16!important}
+  .st.rejected{background:#450a0a!important}
+  .st.off{background:#1f2937!important}
+  a{color:var(--brand)}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>关于本站</h1>
+  <p class="sub">一个个人维护的免费云服务导航站：把「真的能免费用」的云服务与工具整理清楚，帮中文个人开发者少花冤枉钱。</p>
+  <a class="btn" href="/">← 返回免费云导航</a>
+</header>
+<article class="post">
+  <p class="meta">最后更新：2026-10-24</p>
+
+  <div class="card">
+    <p style="margin:0">本站是<strong>非商业性质的个人项目</strong>，没有公司、没有融资、没有 KPI。所有内容来自站长自己注册、部署、踩坑后的真实记录，免费额度以各官网当前政策为准。</p>
+  </div>
+
+  <h2>一、里面有什么</h2>
+  <ul>
+    <li><strong><a href="/">免费云服务导航</a></strong>：静态托管、数据库、服务器、存储等类别的真实免费额度清单，每条附「适合谁」与「坑在哪」；</li>
+    <li><strong><a href="tutorials">实测教程</a></strong>：从注册到部署的手把手记录，包括 Oracle 永久免费实例、Supabase、Neon、Cloudflare Workers / R2、腾讯云轻量等；</li>
+    <li><strong><a href="tools">在线工具箱</a></strong>：29 个开发者小工具（Cron、JSON、时间戳、Base64、密码生成等），全部在浏览器本地运行，输入数据不上传；</li>
+    <li><strong><a href="status">服务状态监测</a></strong>：定时探测常用免费服务官网的可达性，异常置顶提醒；</li>
+    <li><strong><a href="board">留言板</a></strong>：吐槽、许愿新工具、交流使用体验；</li>
+    <li><strong><a href="submit">收录申请</a></strong>：发现好的免费服务，提交给站长，审核通过即刻上架。</li>
+  </ul>
+
+  <h2>二、收录原则</h2>
+  <ul>
+    <li><strong>免费层必须真实存在</strong>：只收录确有免费额度 / 免费层的服务，注明限制条件；</li>
+    <li><strong>不接灰产擦边</strong>：违规、侵权、博彩类服务一律不收录；</li>
+    <li><strong>社区提交、站长审核</strong>：任何访客都可以提交申请，站长人工审核后「通过即上架」，首页动态收录区即时可见；</li>
+    <li><strong>额度会过期，标注提醒</strong>：限时免费、曾缩水的服务会在备注里写清楚，请以官网当前页面为准。</li>
+  </ul>
+
+  <h2>三、技术栈（全部零成本）</h2>
+  <ul>
+    <li><strong>Cloudflare Pages + Pages Functions</strong>：静态页面与服务端接口，免费额度对个人站足够；</li>
+    <li><strong>Supabase</strong>：收录申请与留言板的数据库（免费层）；</li>
+    <li><strong>Cloudflare Workers KV</strong>：匿名点击计数与接口限流；</li>
+    <li><strong>GitHub Actions</strong>：定时触发状态探测任务；</li>
+    <li><strong>PWA</strong>：可「安装」到桌面，离线也能打开工具箱。</li>
+  </ul>
+
+  <h2>四、免责声明</h2>
+  <p>本站内容按「现状」提供，不构成任何承诺或保证。各服务的免费政策可能随时调整或取消，请在依赖任何免费额度前，以服务商官方页面的最新说明为准。因使用第三方服务造成的任何损失，本站不承担责任。</p>
+
+  <h2>五、联系站长</h2>
+  <p>商务合作、内容纠错、收录疑问，请邮件联系：<a href="mailto:861339046@qq.com">861339046@qq.com</a>。隐私相关说明见<a href="privacy">隐私政策</a>。</p>
+
+  <p style="margin-top:24px"><a class="btn" href="/">← 返回免费云导航</a></p>
+</article>
+<footer>
+  <div class="updated">最后更新：2026-10-24</div>
+  <div>个人维护的非商业项目 · 内容以各官网最新政策为准</div>
+</footer>
+</body>
+</html>

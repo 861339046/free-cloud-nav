@@ -1,11 +1,16 @@
 // keting.eu.org Service Worker
 // 策略：静态资源（HTML/CSS/JS/字体/图标）cache-first 兜底网络；API 请求一律走网络，不缓存。
-const CACHE = 'keting-v1';
+// 版本号：改 PRECACHE 内容时同步 bump，activate 会自动清理旧缓存。
+const CACHE = 'keting-v2';
 const PRECACHE = [
+  '/',
   '/tools',
   '/manifest.json',
   '/icon.svg',
-  '/assets/fav.js'
+  '/assets/fav.js',
+  '/assets/og.png',
+  '/assets/icon-192.png',
+  '/assets/icon-512.png'
 ];
 
 self.addEventListener('install', function (e) {
