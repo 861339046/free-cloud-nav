@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>信仰交易录 · 万法商铺 (v3.0 战略经营)</title>
+<title>信仰交易录 · 万法商铺 (v4.0 位面商城建造时代)</title>
 <style>
   :root{
     --faith:#f4c542; --nature:#4ec9a8; --energy:#b07bff; --karma:#e05a5a; --rep:#c98be0;
@@ -72,16 +72,13 @@
   .perk{font-size:12px;padding:4px 0;color:#5a2da0}
   .perk.off{color:#bbaac9}
   #err{position:fixed;left:8px;right:8px;top:8px;z-index:99;background:#a33232;color:#fff;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.5;white-space:pre-wrap;box-shadow:0 4px 14px #0006}
-  .shelf{display:flex;align-items:center;gap:8px;padding:8px;border-radius:11px;background:#fbf6ff;margin:6px 0;box-shadow:0 1px 4px #cdb6e033}
-  .shelf .sl{font-size:11px;color:#9a8aa5;width:26px}
-  .shelf .gi{font-size:22px;width:28px;text-align:center}
-  .shelf .gn{flex:1;font-size:13px;font-weight:600}
-  .shelf .lv{font-size:11px;color:#5a2da0}
-  .shelf select{border:1px solid #cdb6e0;border-radius:8px;padding:3px 6px;font-size:12px;color:var(--ink);background:#fff}
+  .helper{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #0001;font-size:13px}
+  .helper .hn{font-weight:600;width:44px}
+  .helper select{flex:1;border:1px solid #cdb6e0;border-radius:8px;padding:4px 6px;font-size:12px;color:var(--ink);background:#fff}
 
   /* ===== 动态店铺 DOM 版（不依赖 canvas） ===== */
   #shopWrap{position:relative;padding:0;overflow:hidden;border-radius:16px}
-  .shop-stage{position:relative;width:100%;height:360px;overflow:hidden;border-radius:16px;
+  .shop-stage{position:relative;width:100%;height:400px;overflow:hidden;border-radius:16px;
     background:linear-gradient(160deg,#523f6e 0%,#332748 55%,#241a33 100%);
     box-shadow:0 4px 18px #cdb6e055}
   .shop-stage::before{content:"";position:absolute;inset:0;pointer-events:none;
@@ -116,6 +113,17 @@
   .shop-girl .eye{transform-origin:center;animation:blink 4.6s infinite}
   @keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.12)}}
   .girl-aura{filter:drop-shadow(0 0 12px rgba(176,123,255,0.7))}
+  /* 商城地块 */
+  .plot-band{position:absolute;left:112px;right:8px;top:28px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;z-index:3}
+  .plot{position:relative;height:56px;border-radius:10px;background:linear-gradient(160deg,#ffffffe0,#e9def8f2);box-shadow:0 2px 6px #0003;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:#4a3b55;text-align:center;
+    line-height:1.25;padding:2px;border:1px solid #fff9;cursor:pointer;overflow:hidden}
+  .plot:active{transform:scale(.96)}
+  .plot .pi{font-size:19px}
+  .plot .plv{display:flex;gap:2px;margin-top:2px}
+  .plot .plv i{width:4px;height:4px;border-radius:50%;background:#b07bff}
+  .plot .ph{position:absolute;top:2px;left:4px;font-size:8px;background:#7a5aa8;color:#fff;border-radius:6px;padding:0 4px}
+  .plot.empty{background:rgba(255,255,255,0.07);border:1.5px dashed rgba(255,255,255,0.35);color:#ffffffcc;box-shadow:none}
   .cust-layer{position:absolute;inset:0;z-index:5}
   .customer{position:absolute;bottom:70px;left:0;margin-left:-32px;width:64px;height:104px;z-index:5;
     transform:translateX(var(--tx,560px));transition:transform 1.2s cubic-bezier(.25,.9,.3,1),opacity .6s;cursor:pointer}
@@ -190,9 +198,9 @@
     background:linear-gradient(160deg,#ffd9ee,#d9ccff);padding:10px 36px;border-radius:999px;box-shadow:0 4px 16px #0006}
   .bye{opacity:0;pointer-events:none}
 
-  /* 事件抉择模态 */
-  #eventModal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(20,10,35,.72);backdrop-filter:blur(4px);padding:18px}
-  #eventModal .ev-card{background:linear-gradient(160deg,#fff7fc,#efe9ff);border-radius:20px;padding:20px 18px;max-width:420px;width:100%;box-shadow:0 12px 40px #0008;animation:pop .35s ease}
+  /* 事件抉择 / 地块操作 模态 */
+  #eventModal,#plotModal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(20,10,35,.72);backdrop-filter:blur(4px);padding:18px}
+  #eventModal .ev-card,#plotModal .ev-card{background:linear-gradient(160deg,#fff7fc,#efe9ff);border-radius:20px;padding:20px 18px;max-width:420px;width:100%;box-shadow:0 12px 40px #0008;animation:pop .35s ease;max-height:86vh;overflow:auto}
   #eventModal .ev-icon{font-size:44px;text-align:center}
   #eventModal h2{margin:8px 0 6px;font-size:18px;text-align:center;color:#5a2da0}
   #eventModal .ev-desc{font-size:13px;line-height:1.7;color:#5a4b66;margin-bottom:14px;text-align:center}
@@ -200,6 +208,26 @@
     background:#fff;box-shadow:0 2px 6px #0001;cursor:pointer;font-size:13px;color:var(--ink)}
   #eventModal .ev-choice:active{transform:scale(.98)}
   #eventModal .ev-choice .ce{display:block;font-size:11px;color:#9a8aa5;margin-top:3px}
+  .pm-title{font-size:16px;font-weight:700;color:#5a2da0;text-align:center;margin-bottom:4px}
+  .pm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+  .pm-btn{border:0;background:#fff;border-radius:12px;padding:10px 4px;font-size:12px;color:var(--ink);
+    box-shadow:0 2px 6px #0001;cursor:pointer;text-align:center}
+  .pm-btn:active{transform:scale(.96)}
+  .pm-btn .pi{font-size:24px;display:block}
+  .pm-btn .pc{display:block;font-size:10px;color:#9a8aa5;margin-top:2px}
+  .pm-btn.locked{opacity:.45;cursor:not-allowed}
+  .pm-btn.sel{outline:2px solid #b07bff}
+  .pm-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0;font-size:13px}
+
+  /* 位格飞升仪式 */
+  #ascend{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 42%,rgba(90,45,160,.93),rgba(20,10,35,.97));padding:20px}
+  #ascend .asc-card{text-align:center;color:#fff;max-width:340px;animation:pop .5s ease}
+  #ascend .asc-icon{font-size:64px;filter:drop-shadow(0 0 24px #ffd86b);animation:pulse 1.6s ease-in-out infinite}
+  #ascend h2{margin:8px 0 2px;font-size:26px;letter-spacing:4px;text-shadow:0 0 18px #b07bff}
+  #ascend .asc-lv{font-size:42px;font-weight:800;color:#ffd86b;text-shadow:0 0 22px #ff9a3d}
+  #ascend .asc-perk{margin-top:10px;font-size:14px;color:#e8d9ff;line-height:1.7}
+  #ascend .asc-unlock{margin-top:6px;font-size:12px;color:#c79bff}
 
   /* 任务横幅 */
   .task{background:linear-gradient(160deg,#fff4fb,#f0e9ff);border-radius:12px;padding:9px 11px;margin-bottom:8px;box-shadow:0 2px 6px #cdb6e044}
@@ -213,8 +241,8 @@
 <div id="splash">
   <div class="t-wrap">
     <h1>信仰交易录</h1>
-    <div class="t-sub">万法商铺 · 诸天位面商城</div>
-    <div class="t-desc">诸天万界的生灵会来店里，用她们的需要换走货品。成交后，偶尔会留下「超凡物品」——把它炼成无所不能的能量，一点一点，直到无敌。</div>
+    <div class="t-sub">万法商铺 · 诸天位面商城建造时代</div>
+    <div class="t-desc">在一片空地上，建起你的诸天位面商城：货架、信仰祭坛、炼化炉、飞升祭坛……招募伙计、运筹四条资源线、收集无所不能的能量，直到无敌。</div>
     <button class="start" id="startBtn">🌸 开始营业</button>
   </div>
 </div>
@@ -235,7 +263,7 @@
       <span class="pill shop">🏠店Lv<b id="s-shop">1</b> · 位格<b id="s-plane">1</b></span>
       <span class="pill combo" id="s-combo-wrap" style="display:none">🔥连击 <b id="s-combo">0</b></span>
     </div>
-    <div class="muted small" style="margin-top:6px">神格 Lv<b id="s-deity">1</b> · 累计信仰 <b id="s-faithTotal">0</b> · 成交 <b id="s-deals">0</b> · 货仓 <b id="s-goods">0</b> · 无敌 <b id="s-inv">未</b></div>
+    <div class="muted small" style="margin-top:6px">神格 Lv<b id="s-deity">1</b> · 累计信仰 <b id="s-faithTotal">0</b> · 成交 <b id="s-deals">0</b> · 货仓 <b id="s-goods">0</b> · 伙计 <b id="s-helpers">0</b> · 无敌 <b id="s-inv">未</b></div>
   </header>
   <main id="view" style="display:none"></main>
   <div id="shopView" style="display:block">
@@ -250,6 +278,7 @@
           <div class="star" style="left:30%;top:62%;animation-delay:1.6s"></div>
           <div class="star" style="left:60%;top:24%;animation-delay:.3s"></div>
         </div>
+        <div class="plot-band" id="plotBand"></div>
         <div class="lantern" style="left:30%"></div>
         <div class="lantern" style="left:74%;animation-delay:1.2s"></div>
         <div class="jar" style="left:18px;top:120px;color:#ff9ecf"></div>
@@ -315,7 +344,7 @@
         <div class="shop-top" id="shopTop"></div>
         <div class="cust-layer" id="custLayer"></div>
         <div class="float-layer" id="floatLayer"></div>
-        <div class="shop-hint">点顾客接待 · 只卖「已布置货架」的品类 · 满足偏爱/热销有加成 · 连续成交触发连击</div>
+        <div class="shop-hint">点空地建造建筑 · 点建筑升级/分配伙计 · 顾客只买「已上架货架」的品类</div>
       </div>
     </div>
   </div>
@@ -338,6 +367,19 @@
   </div>
 </div>
 
+<div id="plotModal"><div class="ev-card" id="plotCard"></div></div>
+
+<div id="ascend">
+  <div class="asc-card">
+    <div class="asc-icon">🛕</div>
+    <h2>位格飞升</h2>
+    <div class="asc-lv" id="ascLv">Lv2</div>
+    <div class="asc-perk" id="ascPerk"></div>
+    <div class="asc-unlock" id="ascUnlock"></div>
+    <button class="story-next" id="ascBtn" style="margin-top:18px">叩谢天地</button>
+  </div>
+</div>
+
 <script>
 "use strict";
 function showErr(msg){
@@ -348,15 +390,13 @@ function showErr(msg){
 window.addEventListener('error',ev=>showErr((ev.message||'未知错误')+' @'+(ev.lineno||'')));
 window.addEventListener('unhandledrejection',ev=>showErr('Promise: '+(ev.reason&&ev.reason.message||ev.reason)));
 
-const SAVE_KEY = "faithTradeSave_v30";
+const SAVE_KEY = "faithTradeSave_v40";
 
 /* ============ 数据 ============ */
 const GOODS = {食物:"🍱", 知识:"📚", 旧物:"📦", 观想:"🌿", 灵物:"✨", 羁绊:"💞"};
 const GOODS_ORDER = ["食物","知识","旧物","观想","灵物","羁绊"];
 const RESTOCK = {食物:4, 知识:6, 旧物:3, 观想:5, 灵物:8, 羁绊:12};
 const SHELF_SWITCH_COST = 20;
-const SHELF_UP_COST = [0,80,160];
-const SHELF_OPEN_COST = [0,120,260,520,900];
 
 const VOICES = {
   landongong:["小友，今儿地里的收成可好？","老朽带了些神土来换些吃食。","这烟火气，最是养人呐。"],
@@ -423,18 +463,211 @@ function beingUnlocked(b,S){
   return false;
 }
 
+/* ============ 建筑（建造时代核心） ============ */
+const BUILDINGS = {
+  shelf:    {name:"货架",      icon:"🗄",cost:40, plane:1,desc:"专精一个货品类；顾客只买「已上架」品类"},
+  altar:    {name:"信仰祭坛",  icon:"⛩",cost:60, plane:1,desc:"持续产出信仰之力；分配伙计可提速"},
+  furnace:  {name:"炼化炉",    icon:"🔥",cost:70, plane:1,desc:"炼化超凡物品的必备建筑；等级提升炼化收益"},
+  temple:   {name:"飞升祭坛",  icon:"🛕",cost:150,plane:2,desc:"位格飞升的必备建筑；等级降低飞升消耗"},
+  warehouse:{name:"仓库",      icon:"📮",cost:80, plane:2,desc:"货品上限 +10/级（防爆仓、可囤货居奇）"},
+  sign:     {name:"招客招牌",  icon:"🏮",cost:50, plane:3,desc:"顾客到访提速（每座 -15% 间隔）"},
+  camp:     {name:"伙计营地",  icon:"🏕",cost:100,plane:4,desc:"伙计上限 +2/级"},
+};
+const UP_COST = {shelf:[80,160],altar:[100,200],warehouse:[120,240],sign:[70,140],camp:[150,300],furnace:[90,180],temple:[200,400]};
+const HELPER_NAMES = ["小灯","阿账","青叶","团子","阿墨","铃儿","小算","灵犀","阿禾","年年","贰贰","叁叁"];
+
+function plotCount(){ return S.plane>=10?18:(S.plane>=7?15:(S.plane>=4?12:(S.plane>=2?9:6))); }
+function emptyPlot(){ return {b:null,lv:1,good:null,help:null}; }
+function ensurePlots(){ const n=plotCount(); while(S.plots.length<n) S.plots.push(emptyPlot()); }
+function builtCount(){ return S.plots.filter(p=>p.b).length; }
+function maxLvOf(type){ let lv=0; S.plots.forEach(p=>{ if(p.b===type&&p.lv>lv) lv=p.lv; }); return lv; }
+function furnaceLv(){ return maxLvOf("furnace"); }
+function templeLv(){ return maxLvOf("temple"); }
+function refineMul(){ return [1,1,1.2,1.5][furnaceLv()]||1; }
+function goodsCap(){ return 12 + 10*S.plots.reduce((s,p)=>s+(p.b==="warehouse"?p.lv:0),0); }
+function helperCap(){ return 2*S.plots.reduce((s,p)=>s+(p.b==="camp"?p.lv:0),0); }
+function signCount(){ return S.plots.filter(p=>p.b==="sign").length; }
+function altarRate(){
+  let sum=0;
+  S.plots.forEach(p=>{ if(p.b==="altar"){ sum += (1+(p.lv-1)*0.8+(p.help!=null?1.2:0))*faithBonus()*planeBonus().allMul; } });
+  return sum/5;
+}
+function plotLabel(i){ const p=S.plots[i]; if(!p||!p.b) return "空地"+(i+1);
+  const def=BUILDINGS[p.b];
+  return (p.b==="shelf"&&p.good)? (GOODS[p.good]+p.good) : def.name; }
+
+function buildOn(i,type){
+  const def=BUILDINGS[type]; if(!def){ return; }
+  if(S.plane<def.plane){ toast("位格 Lv"+def.plane+" 解锁","karma"); return; }
+  if(S.plots[i]&&S.plots[i].b){ toast("该地块已有建筑"); return; }
+  if(S.natureCurrency<def.cost){ toast("自然货币不足（需"+def.cost+"）","nature"); return; }
+  S.natureCurrency-=def.cost;
+  S.plots[i]={b:type,lv:1,good:null,help:null};
+  S.builds=(S.builds||0)+1;
+  sfx('build'); checkTasks();
+  if(type==="shelf"){ afterAction(); openPlot(i); }
+  else { afterAction(); closePlot(); toast("建造完成："+def.icon+def.name,"rep"); }
+}
+function upPlot(i){
+  const p=S.plots[i]; if(!p||!p.b){ return; }
+  const def=BUILDINGS[p.b];
+  if(p.lv>=3){ toast(def.name+"已满级（Lv3）"); return; }
+  const cost=(UP_COST[p.b]&&UP_COST[p.b][p.lv-1])||160;
+  if(S.natureCurrency<cost){ toast("自然货币不足（升级需"+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; p.lv++;
+  toast(def.icon+def.name+" 升至 Lv"+p.lv,"rep"); sfx('level');
+  afterAction(); openPlot(i);
+}
+function setPlotGood(i,good){
+  const p=S.plots[i]; if(!p||p.b!=="shelf"){ return; }
+  if(p.good===good){ return; }
+  if(S.plots.some((q,j)=>j!==i&&q.b==="shelf"&&q.good===good)){ toast("该品类已有货架——分散品类才能接住更多顾客","karma"); return; }
+  if(p.good && S.natureCurrency<SHELF_SWITCH_COST){ toast("自然货币不足（换品类需"+SHELF_SWITCH_COST+"）","nature"); return; }
+  if(p.good) S.natureCurrency-=SHELF_SWITCH_COST;
+  p.good=good;
+  toast("货架上架 "+GOODS[good]+good,"rep"); sfx('serve');
+  afterAction(); openPlot(i);
+}
+function demolish(i){
+  const p=S.plots[i]; if(!p||!p.b){ return; }
+  const def=BUILDINGS[p.b];
+  if(p.help!=null){ const h=S.helpers.find(x=>x.id===p.help); if(h) h.plot=null; }
+  const refund=Math.floor(def.cost/2);
+  S.natureCurrency+=refund;
+  S.plots[i]=emptyPlot();
+  toast("拆除 "+def.icon+def.name+" · 返还 ❀"+refund,"nature");
+  afterAction(); closePlot();
+}
+function recruitHelper(){
+  const cap=helperCap();
+  if(S.helpers.length>=cap){ toast("伙计上限 "+cap+"——去建 🏕伙计营地（位格4解锁）","karma"); return; }
+  const cost=50+S.helpers.length*30;
+  if(S.natureCurrency<cost){ toast("自然货币不足（招募需"+cost+"）","nature"); return; }
+  S.natureCurrency-=cost;
+  const used=new Set(S.helpers.map(h=>h.name));
+  const nm=HELPER_NAMES.find(n=>!used.has(n))||"伙计"+(S.helpers.length+1);
+  S.helperSeq=(S.helperSeq||S.helpers.length)+1;
+  S.helpers.push({id:S.helperSeq,name:nm,plot:null});
+  toast("招募伙计「"+nm+"」！点建筑即可分配差事","rep"); sfx('level');
+  checkTasks(); afterAction();
+}
+let currentPlot=-1;
+function assignHelperToPlot(v, plotIdx){
+  if(!S.plots[plotIdx]){ return; }
+  const hid = v===""?null:parseInt(v,10);
+  if(hid!=null){
+    const h=S.helpers.find(x=>x.id===hid);
+    if(!h){ return; }
+    if(h.plot!=null && S.plots[h.plot]) S.plots[h.plot].help=null;
+    h.plot=plotIdx;
+  } else {
+    const cur=S.helpers.find(x=>x.plot===plotIdx);
+    if(cur) cur.plot=null;
+  }
+  S.plots[plotIdx].help=hid;
+  checkTasks(); afterAction();
+}
+function assignHelperTo(v){
+  if(currentPlot<0||!S.plots[currentPlot]){ return; }
+  assignHelperToPlot(v,currentPlot);
+  openPlot(currentPlot);
+}
+function assignPlotToHelper(hid,v){
+  const h=S.helpers.find(x=>x.id===hid); if(!h){ return; }
+  const plotIdx = v===""?null:parseInt(v,10);
+  if(h.plot!=null && S.plots[h.plot]) S.plots[h.plot].help=null;
+  h.plot=plotIdx;
+  if(plotIdx!=null && S.plots[plotIdx]) S.plots[plotIdx].help=hid;
+  checkTasks(); afterAction();
+}
+function openPlot(i){
+  currentPlot=i;
+  const p=S.plots[i]; if(!p){ return; }
+  const card=$("#plotCard"); if(!card){ return; }
+  let h="";
+  if(!p.b){
+    h+=`<div class="pm-title">🏗 空地 ${i+1}</div>
+      <div class="muted small" style="text-align:center">自然货币 ❀${Math.round(S.natureCurrency)} · 点击建筑立即建造</div>
+      <div class="pm-grid">`;
+    Object.keys(BUILDINGS).forEach(k=>{
+      const def=BUILDINGS[k];
+      if(S.plane<def.plane){
+        h+=`<button class="pm-btn locked" disabled><span class="pi">🔒</span>${def.name}<span class="pc">位格${def.plane}解锁</span></button>`;
+      } else {
+        h+=`<button class="pm-btn" onclick="buildOn(${i},'${k}')"><span class="pi">${def.icon}</span>${def.name}<span class="pc">❀${def.cost}</span></button>`;
+      }
+    });
+    h+=`</div><div class="muted small" style="text-align:center">货架决定能卖什么；祭坛产信仰；炼化炉炼能量；飞升祭坛升位格</div>`;
+  } else {
+    const def=BUILDINGS[p.b];
+    h+=`<div class="pm-title">${def.icon} ${def.name} Lv${p.lv}</div>
+      <div class="muted small" style="text-align:center">${def.desc}</div>`;
+    if(p.b==="shelf"){
+      if(!p.good){
+        h+=`<div class="muted small" style="text-align:center;margin:8px 0">选择上架品类（之后更换需 ❀${SHELF_SWITCH_COST}）</div><div class="pm-grid">`;
+        GOODS_ORDER.forEach(g=>{
+          const dup=S.plots.some((q,j)=>j!==i&&q.b==="shelf"&&q.good===g);
+          h+=`<button class="pm-btn ${dup?"locked":""}" ${dup?"disabled":""} onclick="setPlotGood(${i},'${g}')"><span class="pi">${GOODS[g]}</span>${g}<span class="pc">${dup?"已有货架":"点击上架"}</span></button>`;
+        });
+        h+=`</div>`;
+      } else {
+        h+=`<div class="pm-row"><span>当前上架：${GOODS[p.good]} <b>${p.good}</b>（收益 ×${[1,1,1.3,1.6][p.lv]}）</span></div>
+          <div class="pm-grid">`;
+        GOODS_ORDER.forEach(g=>{
+          const dup=S.plots.some((q,j)=>j!==i&&q.b==="shelf"&&q.good===g);
+          h+=`<button class="pm-btn ${p.good===g?"sel":""} ${dup?"locked":""}" ${dup?"disabled":""} onclick="setPlotGood(${i},'${g}')"><span class="pi">${GOODS[g]}</span>${g}<span class="pc">${p.good===g?"当前":(dup?"已有货架":"❀"+SHELF_SWITCH_COST+"换")}</span></button>`;
+        });
+        h+=`</div>`;
+      }
+    }
+    if(p.b==="altar"){
+      h+=`<div class="pm-row"><span>产出</span><span>每5秒 +${Math.max(1,Math.round((1+(p.lv-1)*0.8+(p.help!=null?1.2:0))*faithBonus()*planeBonus().allMul))} 信仰${p.help!=null?"（伙计提速）":""}</span></div>`;
+    }
+    if(p.b==="furnace"){
+      h+=`<div class="pm-row"><span>炼化收益</span><span>×${[1,1,1.2,1.5][p.lv]}</span></div>`;
+    }
+    if(p.b==="temple"){
+      h+=`<div class="pm-row"><span>飞升消耗</span><span>×${(1-0.08*(p.lv-1)).toFixed(2)}</span></div>`;
+    }
+    if(p.b==="warehouse"){
+      h+=`<div class="pm-row"><span>货品上限</span><span>${goodsCap()}（本级 +10）</span></div>`;
+    }
+    if(p.b==="sign"){
+      h+=`<div class="pm-row"><span>顾客到访</span><span>间隔 -15%</span></div>`;
+    }
+    if(p.b==="camp"){
+      h+=`<div class="pm-row"><span>伙计上限</span><span>${helperCap()}</span></div>`;
+    }
+    if(p.lv<3){
+      const cost=(UP_COST[p.b]&&UP_COST[p.b][p.lv-1])||160;
+      h+=`<div class="pm-row"><button class="mini" onclick="upPlot(${i})">⬆ 升级 · ❀${cost}</button><span class="muted small">升至 Lv${p.lv+1}</span></div>`;
+    } else {
+      h+=`<div class="pm-row"><span class="muted small">已满级 Lv3</span></div>`;
+    }
+    h+=`<div class="pm-row"><span>分配伙计</span><select onchange="assignHelperTo(this.value)"><option value="">— 空闲 —</option>`;
+    S.helpers.forEach(hh=>{
+      h+=`<option value="${hh.id}" ${p.help===hh.id?"selected":""}>${hh.name}${hh.plot!=null&&hh.plot!==i?"（在他处）":""}</option>`;
+    });
+    h+=`</select></div>
+      <button class="act" style="text-align:center" onclick="demolish(${i})">拆除（返还 ❀${Math.floor(def.cost/2)}）</button>`;
+  }
+  card.innerHTML=h;
+  $("#plotModal").style.display="flex";
+}
+function closePlot(){ currentPlot=-1; const m=$("#plotModal"); if(m) m.style.display="none"; }
+
 /* ============ 位格（能量驱动 → 无敌成长轴） ============ */
 const PLANE_COST = [0, 30, 80, 160, 280, 460, 760, 1200, 1800, 2700];
 const PLANE_PERK = {
-  2:"🌱 修行所得翻倍",
+  2:"🌱 修行所得翻倍 · 商城扩张至9地块",
   3:"✨ 自动进货（货品低于阈值自动补）",
-  4:"💠 超凡物品掉落翻倍",
+  4:"💠 超凡物品掉落翻倍 · 商城扩张至12地块",
   5:"🤲 自动接待（有货自动成交）",
   6:"🔆 能量共鸣（店铺持续溢出源能）",
-  7:"✦ 信仰共鸣（信仰收益 +50%）",
+  7:"✦ 信仰共鸣（信仰收益 +50%）· 商城扩张至15地块",
   8:"🌌 吸引高阶（更常迎来高阶生物）",
   9:"👑 趋近神位（全收益 +25%）",
-  10:"🌟 无敌！诸天万界皆臣服于你",
+  10:"🌟 无敌！诸天万界皆臣服于你 · 商城扩张至18地块",
 };
 function planeBonus(){
   const p=S.plane;
@@ -478,9 +711,10 @@ const EVENTS = [
 /* ============ 新手指引任务 ============ */
 const TUTORIAL = [
   {id:"serve1",name:"接待第一位顾客",desc:"点击排队中的诸天生物，完成一次交易",goal:1,prog:()=>S.deals,reward:{nature:30},rw:"自然+30"},
-  {id:"shelf",name:"升级一次货架",desc:"货架槽专精品类、提升收益，去📈经营页升级货架",goal:1,prog:()=>S.shelfUps||0,reward:{nature:40},rw:"自然+40"},
-  {id:"refine1",name:"炼化第一件超凡物品",desc:"成交后获得超凡物品，到🔮炼化页炼成能量",goal:1,prog:()=>S.refinedTotal,reward:{energy:20},rw:"能量+20"},
-  {id:"plane2",name:"初窥门径（位格2）",desc:"攒够能量，提升位格至 Lv2",goal:2,prog:()=>S.plane,reward:{faith:50},rw:"信仰+50"},
+  {id:"build1",name:"建造第一座建筑",desc:"点击商铺里的空地，建一座货架/祭坛/炼化炉",goal:1,prog:()=>S.builds||0,reward:{nature:40},rw:"自然+40"},
+  {id:"helper1",name:"分配一位伙计",desc:"伙计能加速祭坛产信仰、自动补货；点建筑即可分配",goal:1,prog:()=>S.helpers.filter(h=>h.plot!=null).length,reward:{nature:40},rw:"自然+40"},
+  {id:"refine1",name:"炼化第一件超凡物品",desc:"先建🔥炼化炉；成交获超凡物品后到🔮炼化页炼成能量",goal:1,prog:()=>S.refinedTotal,reward:{energy:20},rw:"能量+20"},
+  {id:"plane2",name:"初窥门径（位格2）",desc:"建🛕飞升祭坛，攒够能量飞升位格 Lv2",goal:2,prog:()=>S.plane,reward:{faith:50},rw:"信仰+50"},
   {id:"event1",name:"经历一次诸天奇遇",desc:"等待或触发事件抉择，并做出选择",goal:1,prog:()=>S.eventsDone,reward:{nature:50},rw:"自然+50"},
   {id:"combo5",name:"连击大师（连击×5）",desc:"连续成交不失败，累积连击至 5",goal:5,prog:()=>S.comboMax,reward:{rep:10},rw:"声望+10"},
 ];
@@ -497,18 +731,36 @@ function defaultState(){
     beings:{}, deals:0, streak:{checkin:0}, lastActionTs:{}, inventory:{}, buffs:{丰穰:0},
     achievements:[], flying:false, log:[], peTimer:0,
     combo:0, comboMax:0, refinedTotal:0, eventsDone:0, critLuck:0, storySeen:false,
-    shelves:[{good:"食物",level:1},{good:"知识",level:1},{good:"旧物",level:1},{good:null,level:1}],
-    hot:{good:"食物",t:50}, hotNext:"知识", shelfUps:0, adsUsed:0
+    hot:{good:"食物",t:50}, hotNext:"知识", shelfUps:0, adsUsed:0,
+    plots:[
+      {b:"shelf",lv:1,good:"食物",help:null},
+      {b:"shelf",lv:1,good:"知识",help:null},
+      {b:"shelf",lv:1,good:"旧物",help:null},
+      emptyPlot(),emptyPlot(),emptyPlot()
+    ],
+    helpers:[{id:1,name:"小灯",plot:null},{id:2,name:"阿账",plot:null}],
+    helperSeq:2, builds:0, altarT:0, restockT:{}
   };
 }
 let S = load();
 function load(){
   try{ const r=localStorage.getItem(SAVE_KEY); if(r){ const d=JSON.parse(r); const base=defaultState();
     Object.assign(base,d);
-    const relics={}; BEINGS.forEach(b=>relics[b.relic]= (d.relics&&d.relics[b.relic])||0); base.relics=relics;
-    const tasks={}; TUTORIAL.forEach(t=>tasks[t.id]= (d.tasks&&d.tasks[t.id])||false); base.tasks=tasks;
+    const relics={}; BEINGS.forEach(b=>relics[b.relic]=(d.relics&&d.relics[b.relic])||0); base.relics=relics;
+    const tasks={}; TUTORIAL.forEach(t=>tasks[t.id]=(d.tasks&&d.tasks[t.id])||false); base.tasks=tasks;
     BEINGS.forEach(b=>{ if(!base.beings[b.id]) base.beings[b.id]={rep:0}; });
-    if(!Array.isArray(base.shelves)||base.shelves.length<4) base.shelves=defaultState().shelves;
+    // —— 旧档迁移：v30 货架槽 → v40 商城地块 ——
+    if(!Array.isArray(base.plots)||base.plots.length<6){
+      const old=(Array.isArray(d.shelves)&&d.shelves.length)?d.shelves:defaultState().shelves||[];
+      const plots=[];
+      for(let i=0;i<6;i++){ const s=old[i]; plots.push(s&&s.good?{b:"shelf",lv:s.level||1,good:s.good,help:null}:emptyPlot()); }
+      base.plots=plots;
+    }
+    base.plots=base.plots.map(p=>({b:p.b||null,lv:p.lv||1,good:p.good||null,help:(p.help==null?null:p.help)}));
+    if(!Array.isArray(base.helpers)||base.helpers.length===0){ base.helpers=[{id:1,name:"小灯",plot:null},{id:2,name:"阿账",plot:null}]; base.helperSeq=2; }
+    base.helpers.forEach(h=>{ if(h.plot!=null&&(!base.plots[h.plot]||!base.plots[h.plot].b)) h.plot=null; });
+    if(!base.restockT) base.restockT={};
+    ensurePlots();
     if(!base.hot||!base.hot.good){ base.hot={good:GOODS_ORDER[0],t:50}; base.hotNext=GOODS_ORDER[1]; }
     return base; } }catch(e){}
   const s=defaultState(); BEINGS.forEach(b=>s.beings[b.id]={rep:0}); return s;
@@ -526,44 +778,12 @@ function comboMul(){ return Math.min(2, 1 + S.combo*0.05); }
 function goodsTotal(){ return GOODS_ORDER.reduce((s,k)=>s+S.goods[k],0); }
 function toast(msg,cls){ const t=document.createElement("div"); t.className="toast "+(cls||""); t.textContent=msg; const box=$("#toast"); if(box) box.appendChild(t); setTimeout(()=>t.remove(),2600); }
 
-/* ============ 货架槽位系统（战略配置核心） ============ */
-function shelfCount(){ return Math.min(8, 3 + S.shop.level); }
-function ensureShelves(){ const n=shelfCount(); while(S.shelves.length<n) S.shelves.push({good:null,level:1}); while(S.shelves.length>n) S.shelves.pop(); }
-function hasShelf(good){ return S.shelves.some(s=>s.good===good); }
-function bestShelfLevel(good){ let lv=0; S.shelves.forEach(s=>{ if(s.good===good&&s.level>lv) lv=s.level; }); return lv; }
+/* ============ 货架（地块上的货架建筑） ============ */
+function hasShelf(good){ return S.plots.some(p=>p.b==="shelf"&&p.good===good); }
+function bestShelfLevel(good){ let lv=0; S.plots.forEach(p=>{ if(p.b==="shelf"&&p.good===good&&p.lv>lv) lv=p.lv; }); return lv; }
 function shelfMul(good){ return [1,1,1.3,1.6][bestShelfLevel(good)||0]; }
 function hotMul(req){ return (S.hot&&S.hot.good&&req.some(r=>r.good===S.hot.good))?1.5:1; }
-function setShelf(i,good){
-  if(!S.shelves[i]) return;
-  const cur=S.shelves[i].good;
-  if(cur===good){ toast("该货架已是 "+good); return; }
-  if(S.natureCurrency<SHELF_SWITCH_COST){ toast("自然货币不足（布置需 "+SHELF_SWITCH_COST+"）","nature"); return; }
-  S.natureCurrency-=SHELF_SWITCH_COST; S.shelves[i]={good:good,level:1}; S.shelfUps++;
-  toast("货架"+(i+1)+" 布置为 "+GOODS[good]+good,"rep"); sfx('serve'); afterAction();
-}
-function upShelf(i){
-  const s=S.shelves[i]; if(!s||!s.good){ toast("先布置该货架的品类"); return; }
-  if(s.level>=3){ toast("货架已满级（Lv3）"); return; }
-  const cost=SHELF_UP_COST[s.level]||160;
-  if(S.natureCurrency<cost){ toast("自然货币不足（升级需 "+cost+"）","nature"); return; }
-  S.natureCurrency-=cost; s.level++; S.shelfUps++;
-  toast("货架"+(i+1)+" "+s.good+" 升至 Lv"+s.level+"（收益 ×"+[1,1,1.3,1.6][s.level]+"）","rep"); sfx('level'); afterAction();
-}
-function openShelf(){
-  ensureShelves();
-  if(S.shelves.length>=8){ toast("货架已达上限（8）"); return; }
-  const cost=SHELF_OPEN_COST[S.shelves.length-3]||900;
-  if(S.natureCurrency<cost){ toast("自然货币不足（开槽需 "+cost+"）","nature"); return; }
-  S.natureCurrency-=cost; S.shelves.push({good:null,level:1});
-  toast("开启新货架槽位（现有 "+S.shelves.length+"）","rep"); sfx('level'); afterAction();
-}
-function advertise(){
-  const cost=60;
-  if(S.natureCurrency<cost){ toast("自然货币不足（广告需 "+cost+"）","nature"); return; }
-  S.natureCurrency-=cost; S.adsUsed=(S.adsUsed||0)+1;
-  toast("📢 广告生效：高阶客将至！","disc"); sfx('event');
-  S.adPulse=2; afterAction();
-}
+
 function checkTasks(){
   TUTORIAL.forEach(t=>{
     if(!S.tasks[t.id] && t.prog()>=t.goal){
@@ -579,21 +799,38 @@ function checkTasks(){
 }
 function refineOne(id){
   if((S.relics[id]||0)<=0){ toast("没有 "+RELICS[id].name,"karma"); return; }
-  S.relics[id]--; const e=RELICS[id].energy; S.energy+=e; S.refinedTotal++;
+  if(furnaceLv()<1){ toast("先建造 🔥炼化炉 才能炼化","karma"); return; }
+  S.relics[id]--; const e=Math.round(RELICS[id].energy*refineMul()); S.energy+=e; S.refinedTotal++;
   toast("炼化 "+RELICS[id].name+" → +"+e+" 能量","energy"); sfx('refine'); afterAction();
 }
 function refineAll(){
   let total=0; BEINGS.forEach(b=>{ const c=S.relics[b.relic]||0; if(c>0){ total+=c*RELICS[b.relic].energy; S.relics[b.relic]=0; } });
   if(total<=0){ toast("暂无可炼化的超凡物品","karma"); return; }
-  S.energy+=total; S.refinedTotal++; toast("全部炼化 → +"+total+" 能量","energy"); sfx('refine'); afterAction();
+  if(furnaceLv()<1){ toast("先建造 🔥炼化炉 才能炼化","karma"); return; }
+  total=Math.round(total*refineMul()); S.energy+=total; S.refinedTotal++;
+  toast("全部炼化 → +"+total+" 能量","energy"); sfx('refine'); afterAction();
 }
 function planeUp(){
   const p=S.plane; if(p>=10){ toast("已是位格巅峰·无敌","energy"); return; }
-  const cost=PLANE_COST[p]; if(S.energy<cost){ toast("能量不足（需"+cost+"）","energy"); return; }
+  if(templeLv()<1){ toast("需先建造 🛕飞升祭坛 才能飞升","karma"); return; }
+  const cost=Math.round(PLANE_COST[p]*(1-0.08*(templeLv()-1)));
+  if(S.energy<cost){ toast("能量不足（需"+cost+"）","energy"); return; }
   S.energy-=cost; S.plane++;
-  if(S.plane>=10){ S.invincible=true; toast("🌟 你已无敌！诸天万界皆臣服","disc"); }
-  else toast("位格升至 Lv"+S.plane+" · "+PLANE_PERK[S.plane],"energy");
+  const before=S.plots.length;
+  ensurePlots();
+  if(S.plane>=10){ S.invincible=true; }
+  showAscend(S.plane, before);
   sfx('level'); afterAction();
+}
+function showAscend(lv, plotsBefore){
+  const m=$("#ascend"); if(!m){ return; }
+  $("#ascLv").textContent="Lv"+lv;
+  $("#ascPerk").textContent=PLANE_PERK[lv]||"";
+  const grew=plotCount()>plotsBefore;
+  $("#ascUnlock").textContent=(grew?("🏗 商城扩张！地块 "+plotsBefore+" → "+plotCount()):"")+(S.plane>=10?" · 诸天万界，皆来臣服":"");
+  m.style.display="flex";
+  const btn=$("#ascBtn");
+  if(btn) btn.onclick=()=>{ m.style.display="none"; };
 }
 
 /* ============ 音效 ============ */
@@ -611,8 +848,9 @@ function sfx(type){
   else if(type==='level'){ f=523; dur=.3; wave='triangle'; }
   else if(type==='fail'){ f=160; dur=.25; wave='square'; }
   else if(type==='event'){ f=440; dur=.2; wave='sine'; }
+  else if(type==='build'){ f=392; dur=.18; wave='triangle'; }
   o.type=wave; o.frequency.setValueAtTime(f,now);
-  if(type==='serve'||type==='crit'||type==='level') o.frequency.exponentialRampToValueAtTime(f*1.5,now+dur);
+  if(type==='serve'||type==='crit'||type==='level'||type==='build') o.frequency.exponentialRampToValueAtTime(f*1.5,now+dur);
   if(type==='fail') o.frequency.exponentialRampToValueAtTime(f*0.5,now+dur);
   g.gain.setValueAtTime(vol,now); g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
   o.start(now); o.stop(now+dur+0.02);
@@ -627,7 +865,9 @@ function doCult(id){
   const pb=planeBonus();
   let mult = (S.buffs.丰穰>0 ? 1.5 : 1) * pb.cultMul * pb.allMul;
   if(c.streak){ S.streak.checkin++; const v=Math.min(25,10+(S.streak.checkin-1)*3); S.natureCurrency+=Math.round(v*mult); toast("+ "+Math.round(v*mult)+" 自然","nature"); }
-  if(c.good){ S.goods[c.good]+=c.n; toast("入库 "+GOODS[c.good]+c.good+"×"+c.n,"rep"); }
+  if(c.good){ const cap=goodsCap(); const room=cap-S.goods[c.good];
+    if(room<=0){ toast("货仓已满（上限"+cap+"）——建 📮仓库 或先消耗","karma"); }
+    else { const add=Math.min(c.n,room); S.goods[c.good]+=add; toast("入库 "+GOODS[c.good]+c.good+"×"+add+(add<c.n?"（货仓将满）":""),"rep"); } }
   if(c.nature && !c.streak){ S.natureCurrency+=Math.round(c.n*mult); toast("+ "+Math.round(c.n*mult)+" 自然","nature"); }
   if(c.faith){ const g=Math.round(c.faith*faithBonus()*penalty()*mult); S.faithCurrent+=g; S.faithTotal+=g; toast("+ "+g+" 信仰","faith"); }
   if(c.count){ S.counts[c.count]=(S.counts[c.count]||0)+1; }
@@ -636,10 +876,14 @@ function doCult(id){
   sfx('serve'); afterAction();
 }
 function autoRestock(){
-  GOODS_ORDER.forEach(k=>{ while(S.goods[k]<2 && S.natureCurrency>=(RESTOCK[k]||5)){ S.natureCurrency-=(RESTOCK[k]||5); S.goods[k]++; } });
+  const cap=goodsCap();
+  GOODS_ORDER.forEach(k=>{ while(S.goods[k]<2 && S.goods[k]<cap && S.natureCurrency>=(RESTOCK[k]||5)){ S.natureCurrency-=(RESTOCK[k]||5); S.goods[k]++; } });
 }
 function buyGood(good,n){
-  n=n||1; const price=(RESTOCK[good]||5)*n;
+  n=n||1; const cap=goodsCap(); const room=cap-S.goods[good];
+  if(room<=0){ toast("货仓已满（上限"+cap+"）——建 📮仓库 扩容","karma"); return; }
+  n=Math.min(n,room);
+  const price=(RESTOCK[good]||5)*n;
   if(S.natureCurrency<price){ toast("自然货币不足（需"+price+"）","nature"); return; }
   S.natureCurrency-=price; S.goods[good]+=n;
   toast("进货 "+GOODS[good]+good+"×"+n+" · -"+price+"自然","rep");
@@ -652,9 +896,8 @@ function canServe(cust){
 }
 function serve(cust){
   const b=cust.being, req=cust.req;
-  // 货架/库存前置校验
   for(const r of req){
-    if(!hasShelf(r.good)){ toast("未布置 "+GOODS[r.good]+r.good+" 货架（去📈经营布置）","karma"); return; }
+    if(!hasShelf(r.good)){ toast("未上架 "+GOODS[r.good]+r.good+"（点商铺里的货架布置）","karma"); return; }
     if(S.goods[r.good] < r.n){ toast("货仓缺 "+GOODS[r.good]+r.good+"×"+r.n+"（去📦货仓进货）","karma"); return; }
   }
   if(b.costFaith && S.faithCurrent < b.costFaith){ toast("信仰之力不足（需"+b.costFaith+"）","karma"); return; }
@@ -716,19 +959,26 @@ const DEITY_COST=[0,200,500,1200,3000,6000];
 function shopUp(){
   const lv=S.shop.level; if(lv>=5){ toast("店铺已满级","faith"); return; }
   const cost=SHOP_COST[lv]; if(S.natureCurrency<cost){ toast("自然货币不足（需"+cost+"）","nature"); return; }
-  S.natureCurrency-=cost; S.shop.level++; ensureShelves();
-  toast("店铺升至 Lv"+S.shop.level+"（货架槽+"+(S.shop.level>lv?1:0)+"）","faith"); sfx('level'); afterAction();
+  S.natureCurrency-=cost; S.shop.level++;
+  toast("店铺升至 Lv"+S.shop.level+"（服务位+1 · 解锁更高阶生物）","faith"); sfx('level'); afterAction();
 }
 function deityUp(){
   const lv=S.deityLevel; if(lv>=6){ toast("神格已满级","faith"); return; }
   const cost=DEITY_COST[lv]; if(S.faithCurrent<cost){ toast("信仰之力不足（需"+cost+"）","faith"); return; }
   S.faithCurrent-=cost; S.deityLevel++; toast("神格升至 Lv"+S.deityLevel+"（产出+8%）","faith"); sfx('level'); afterAction();
 }
+function advertise(){
+  const cost=60;
+  if(S.natureCurrency<cost){ toast("自然货币不足（广告需"+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; S.adsUsed=(S.adsUsed||0)+1;
+  toast("📢 广告生效：高阶客将至！","disc"); sfx('event');
+  S.adPulse=2; afterAction();
+}
 
 /* ============ 渲染 ============ */
 let TAB="shop";
 function afterAction(){ save(); render(); }
-function render(){
+function updateStats(){
   $("#s-faith").textContent=Math.round(S.faithCurrent);
   $("#s-nature").textContent=Math.round(S.natureCurrency);
   $("#s-energy").textContent=Math.round(S.energy);
@@ -740,11 +990,15 @@ function render(){
   $("#s-faithTotal").textContent=Math.round(S.faithTotal);
   $("#s-deals").textContent=S.deals;
   $("#s-goods").textContent=goodsTotal();
+  $("#s-helpers").textContent=S.helpers.length;
   $("#s-inv").textContent=S.invincible?"已达成":"未";
   const cw=$("#s-combo-wrap");
   if(cw){ cw.style.display=S.combo>1?"":"none"; $("#s-combo").textContent=S.combo; }
+}
+function render(){
+  updateStats();
   const v=$("#view"), sv=$("#shopView");
-  if(TAB==="shop"){ sv.style.display="block"; v.style.display="none"; updateShopTop(); updateOrb(); if(!shopRunning) startShop(); }
+  if(TAB==="shop"){ sv.style.display="block"; v.style.display="none"; renderPlots(); updateShopTop(); updateOrb(); if(!shopRunning) startShop(); }
   else { sv.style.display="none"; v.style.display="block";
     if(TAB==="goods") v.innerHTML=renderGoods();
     else if(TAB==="refine") v.innerHTML=renderRefine();
@@ -754,28 +1008,30 @@ function render(){
 }
 function renderGoods(){
   let h=`<div class="card"><h3>📦 货仓（现实采集的平凡货品 · 非货币）</h3>
-    <div class="muted small">共 ${goodsTotal()} 件。只有<b>已布置货架</b>的品类才能被顾客买走</div><div class="grid" style="margin-top:8px">`;
+    <div class="muted small">共 ${goodsTotal()} 件 · 上限 <b>${goodsCap()}</b>（建 📮仓库 扩容）。只有<b>已上架货架</b>的品类才能被顾客买走</div><div class="grid" style="margin-top:8px">`;
   GOODS_ORDER.forEach(k=>{ const ok=hasShelf(k);
-    h+=`<div class="merit" style="${ok?"":"opacity:.55"}"><div class="e">${GOODS[k]}</div>${k}<div class="c">×${S.goods[k]}${ok?"":"·无货架"}</div></div>`; });
+    h+=`<div class="merit" style="${ok?"":"opacity:.55"}"><div class="e">${GOODS[k]}</div>${k}<div class="c">×${S.goods[k]}${ok?"":"·未上架"}</div></div>`; });
   h+=`</div></div>`;
   h+=`<div class="card"><h3>🛒 进货（消耗自然货币购入货品）</h3>
     <div class="muted small">预判「热销」备货能吃红利；只进有货架的品类，避免积压</div><div style="margin-top:6px">`;
   GOODS_ORDER.forEach(k=>{
     const p=RESTOCK[k]||5;
     h+=`<div class="row" style="padding:8px 0;border-bottom:1px solid #0001">
-      <div style="flex:1;font-size:14px">${GOODS[k]} ${k} <span class="muted small">库存 ${S.goods[k]}${hasShelf(k)?"":" · 无货架"}</span></div>
+      <div style="flex:1;font-size:14px">${GOODS[k]} ${k} <span class="muted small">库存 ${S.goods[k]}${hasShelf(k)?"":" · 未上架"}</span></div>
       <div style="display:flex;gap:6px">
         <button class="act" style="width:auto;margin:0;padding:6px 10px" onclick="buyGood('${k}',1)">+1 ·${p}❀</button>
         <button class="act" style="width:auto;margin:0;padding:6px 10px" onclick="buyGood('${k}',5)">+5 ·${p*5}❀</button>
       </div>
     </div>`;
   });
-  h+=`</div><div class="muted small" style="margin-top:8px">自然货币来自「🌱修行」与接待顾客；信仰之力主要来自服务超凡生物</div></div>`;
+  h+=`</div><div class="muted small" style="margin-top:8px">自然货币来自「🌱修行」与接待顾客；信仰之力主要来自祭坛产出与服务超凡生物</div></div>`;
   return h;
 }
 function renderRefine(){
   let h=`<div class="card"><h3>🔮 超凡物品炼化炉</h3>
     <div class="muted small">成交后诸天生物会留下「超凡物品」，在此炼化成<b style="color:#5a2da0">无所不能的能量</b>。能量用于提升<b>位格</b>，直至<b style="color:#5a2da0">无敌</b>。</div>`;
+  const fl=furnaceLv();
+  h+=`<div class="muted small" style="margin:6px 0">炼化炉 Lv${fl}${fl<1?"（未建造——先在商铺建 🔥炼化炉）":" · 炼化收益 ×"+refineMul()}</div>`;
   const have = BEINGS.filter(b=>(S.relics[b.relic]||0)>0);
   if(have.length===0){
     h+=`<div class="muted small" style="margin-top:10px">暂未持有超凡物品——去🏪商铺接待诸天生物，成交后即可获得。</div>`;
@@ -783,7 +1039,7 @@ function renderRefine(){
     have.forEach(b=>{
       const r=RELICS[b.relic];
       h+=`<div class="relic"><div class="ic">${r.icon}</div><div style="flex:1">
-        <div class="nm">${r.name} <span class="muted small">×${S.relics[b.relic]} · 每件炼化 +${r.energy} 能量</span></div></div>
+        <div class="nm">${r.name} <span class="muted small">×${S.relics[b.relic]} · 每件炼化 +${Math.round(r.energy*refineMul())} 能量</span></div></div>
         <button class="act" style="width:auto;margin:0;padding:6px 12px" onclick="refineOne('${b.relic}')">炼化×1</button></div>`;
     });
     h+=`<button class="act" onclick="refineAll()" style="background:linear-gradient(160deg,#efe4ff,#e0d2ff);font-weight:700">🔥 全部炼化</button>`;
@@ -795,11 +1051,11 @@ function renderRefine(){
   BEINGS.forEach(b=>{ const r=RELICS[b.relic]; const got=(S.relics[b.relic]||0)>0;
     h+=`<div class="merit" style="${got?"":"opacity:.45"}"><div class="e">${got?r.icon:"❔"}</div>${got?r.name:"未知"}<div class="c">${got?("+"+r.energy+"能量"):"未获得"}</div></div>`; });
   h+=`</div><div class="muted small" style="margin-top:6px">成交诸天生物有概率留下超凡物品；集齐图鉴也是乐趣。</div></div>`;
-  const p=S.plane, cost=PLANE_COST[p]||0, pct=p>=10?100:Math.round(p/10*100);
+  const p=S.plane, tl=templeLv(), cost=Math.round((PLANE_COST[p]||0)*(1-0.08*(tl-1))), pct=p>=10?100:Math.round(p/10*100);
   h+=`<div class="card"><div class="row"><h3>🌟 位格 Lv${p}${S.invincible?" · 无敌":""}</h3>
-    <button class="act" style="width:auto" onclick="planeUp()">${p>=10?"已达巅峰":("提升·能量"+cost)}</button></div>
+    <button class="act" style="width:auto" onclick="planeUp()">${p>=10?"已达巅峰":("飞升·能量"+cost)}</button></div>
     <div class="bar"><i class="energy" style="width:${pct}%"></i></div>
-    <div class="muted small" style="margin-top:6px">${p>=10?"你已无敌：诸天万界皆来臣服，能量源源不绝。":("距无敌还需 "+(10-p)+" 级位格")}</div></div>`;
+    <div class="muted small" style="margin-top:6px">${p>=10?"你已无敌：诸天万界皆来臣服，能量源源不绝。":("飞升需 🛕飞升祭坛（Lv"+tl+"·消耗×"+(1-0.08*(tl-1)).toFixed(2)+"）｜距无敌还需 "+(10-p)+" 级位格")}</div></div>`;
   h+=`<div class="card"><h3>👑 位格神通（能量解锁）</h3>`;
   for(let i=2;i<=10;i++){ const ok=S.plane>=i; h+=`<div class="perk ${ok?"":"off"}">${ok?"✅":"🔒"} Lv${i} ${PLANE_PERK[i]}</div>`; }
   h+=`</div>`;
@@ -820,25 +1076,38 @@ function renderManage(){
       style="width:86px;height:122px;object-fit:cover;border-radius:12px;box-shadow:0 3px 10px #cdb6e066"
       onerror="this.style.display='none'">
     <div style="flex:1"><h3 style="margin:0 0 6px">🌸 美少女店主</h3>
-    <div class="muted small">诸天位面商城的少女店主。某天她发现：超凡物品竟能炼化成<b style="color:#5a2da0">无所不能的能量</b>——于是开始一点一点收集能量，走向无敌之路。</div></div></div>`;
-  // 热销/预告（市场博弈）
-  h+=`<div class="card"><div class="row"><h3>🔥 本波热销：${GOODS[S.hot.good]||"?"} ${S.hot.good}</h3><span class="muted small">${Math.max(0,Math.ceil(S.hot.t))}s</span></div>
-    <div class="muted small">热销品类成交收益 ×1.5，顾客需求也更偏向它。下一波预告：<b>${GOODS[S.hotNext]||"?"} ${S.hotNext}</b> —— 提前布置货架、备货吃红利。</div>
-    <div class="bar"><i style="width:${Math.max(0,Math.min(100,S.hot.t/70*100))}%"></i></div></div>`;
-  // 货架槽位配置（战略核心）
-  h+=`<div class="card"><div class="row"><h3>🗄 货架配置（${S.shelves.length}/${shelfCount()} 槽）</h3>
-    <button class="mini" onclick="openShelf()">开新槽 ·❀${SHELF_OPEN_COST[S.shelves.length-3]||900}</button></div>
-    <div class="muted small">顾客只买「已布置货架」的品类；货架等级越高收益越高（Lv1×1 / Lv2×1.3 / Lv3×1.6）。</div>`;
-  S.shelves.forEach((s,i)=>{
-    const opts = GOODS_ORDER.map(g=>`<option value="${g}" ${s.good===g?"selected":""}>${GOODS[g]}${g}</option>`).join("");
-    const upCost = s.level>=3?"已满级":("升级 ·❀"+(SHELF_UP_COST[s.level]||160));
-    h+=`<div class="shelf"><span class="sl">槽${i+1}</span>
-      <span class="gi">${s.good?GOODS[s.good]:"❔"}</span>
-      <span class="gn">${s.good?s.good:'<span class="muted">未布置</span>'}<br><span class="lv">Lv${s.level} · 收益×${[1,1,1.3,1.6][s.level]}</span></span>
-      <select onchange="setShelf(${i},this.value)"><option value="">—空—</option>${opts}</select>
-      <button class="mini" onclick="upShelf(${i})">${upCost}</button></div>`;
+    <div class="muted small">诸天位面商城的少女城主。从一片空地开始，建货架、请伙计、立祭坛——收集无所不能的能量，一阶一阶，走向无敌之路。</div></div></div>`;
+  // 位格飞升（时代演进核心）
+  const tl=templeLv(), pcost=Math.round((PLANE_COST[S.plane]||0)*(1-0.08*(tl-1)));
+  h+=`<div class="card"><div class="row"><h3>🛕 位格飞升 Lv${S.plane}</h3>
+    <button class="mini" onclick="planeUp()">${S.plane>=10?"巅峰":("飞升·🔮"+pcost)}</button></div>
+    <div class="muted small">${S.plane>=10?"诸天万界皆来臣服。":"需先建 🛕飞升祭坛（当前 Lv"+tl+"，飞升消耗 ×"+(1-0.08*(tl-1)).toFixed(2)+"）｜每阶位格解锁新建筑与地块"}</div>
+    <div class="muted small" style="margin-top:4px">下一阶扩张：${plotCount()<9?"位格2 → 9地块":(plotCount()<12?"位格4 → 12地块":(plotCount()<15?"位格7 → 15地块":(plotCount()<18?"位格10 → 18地块":"已达最大"))) }</div></div>`;
+  // 伙计系统（自动化经营）
+  const cap=helperCap();
+  const rc=50+S.helpers.length*30;
+  h+=`<div class="card"><div class="row"><h3>👥 伙计（${S.helpers.length}/${cap||0}）</h3>
+    <button class="mini" onclick="recruitHelper()">招募 · ❀${rc}</button></div>
+    <div class="muted small">伙计驻守建筑可自动经营：祭坛产信仰提速、货架自动补货。上限靠 🏕伙计营地（位格4解锁）提升。</div>`;
+  S.helpers.forEach(hh=>{
+    h+=`<div class="helper"><span class="hn">${hh.name}</span>
+      <select onchange="assignPlotToHelper(${hh.id},this.value)">
+        <option value="">— 空闲 —</option>
+        ${S.plots.map((p,i)=>p.b?`<option value="${i}" ${hh.plot===i?"selected":""}>${plotLabel(i)}</option>`:"").join("")}
+      </select></div>`;
   });
+  if(cap===0) h+=`<div class="muted small">提示：暂无伙计营地，当前上限 0——新伙计需先建营地</div>`;
   h+=`</div>`;
+  // 热销波动
+  h+=`<div class="card"><div class="row"><h3>🔥 本波热销：${GOODS[S.hot.good]||"?"} ${S.hot.good}</h3><span class="muted small">${Math.max(0,Math.ceil(S.hot.t))}s</span></div>
+    <div class="muted small">热销品类成交收益 ×1.5，顾客需求也更偏向它。下一波预告：<b>${GOODS[S.hotNext]||"?"} ${S.hotNext}</b> —— 提前上架货架、备货吃红利。</div>
+    <div class="bar"><i style="width:${Math.max(0,Math.min(100,S.hot.t/70*100))}%"></i></div></div>`;
+  // 商城概览
+  const counts={}; S.plots.forEach(p=>{ if(p.b) counts[p.b]=(counts[p.b]||0)+1; });
+  const statArr=Object.keys(BUILDINGS).map(k=>`${BUILDINGS[k].icon}${BUILDINGS[k].name}×${counts[k]||0}`).join(" · ");
+  h+=`<div class="card"><h3>🏗 商城概览（${builtCount()}/${S.plots.length} 地块已建）</h3>
+    <div class="muted small">${statArr}</div>
+    <div class="muted small" style="margin-top:4px">${signCount()?("🏮 招客招牌 "+signCount()+" 座 · 到访提速"):""} ${altarRate()>0?("⛩ 祭坛产出 ≈ "+altarRate().toFixed(1)+" 信仰/秒"):""} ${S.plots.filter(p=>p.b==="shelf").length?("🗄 货架 "+S.plots.filter(p=>p.b==="shelf").length+" 座"):""}</div></div>`;
   // 新手任务
   h+=`<div class="card"><h3>📜 新手指引</h3>`;
   TUTORIAL.forEach(t=>{
@@ -851,12 +1120,12 @@ function renderManage(){
   const sc=SHOP_COST[S.shop.level]||null;
   const dc=DEITY_COST[S.deityLevel]||null;
   h+=`<div class="card"><h3>💼 投资与扩张</h3>
-    <button class="act" onclick="shopUp()">🏠 升级店铺（+1货架槽）${sc?`<span class="sub">自然货币 ${sc} · 当前 Lv${S.shop.level}</span>`:'<span class="sub">已满级</span>'}</button>
+    <button class="act" onclick="shopUp()">🏠 升级店铺（+1服务位）${sc?`<span class="sub">自然货币 ${sc} · 当前 Lv${S.shop.level}</span>`:'<span class="sub">已满级</span>'}</button>
     <button class="act" onclick="deityUp()">🔱 提升神格（产出+8%）${dc?`<span class="sub">信仰之力 ${dc} · 当前 Lv${S.deityLevel}</span>`:'<span class="sub">已满级</span>'}</button>
     <button class="act" onclick="advertise()">📢 投放招客广告<span class="sub">自然货币 60 · 立即引来高阶客，抢占先机</span></button>
     </div>`;
   h+=`<div class="card"><h3>★ 声望 ${S.reputation}</h3><div class="muted small">声望越高，越高阶的诸天生物愿上门；失败/放走会下降</div></div>`;
-  h+=`<div class="card"><h3>🔮 能量 ${Math.round(S.energy)}</h3><div class="muted small">源能来自超凡物品炼化（🔮炼化页）；用于提升位格直至无敌</div></div>`;
+  h+=`<div class="card"><h3>🔮 能量 ${Math.round(S.energy)}</h3><div class="muted small">源能来自超凡物品炼化（🔮炼化页）与位格6后的能量共鸣；用于位格飞升直至无敌</div></div>`;
   h+=`<div class="card"><h3>🐾 诸天生物（已解锁 ${BEINGS.filter(b=>beingUnlocked(b,S)).length}/${BEINGS.length}）</h3>`;
   BEINGS.forEach(b=>{
     const un=beingUnlocked(b,S);
@@ -867,13 +1136,15 @@ function renderManage(){
   h+=`</div>`;
   const ach=[];
   if(S.shop.level>=1) ach.push("初开张");
+  if((S.builds||0)>=10) ach.push("建造大师");
+  if(S.helpers.length>=6) ach.push("伙计东主");
   if(S.shop.level>=5) ach.push("万家灯火");
   if(S.flying) ach.push("店铺飞升");
   if(S.reputation>=100) ach.push("百家争鸣");
   if(S.plane>=10) ach.push("🌟无敌");
   if((S.counts.善行||0)>=100) ach.push("百善");
   if(S.comboMax>=10) ach.push("连击宗师");
-  if(S.shelves.filter(s=>s.level>=3).length>=3) ach.push("货架大师");
+  if(S.plots.filter(p=>p.b==="shelf").length>=6) ach.push("商城大亨");
   h+=`<div class="card"><h3>🏅 成就</h3><div>${ach.length?ach.map(a=>`<span class="ach">${a}</span>`).join(""):'<span class="muted small">暂无，继续经营吧</span>'}</div>`;
   if(S.invincible) h+=`<div class="muted small">🎉 你已无敌，诸天万界皆来光顾！</div>`;
   h+=`<button class="act" onclick="resetGame()">🗑 重置存档（Demo）</button></div>`;
@@ -882,15 +1153,15 @@ function renderManage(){
 function resetGame(){ if(confirm("确定重置 Demo 存档？")){ S=defaultState(); BEINGS.forEach(b=>S.beings[b.id]={rep:0}); save(); render(); toast("存档已重置"); } }
 
 /* ============ 动态店铺 DOM 运行时 ============ */
-let stage=null, custLayer=null, floatLayer=null, orbEl=null, girlEl=null;
+let stage=null, plotBand=null, custLayer=null, floatLayer=null, orbEl=null, girlEl=null;
 let customers=[], spawnTimer=0, shopRunning=false, lastT=0, clock=0, eventTimer=0, stageW=480, eventActive=false;
 function setupShop(){
   stage=$("#shopStage"); if(!stage){ showErr('找不到 #shopStage'); return; }
-  custLayer=$("#custLayer"); floatLayer=$("#floatLayer"); orbEl=$("#energyOrb"); girlEl=$("#shopGirl");
+  plotBand=$("#plotBand"); custLayer=$("#custLayer"); floatLayer=$("#floatLayer"); orbEl=$("#energyOrb"); girlEl=$("#shopGirl");
   stageW=Math.max(280, stage.clientWidth||480);
-  decorateStage(); ensureShelves();
+  decorateStage(); ensurePlots();
   if(girlEl) girlEl.classList.toggle("girl-aura", S.plane>=3);
-  updateOrb(); updateShopTop();
+  renderPlots(); updateOrb(); updateShopTop();
 }
 function decorateStage(){
   if(!stage||stage.dataset.decorated) return; stage.dataset.decorated="1";
@@ -905,6 +1176,41 @@ function decorateStage(){
     p.style.animationDuration=(4+Math.random()*5)+'s'; p.style.animationDelay=(Math.random()*4)+'s';
     p.style.color=cols[i%3]; stage.appendChild(p); }
 }
+function layoutPlots(){
+  if(!stage||!plotBand) return;
+  stageW=Math.max(280, stage.clientWidth||480);
+  const cols=Math.max(3,Math.min(6,Math.floor((stageW-120)/52)));
+  plotBand.style.gridTemplateColumns="repeat("+cols+",1fr)";
+  const rows=Math.ceil(Math.max(6,plotCount())/cols);
+  stage.style.height=(rows<=2?400:400+(rows-2)*62)+"px";
+}
+function renderPlots(){
+  if(!plotBand) return;
+  ensurePlots();
+  plotBand.innerHTML="";
+  S.plots.forEach((p,i)=>{
+    const el=document.createElement("div");
+    const def=p.b?BUILDINGS[p.b]:null;
+    el.className="plot"+(p.b?"":" empty");
+    let inner="";
+    if(p.b){
+      const label = p.b==="shelf" ? (p.good? (GOODS[p.good]+" "+p.good) : "待上架") : def.name;
+      inner=`<div class="pi">${def.icon}</div><div>${label}</div><div class="plv">${"<i></i>".repeat(p.lv)}</div>`;
+      if(p.help!=null){ const hh=S.helpers.find(x=>x.id===p.help); if(hh) inner=`<div class="ph">${hh.name}</div>`+inner; }
+    } else {
+      inner=`<div class="pi">＋</div><div>空地${i+1}</div>`;
+    }
+    el.innerHTML=inner;
+    el.onclick=()=>openPlot(i);
+    plotBand.appendChild(el);
+  });
+  layoutPlots();
+}
+function plotElPos(idx){
+  if(!plotBand) return null;
+  const tile=plotBand.children[idx]; if(!tile) return null;
+  return {x: plotBand.offsetLeft + tile.offsetLeft + tile.offsetWidth/2, y: plotBand.offsetTop + tile.offsetTop};
+}
 function updateOrb(){
   if(!orbEl) return;
   const eNorm=Math.min(1, S.energy/2700), r=14+eNorm*22, warm=eNorm>=0.5;
@@ -917,14 +1223,21 @@ function updateShopTop(){
   const t=$("#shopTop"); if(!t) return;
   let comboHtml = S.combo>1? `<div class="combo">🔥连击 ×${S.combo}（收益+${Math.round((comboMul()-1)*100)}%）</div>` : "";
   let hotHtml = (S.hot&&S.hot.good)? `<div class="hot">🔥热销 ${GOODS[S.hot.good]}×1.5 ｜ 预告 ${GOODS[S.hotNext]||"?"}</div>` : "";
-  t.innerHTML=`<div class="t1">万法商铺 Lv${S.shop.level}</div>
+  const ar=altarRate();
+  t.innerHTML=`<div class="t1">万法商铺 Lv${S.shop.level} · 位格${S.plane}</div>
     ${comboHtml}${hotHtml}
+    <div>🏗地块 ${builtCount()}/${S.plots.length} · 👥伙计 ${S.helpers.length}${ar>0?(" · ⛩+"+ar.toFixed(1)+"/s"):""}</div>
     <div>${S.karma>0?("☣业障 "+Math.round(S.karma)):"✿ 营业中"}</div>
-    <div style="color:#c79bff">🔮能量 ${Math.round(S.energy)} · 位格${S.plane}</div>`;
+    <div style="color:#c79bff">🔮能量 ${Math.round(S.energy)}</div>`;
 }
 function maxCust(){ return Math.min(6, S.shop.level+1); }
 function patienceMax(urgent,big){ return ((urgent?14000:(big?26000:40000))+S.shop.level*1000); }
-function spawnInterval(){ let base=Math.max(2500, 7000 - S.shop.level*900); if(planeBonus().attractHigh) base*=0.8; return base; }
+function spawnInterval(){
+  let base=Math.max(2500, 7000 - S.shop.level*900);
+  if(signCount()>0) base*=Math.pow(0.85, signCount());
+  if(planeBonus().attractHigh) base*=0.8;
+  return Math.max(1500, base);
+}
 function slotX(i,n){ if(n<=1) return stageW/2; const pad=120, span=Math.max(40,stageW-pad*2); return pad+span*i/(n-1); }
 function freeSlot(){
   const n=maxCust(), used=new Set(customers.filter(c=>(c.state==="enter"||c.state==="wait")).map(c=>c.slot));
@@ -972,7 +1285,6 @@ function trySpawn(){
   const urgent = b.tier>=2 && Math.random()<0.12;
   const big = b.tier>=2 && !urgent && Math.random()<0.14;
   spawnOne(b,slot,{urgent,big});
-  // 熟客带客：关系>=50 的顾客 40% 概率带一位同类
   if(S.beings[b.id].rep>=50 && Math.random()<0.4){
     const s2=freeSlot(); if(s2>=0) spawnOne(b,s2,{});
   }
@@ -984,6 +1296,13 @@ function floatText(cust,text,cls){
   el.style.color = cls==="karma"?"#ff8a8a":(cls==="nature"?"#7fe6c8":(cls==="energy"?"#d9c2ff":"#ffe08a"));
   const tx=(parseFloat(cust.el.style.getPropertyValue("--tx"))||cust.tx||stageW/2);
   el.style.left=(tx-16)+"px"; el.style.bottom="120px";
+  floatLayer.appendChild(el); setTimeout(()=>el.remove(),1400);
+}
+function floatAt(pos,text,cls){
+  if(!floatLayer||!pos) return;
+  const el=document.createElement("div"); el.className="float"; el.textContent=text;
+  el.style.color = cls==="karma"?"#ff8a8a":(cls==="faith"?"#ffe08a":(cls==="nature"?"#7fe6c8":"#d9c2ff"));
+  el.style.left=(pos.x-18)+"px"; el.style.top=(pos.y)+"px";
   floatLayer.appendChild(el); setTimeout(()=>el.remove(),1400);
 }
 function burstParticles(cust,color){
@@ -1015,13 +1334,46 @@ function triggerEvent(){
 }
 function tick(dt){
   clock+=dt;
-  // 热销波动（市场博弈）
   if(S.hot){ S.hot.t-=dt/1000; if(S.hot.t<=0){ S.hot={good:S.hotNext,t:rand(40,70)}; const others=GOODS_ORDER.filter(g=>g!==S.hot.good); S.hotNext=others[rand(0,others.length-1)]; toast("🔥 热销切换为 "+GOODS[S.hot.good]+S.hot.good+"，下一波预告 "+GOODS[S.hotNext],"hot"); updateShopTop(); } }
   if(!eventActive){
     eventTimer-=dt; if(eventTimer<=0){ eventTimer=55000+Math.random()*45000; triggerEvent(); }
   }
   const pb=planeBonus();
   if(pb.passiveEnergy){ S.peTimer=(S.peTimer||0)+dt; const rate=pb.invincible?900:3000; if(S.peTimer>=rate){ S.peTimer=0; const a=pb.invincible?3:1; S.energy+=a; updateOrb(); } }
+  // 祭坛被动产信仰（四条资源线之一）
+  S.altarT=(S.altarT||0)+dt;
+  if(S.altarT>=5000){
+    S.altarT=0;
+    let gained=0, firstIdx=-1;
+    S.plots.forEach((p,idx)=>{ if(p.b==="altar"){
+      if(firstIdx<0) firstIdx=idx;
+      const amt=Math.max(1,Math.round((1+(p.lv-1)*0.8+(p.help!=null?1.2:0))*faithBonus()*planeBonus().allMul));
+      S.faithCurrent+=amt; S.faithTotal+=amt; gained+=amt;
+    } });
+    if(gained>0){
+      const pos=plotElPos(firstIdx);
+      floatAt(pos,"⛩ +"+gained+" 信仰","faith");
+      updateStats(); save();
+    }
+  }
+  // 伙计自动补货（货架上有伙计时）
+  S.plots.forEach((p,idx)=>{
+    if(p.b==="shelf"&&p.help!=null&&p.good){
+      S.restockT[idx]=(S.restockT[idx]||0)+dt;
+      if(S.restockT[idx]>=9000){
+        S.restockT[idx]=0;
+        const cap=goodsCap();
+        if(S.goods[p.good]<cap){
+          const price=Math.max(1,Math.ceil((RESTOCK[p.good]||5)*0.5));
+          if(S.natureCurrency>=price){
+            S.natureCurrency-=price; S.goods[p.good]++;
+            floatAt(plotElPos(idx),"📦 伙计补货 +1","nature");
+            updateStats(); save();
+          }
+        }
+      }
+    }
+  });
   if(!eventActive){
     spawnTimer-=dt; if(spawnTimer<=0){ spawnTimer=spawnInterval(); trySpawn(); }
   }
@@ -1047,7 +1399,7 @@ function startShop(){
   customers.forEach(c=>c.el&&c.el.remove()); customers=[];
   shopRunning=true; lastT=0; spawnTimer=400; eventTimer=55000+Math.random()*45000;
   if(girlEl) girlEl.classList.toggle("girl-aura", S.plane>=3);
-  ensureShelves(); updateOrb(); updateShopTop();
+  ensurePlots(); renderPlots(); updateOrb(); updateShopTop();
   trySpawn(); trySpawn(); trySpawn();
   requestAnimationFrame(loop);
 }
@@ -1060,13 +1412,13 @@ document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{
 });
 
 /* ============ 启动 ============ */
-window.addEventListener('resize',()=>{ if(TAB==="shop"&&shopRunning&&stage){ stageW=Math.max(280,stage.clientWidth||480); customers.forEach(c=>{ if(c.state==="wait"){ c.tx=slotX(c.slot,maxCust()); c.el.style.setProperty("--tx",c.tx+"px"); } }); } });
+window.addEventListener('resize',()=>{ if(TAB==="shop"&&shopRunning&&stage){ stageW=Math.max(280,stage.clientWidth||480); customers.forEach(c=>{ if(c.state==="wait"){ c.tx=slotX(c.slot,maxCust()); c.el.style.setProperty("--tx",c.tx+"px"); } }); layoutPlots(); } });
 const _splash=document.getElementById('splash'), _startBtn=document.getElementById('startBtn');
 const _story=document.getElementById('story'), _storyNext=document.getElementById('storyNext'), _storyText=document.getElementById('storyText');
 const STORY_PAGES=[
-  "「万法商铺」开张第七日。少女店主守着这间诸天位面商城，卖些人间的平凡货品，换些零碎的信仰与自然货币。",
+  "「万法商铺」开张第七日。少女城主守着这间诸天位面商城，卖些人间的平凡货品，换些零碎的信仰与自然货币。",
   "直到那日——一位土地公成交后，竟留下一枚温润的「神土」。她随手将它投入炼化炉，炉火骤亮，化出一缕<b>无所不能的能量</b>。",
-  "原来诸天生物的馈赠，皆可炼为能量。而能量，能让她一阶一阶，走向<b>无敌</b>。\n\n于是她决定：开张迎客，运筹货架，收集能量，直到诸天万界皆来臣服。",
+  "原来诸天生物的馈赠，皆可炼为能量。而能量，能让她一阶一阶，走向<b>无敌</b>。\n\n于是她决定：平地起商城，广建屋舍，招募伙计，收集能量——直到诸天万界皆来臣服。",
 ];
 let _storyIdx=0;
 function showStory(){
