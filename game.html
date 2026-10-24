@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>信仰交易录 · 万法商铺 (v2.0 大改)</title>
+<title>信仰交易录 · 万法商铺 (v3.0 战略经营)</title>
 <style>
   :root{
     --faith:#f4c542; --nature:#4ec9a8; --energy:#b07bff; --karma:#e05a5a; --rep:#c98be0;
@@ -24,9 +24,10 @@
   .pill.rep{color:#7a3fa0;border:1px solid #c98be066}
   .pill.shop{color:#6a4bb0;border:1px solid #9b7be066}
   .pill.combo{color:#d2691e;border:1px solid #ff9a4d66;font-weight:700}
-  nav{display:flex;gap:5px;position:fixed;bottom:0;left:0;right:0;max-width:540px;margin:0 auto;
+  .pill.hot{color:#d2691e;border:1px solid #ff9a4d99;font-weight:700}
+  nav{display:flex;gap:4px;position:fixed;bottom:0;left:0;right:0;max-width:540px;margin:0 auto;
     background:#fff8;backdrop-filter:blur(8px);padding:8px;border-top:1px solid #fff;z-index:6}
-  nav button{flex:1;border:0;background:#fff;border-radius:12px;padding:8px 1px;font-size:12px;color:var(--ink);
+  nav button{flex:1;border:0;background:#fff;border-radius:11px;padding:8px 1px;font-size:11px;color:var(--ink);
     box-shadow:0 2px 6px #0001;cursor:pointer}
   nav button.active{background:linear-gradient(160deg,#ffd9ee,#d9ccff);font-weight:700}
   .card{background:var(--card);border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 3px 12px #cdb6e044}
@@ -35,6 +36,8 @@
     background:#fff;box-shadow:0 2px 6px #0001;cursor:pointer;font-size:14px;color:var(--ink)}
   button.act:active{transform:scale(.98)}
   button.act .sub{display:block;font-size:11px;color:#9a8aa5;margin-top:2px}
+  button.mini{border:0;background:#f6efff;color:#6a4bb0;border-radius:9px;padding:5px 10px;font-size:12px;cursor:pointer;box-shadow:0 2px 5px #0001}
+  button.mini.on{background:linear-gradient(160deg,#ffd9ee,#d9ccff);color:#4a2a6b;font-weight:700}
   .tag{display:inline-block;font-size:11px;border-radius:8px;padding:1px 7px;margin-right:4px}
   .t-faith{background:#f4c54222;color:#9a7400}
   .t-nature{background:#4ec9a822;color:#1f7a63}
@@ -53,6 +56,7 @@
   .toast.faith{background:#9a7400ee}.toast.nature{background:#1f7a63ee}.toast.energy{background:#5a2da0ee}
   .toast.karma{background:#a33232ee}.toast.rep{background:#7a3fa0ee}.toast.disc{background:#b07bffee}
   .toast.crit{background:#e07b1fee;font-weight:800;font-size:15px}
+  .toast.hot{background:#e08a1fee}
   @keyframes pop{from{transform:translateY(-8px) scale(.9);opacity:0}to{transform:none;opacity:1}}
   @keyframes fade{0%,70%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
   .muted{color:#9a8aa5;font-size:12px}
@@ -68,6 +72,12 @@
   .perk{font-size:12px;padding:4px 0;color:#5a2da0}
   .perk.off{color:#bbaac9}
   #err{position:fixed;left:8px;right:8px;top:8px;z-index:99;background:#a33232;color:#fff;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.5;white-space:pre-wrap;box-shadow:0 4px 14px #0006}
+  .shelf{display:flex;align-items:center;gap:8px;padding:8px;border-radius:11px;background:#fbf6ff;margin:6px 0;box-shadow:0 1px 4px #cdb6e033}
+  .shelf .sl{font-size:11px;color:#9a8aa5;width:26px}
+  .shelf .gi{font-size:22px;width:28px;text-align:center}
+  .shelf .gn{flex:1;font-size:13px;font-weight:600}
+  .shelf .lv{font-size:11px;color:#5a2da0}
+  .shelf select{border:1px solid #cdb6e0;border-radius:8px;padding:3px 6px;font-size:12px;color:var(--ink);background:#fff}
 
   /* ===== 动态店铺 DOM 版（不依赖 canvas） ===== */
   #shopWrap{position:relative;padding:0;overflow:hidden;border-radius:16px}
@@ -118,16 +128,21 @@
     background:#ffffffe8;color:#4a3b55;font-size:13px;padding:3px 8px;border-radius:9px;box-shadow:0 2px 6px #0002;font-weight:600}
   .customer .pref{position:absolute;left:50%;top:-52px;transform:translateX(-50%);white-space:nowrap;
     background:#fff4d6;color:#9a7400;font-size:10px;padding:1px 6px;border-radius:7px;border:1px solid #f4c54266}
+  .customer .loyal{position:absolute;left:50%;top:-52px;transform:translateX(-50%);white-space:nowrap;
+    background:#e6d6ff;color:#5a2da0;font-size:10px;padding:1px 6px;border-radius:7px;border:1px solid #b07bff66}
   .customer .voice{position:absolute;left:50%;top:-72px;transform:translateX(-50%);white-space:nowrap;max-width:170px;
     background:rgba(123,75,160,0.92);color:#fff;font-size:10px;padding:2px 6px;border-radius:8px}
   .customer .urgent{position:absolute;left:50%;top:-92px;transform:translateX(-50%);white-space:nowrap;
     background:#ff6b3d;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;animation:flash .8s infinite}
+  .customer .big{position:absolute;left:50%;top:-92px;transform:translateX(-50%);white-space:nowrap;
+    background:#3d7bff;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;animation:flash .8s infinite}
   @keyframes flash{0%,100%{opacity:1}50%{opacity:.5}}
   .customer .ring{position:absolute;left:2px;top:18px;width:60px;height:60px;z-index:-1}
   .customer .ring circle{fill:none;stroke-width:4;stroke-linecap:round}
   .customer .ring .bg{stroke:rgba(0,0,0,0.3)}
   .customer .ring .fg{stroke:#4ec9a8;transition:stroke-dashoffset .1s linear}
   .customer.urgentc .ring .fg{stroke:#ff8a4d}
+  .customer.bigc .ring .fg{stroke:#6ba6ff}
   .customer.happy{transform:translateX(-260px)!important;opacity:0;transition:transform .9s ease-in,opacity .9s}
   .customer.sad{transform:translateX(660px)!important;opacity:0;transition:transform .9s ease-in,opacity .9s}
   .float-layer{position:absolute;inset:0;pointer-events:none;z-index:8}
@@ -140,6 +155,7 @@
   .shop-top{position:absolute;left:12px;top:10px;color:#fff;font-size:12px;text-shadow:0 1px 2px #0008;line-height:1.6;pointer-events:none;z-index:7}
   .shop-top .t1{font-size:15px;font-weight:700}
   .shop-top .combo{color:#ffb84d;font-weight:800}
+  .shop-top .hot{color:#ffb84d;font-weight:700}
   .shop-hint{position:absolute;left:10px;bottom:8px;font-size:11px;color:#fff8;text-shadow:0 1px 2px #0006;pointer-events:none;z-index:7}
 
   /* 矢量氛围：星云 / 视差星空 / 上升光尘 */
@@ -299,7 +315,7 @@
         <div class="shop-top" id="shopTop"></div>
         <div class="cust-layer" id="custLayer"></div>
         <div class="float-layer" id="floatLayer"></div>
-        <div class="shop-hint">点击排队顾客接待 · 满足「偏爱」货品有额外奖励 · 连续成交触发连击</div>
+        <div class="shop-hint">点顾客接待 · 只卖「已布置货架」的品类 · 满足偏爱/热销有加成 · 连续成交触发连击</div>
       </div>
     </div>
   </div>
@@ -324,7 +340,6 @@
 
 <script>
 "use strict";
-/* 运行期错误可见化（避免静默白屏） */
 function showErr(msg){
   let e=document.getElementById('err');
   if(!e){ e=document.createElement('div'); e.id='err'; document.body.appendChild(e); }
@@ -333,12 +348,15 @@ function showErr(msg){
 window.addEventListener('error',ev=>showErr((ev.message||'未知错误')+' @'+(ev.lineno||'')));
 window.addEventListener('unhandledrejection',ev=>showErr('Promise: '+(ev.reason&&ev.reason.message||ev.reason)));
 
-const SAVE_KEY = "faithTradeSave_v20";
+const SAVE_KEY = "faithTradeSave_v30";
 
-/* ============ 数据（v2.0） ============ */
+/* ============ 数据 ============ */
 const GOODS = {食物:"🍱", 知识:"📚", 旧物:"📦", 观想:"🌿", 灵物:"✨", 羁绊:"💞"};
 const GOODS_ORDER = ["食物","知识","旧物","观想","灵物","羁绊"];
 const RESTOCK = {食物:4, 知识:6, 旧物:3, 观想:5, 灵物:8, 羁绊:12};
+const SHELF_SWITCH_COST = 20;
+const SHELF_UP_COST = [0,80,160];
+const SHELF_OPEN_COST = [0,120,260,520,900];
 
 const VOICES = {
   landongong:["小友，今儿地里的收成可好？","老朽带了些神土来换些吃食。","这烟火气，最是养人呐。"],
@@ -362,14 +380,6 @@ const RELICS = {
   tianting:{name:"天威",icon:"☀️",energy:40,col:"#fff0a0"},
 };
 
-function buyGood(good,n){
-  n=n||1; const price=(RESTOCK[good]||5)*n;
-  if(S.natureCurrency<price){ toast("自然货币不足（需"+price+"）","nature"); return; }
-  S.natureCurrency-=price; S.goods[good]+=n;
-  toast("进货 "+GOODS[good]+good+"×"+n+" · -"+price+"自然","rep");
-  afterAction();
-}
-
 const CULTS = [
   {id:"checkin",name:"每日签到",nature:10,streak:true,sub:"连签递增至25（位格高时翻倍）"},
   {id:"food",name:"拍今天的食物",good:"食物",n:1,nature:5,sub:"入货仓·食物"},
@@ -383,7 +393,6 @@ const CULTS = [
   {id:"habit",name:"记戒除的坏习惯",faith:20,sub:"非自然心性→信仰·修行"},
 ];
 
-// 顾客 = 诸天万界生物；relic=成交掉落；pref=偏爱货品（给对额外奖励）；tier=阶层
 const BEINGS = [
   {id:"landongong",name:"土地公",icon:"👴",tier:1,relic:"landongong",payNature:20,pref:"食物",desc:"随机需求 → 自然+20"},
   {id:"huxian",name:"狐仙",icon:"🦊",tier:1,relic:"huxian",payFaith:15,pref:"灵物",desc:"随机需求 → 信仰+15"},
@@ -395,11 +404,12 @@ const BEINGS = [
   {id:"tianting",name:"天庭使者",icon:"☀️",tier:4,relic:"tianting",costFaith:100,boon:"飞升",succ:0.6,fail:{imp:-25,consume:true,karma:20},pref:"知识",desc:"随机需求+信仰100 → 飞升(60%)"},
 ];
 function genReq(b){
-  const nItems = b.tier<=1 ? 1 : (Math.random()<0.5?1:2);
+  let nItems = b.tier<=1 ? 1 : (Math.random()<0.5?1:2);
   const req=[]; const used=new Set();
   for(let i=0;i<nItems;i++){
     let g, tries=0;
-    do{ g=GOODS_ORDER[rand(0,GOODS_ORDER.length-1)]; tries++; }while(used.has(g)&&tries<6);
+    if(i===0 && S.hot && S.hot.good && Math.random()<0.5){ g=S.hot.good; }
+    else { do{ g=GOODS_ORDER[rand(0,GOODS_ORDER.length-1)]; tries++; }while(used.has(g)&&tries<6); }
     used.add(g);
     req.push({good:g, n: rand(1, 2+b.tier)});
   }
@@ -413,13 +423,13 @@ function beingUnlocked(b,S){
   return false;
 }
 
-/* ============ 位格（能量驱动 → 无敌成长轴，v2.0 缩短前期路径） ============ */
+/* ============ 位格（能量驱动 → 无敌成长轴） ============ */
 const PLANE_COST = [0, 30, 80, 160, 280, 460, 760, 1200, 1800, 2700];
 const PLANE_PERK = {
   2:"🌱 修行所得翻倍",
   3:"✨ 自动进货（货品低于阈值自动补）",
   4:"💠 超凡物品掉落翻倍",
-  5:"🤲 自动接待（有货自动成交，点击仍给额外奖励）",
+  5:"🤲 自动接待（有货自动成交）",
   6:"🔆 能量共鸣（店铺持续溢出源能）",
   7:"✦ 信仰共鸣（信仰收益 +50%）",
   8:"🌌 吸引高阶（更常迎来高阶生物）",
@@ -440,16 +450,16 @@ function planeBonus(){
   };
 }
 
-/* ============ 事件（诸天奇遇·抉择，v2.0 新增） ============ */
+/* ============ 事件（诸天奇遇·抉择） ============ */
 const EVENTS = [
   {id:"merchant",icon:"🪙",title:"诸天商会来收购",desc:"一位神秘商人愿高价收购你手中的超凡物品，换成大量自然货币——但你将失去炼化它们的能量潜力。",
     choices:[
-      {label:"① 卖给她（清空超凡物品）",ce:"自然货币 +120，超凡物品清零",effect:()=>{ let n=0;BEINGS.forEach(b=>n+=S.relics[b.relic]||0); BEINGS.forEach(b=>S.relics[b.relic]=0); S.natureCurrency+=120; return "商会收走所有超凡物品，你获 +120 自然"; }},
+      {label:"① 卖给她（清空超凡物品）",ce:"自然货币 +120，超凡物品清零",effect:()=>{ BEINGS.forEach(b=>S.relics[b.relic]=0); S.natureCurrency+=120; return "商会收走所有超凡物品，你获 +120 自然"; }},
       {label:"② 婉拒（守护能量）",ce:"声望 +3，业障 -3",effect:()=>{ S.reputation+=3; S.karma=Math.max(0,S.karma-3); return "你婉拒了商人，守护了能量的可能。声望 +3"; }},
     ]},
   {id:"lostgod",icon:"🕯️",title:"迷途神灵求助",desc:"一位落魄的小神在店门外徘徊，他只想要一份平凡的温暖。",
     choices:[
-      {label:"① 赠他一份货品",ce:"自然 -8，声望 +5，随机好感",effect:()=>{ S.natureCurrency=Math.max(0,S.natureCurrency-8); S.reputation+=5; return "你递出一份货品，小神感激离去。声望 +5"; }},
+      {label:"① 赠他一份货品",ce:"自然 -8，声望 +5",effect:()=>{ S.natureCurrency=Math.max(0,S.natureCurrency-8); S.reputation+=5; return "你递出一份货品，小神感激离去。声望 +5"; }},
       {label:"② 请他入店歇脚",ce:"信仰 +20，声望 +2",effect:()=>{ const g=Math.round(20*faithBonus()); S.faithCurrent+=g;S.faithTotal+=g; S.reputation+=2; return "小神讲述诸天见闻，你悟得信仰 +"+g; }},
       {label:"③ 婉言送客",ce:"无变化",effect:()=>{ return "你礼貌送客，门庭依旧。"; }},
     ]},
@@ -465,9 +475,10 @@ const EVENTS = [
     ]},
 ];
 
-/* ============ 新手引导任务（v2.0 新增） ============ */
+/* ============ 新手指引任务 ============ */
 const TUTORIAL = [
   {id:"serve1",name:"接待第一位顾客",desc:"点击排队中的诸天生物，完成一次交易",goal:1,prog:()=>S.deals,reward:{nature:30},rw:"自然+30"},
+  {id:"shelf",name:"升级一次货架",desc:"货架槽专精品类、提升收益，去📈经营页升级货架",goal:1,prog:()=>S.shelfUps||0,reward:{nature:40},rw:"自然+40"},
   {id:"refine1",name:"炼化第一件超凡物品",desc:"成交后获得超凡物品，到🔮炼化页炼成能量",goal:1,prog:()=>S.refinedTotal,reward:{energy:20},rw:"能量+20"},
   {id:"plane2",name:"初窥门径（位格2）",desc:"攒够能量，提升位格至 Lv2",goal:2,prog:()=>S.plane,reward:{faith:50},rw:"信仰+50"},
   {id:"event1",name:"经历一次诸天奇遇",desc:"等待或触发事件抉择，并做出选择",goal:1,prog:()=>S.eventsDone,reward:{nature:50},rw:"自然+50"},
@@ -479,13 +490,15 @@ function defaultState(){
   const relics={}; BEINGS.forEach(b=>relics[b.relic]=0);
   const tasks={}; TUTORIAL.forEach(t=>tasks[t.id]=false);
   return {
-    faithTotal:0, faithCurrent:0, natureCurrency:200, energy:0, karma:0,
+    faithTotal:0, faithCurrent:0, natureCurrency:220, energy:0, karma:0,
     deityLevel:1, shop:{level:1}, reputation:0, plane:1, invincible:false, discovered:false,
     goods:{食物:2,知识:2,旧物:2,观想:2,灵物:2,羁绊:2},
     counts:{}, relics:relics, tasks:tasks,
     beings:{}, deals:0, streak:{checkin:0}, lastActionTs:{}, inventory:{}, buffs:{丰穰:0},
     achievements:[], flying:false, log:[], peTimer:0,
-    combo:0, comboMax:0, refinedTotal:0, eventsDone:0, critLuck:0, storySeen:false
+    combo:0, comboMax:0, refinedTotal:0, eventsDone:0, critLuck:0, storySeen:false,
+    shelves:[{good:"食物",level:1},{good:"知识",level:1},{good:"旧物",level:1},{good:null,level:1}],
+    hot:{good:"食物",t:50}, hotNext:"知识", shelfUps:0, adsUsed:0
   };
 }
 let S = load();
@@ -495,10 +508,12 @@ function load(){
     const relics={}; BEINGS.forEach(b=>relics[b.relic]= (d.relics&&d.relics[b.relic])||0); base.relics=relics;
     const tasks={}; TUTORIAL.forEach(t=>tasks[t.id]= (d.tasks&&d.tasks[t.id])||false); base.tasks=tasks;
     BEINGS.forEach(b=>{ if(!base.beings[b.id]) base.beings[b.id]={rep:0}; });
+    if(!Array.isArray(base.shelves)||base.shelves.length<4) base.shelves=defaultState().shelves;
+    if(!base.hot||!base.hot.good){ base.hot={good:GOODS_ORDER[0],t:50}; base.hotNext=GOODS_ORDER[1]; }
     return base; } }catch(e){}
   const s=defaultState(); BEINGS.forEach(b=>s.beings[b.id]={rep:0}); return s;
 }
-function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){ /* 存储不可用时忽略 */ } }
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
 
 /* ============ 工具 ============ */
 const $ = s=>document.querySelector(s);
@@ -508,8 +523,47 @@ function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
 function faithBonus(){ return (1 + 0.08*(S.deityLevel-1)) * planeBonus().faithMul * planeBonus().allMul; }
 function dropChance(b){ return Math.min(0.7, 0.25 + b.tier*0.08) * planeBonus().dropMul; }
 function comboMul(){ return Math.min(2, 1 + S.combo*0.05); }
-function toast(msg,cls){ const t=document.createElement("div"); t.className="toast "+(cls||""); t.textContent=msg; const box=$("#toast"); if(box) box.appendChild(t); setTimeout(()=>t.remove(),2600); }
 function goodsTotal(){ return GOODS_ORDER.reduce((s,k)=>s+S.goods[k],0); }
+function toast(msg,cls){ const t=document.createElement("div"); t.className="toast "+(cls||""); t.textContent=msg; const box=$("#toast"); if(box) box.appendChild(t); setTimeout(()=>t.remove(),2600); }
+
+/* ============ 货架槽位系统（战略配置核心） ============ */
+function shelfCount(){ return Math.min(8, 3 + S.shop.level); }
+function ensureShelves(){ const n=shelfCount(); while(S.shelves.length<n) S.shelves.push({good:null,level:1}); while(S.shelves.length>n) S.shelves.pop(); }
+function hasShelf(good){ return S.shelves.some(s=>s.good===good); }
+function bestShelfLevel(good){ let lv=0; S.shelves.forEach(s=>{ if(s.good===good&&s.level>lv) lv=s.level; }); return lv; }
+function shelfMul(good){ return [1,1,1.3,1.6][bestShelfLevel(good)||0]; }
+function hotMul(req){ return (S.hot&&S.hot.good&&req.some(r=>r.good===S.hot.good))?1.5:1; }
+function setShelf(i,good){
+  if(!S.shelves[i]) return;
+  const cur=S.shelves[i].good;
+  if(cur===good){ toast("该货架已是 "+good); return; }
+  if(S.natureCurrency<SHELF_SWITCH_COST){ toast("自然货币不足（布置需 "+SHELF_SWITCH_COST+"）","nature"); return; }
+  S.natureCurrency-=SHELF_SWITCH_COST; S.shelves[i]={good:good,level:1}; S.shelfUps++;
+  toast("货架"+(i+1)+" 布置为 "+GOODS[good]+good,"rep"); sfx('serve'); afterAction();
+}
+function upShelf(i){
+  const s=S.shelves[i]; if(!s||!s.good){ toast("先布置该货架的品类"); return; }
+  if(s.level>=3){ toast("货架已满级（Lv3）"); return; }
+  const cost=SHELF_UP_COST[s.level]||160;
+  if(S.natureCurrency<cost){ toast("自然货币不足（升级需 "+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; s.level++; S.shelfUps++;
+  toast("货架"+(i+1)+" "+s.good+" 升至 Lv"+s.level+"（收益 ×"+[1,1,1.3,1.6][s.level]+"）","rep"); sfx('level'); afterAction();
+}
+function openShelf(){
+  ensureShelves();
+  if(S.shelves.length>=8){ toast("货架已达上限（8）"); return; }
+  const cost=SHELF_OPEN_COST[S.shelves.length-3]||900;
+  if(S.natureCurrency<cost){ toast("自然货币不足（开槽需 "+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; S.shelves.push({good:null,level:1});
+  toast("开启新货架槽位（现有 "+S.shelves.length+"）","rep"); sfx('level'); afterAction();
+}
+function advertise(){
+  const cost=60;
+  if(S.natureCurrency<cost){ toast("自然货币不足（广告需 "+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; S.adsUsed=(S.adsUsed||0)+1;
+  toast("📢 广告生效：高阶客将至！","disc"); sfx('event');
+  S.adPulse=2; afterAction();
+}
 function checkTasks(){
   TUTORIAL.forEach(t=>{
     if(!S.tasks[t.id] && t.prog()>=t.goal){
@@ -542,7 +596,7 @@ function planeUp(){
   sfx('level'); afterAction();
 }
 
-/* ============ 音效（Web Audio，首次交互后启用） ============ */
+/* ============ 音效 ============ */
 let actx=null;
 function initAudio(){ if(actx) return; try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ actx=null; } }
 function sfx(type){
@@ -574,7 +628,7 @@ function doCult(id){
   let mult = (S.buffs.丰穰>0 ? 1.5 : 1) * pb.cultMul * pb.allMul;
   if(c.streak){ S.streak.checkin++; const v=Math.min(25,10+(S.streak.checkin-1)*3); S.natureCurrency+=Math.round(v*mult); toast("+ "+Math.round(v*mult)+" 自然","nature"); }
   if(c.good){ S.goods[c.good]+=c.n; toast("入库 "+GOODS[c.good]+c.good+"×"+c.n,"rep"); }
-  if(c.nature && !c.streak){ S.natureCurrency+=Math.round(c.nature*mult); toast("+ "+Math.round(c.nature*mult)+" 自然","nature"); }
+  if(c.nature && !c.streak){ S.natureCurrency+=Math.round(c.n*mult); toast("+ "+Math.round(c.n*mult)+" 自然","nature"); }
   if(c.faith){ const g=Math.round(c.faith*faithBonus()*penalty()*mult); S.faithCurrent+=g; S.faithTotal+=g; toast("+ "+g+" 信仰","faith"); }
   if(c.count){ S.counts[c.count]=(S.counts[c.count]||0)+1; }
   if(S.buffs.丰穰>0) S.buffs.丰穰--;
@@ -584,16 +638,32 @@ function doCult(id){
 function autoRestock(){
   GOODS_ORDER.forEach(k=>{ while(S.goods[k]<2 && S.natureCurrency>=(RESTOCK[k]||5)){ S.natureCurrency-=(RESTOCK[k]||5); S.goods[k]++; } });
 }
+function buyGood(good,n){
+  n=n||1; const price=(RESTOCK[good]||5)*n;
+  if(S.natureCurrency<price){ toast("自然货币不足（需"+price+"）","nature"); return; }
+  S.natureCurrency-=price; S.goods[good]+=n;
+  toast("进货 "+GOODS[good]+good+"×"+n+" · -"+price+"自然","rep");
+  afterAction();
+}
 
-/* ============ 接待顾客（含偏好 / 暴击 / 连击） ============ */
+/* ============ 接待顾客（含货架/热销/偏爱/暴击/连击） ============ */
+function canServe(cust){
+  return cust.req.every(r=>hasShelf(r.good) && S.goods[r.good]>=r.n) && !(cust.being.costFaith && S.faithCurrent<cust.being.costFaith);
+}
 function serve(cust){
   const b=cust.being, req=cust.req;
-  for(const r of req){ if(S.goods[r.good] < r.n){ toast("货仓缺 "+GOODS[r.good]+r.good+"×"+r.n+"（去货仓进货）","karma"); return; } }
+  // 货架/库存前置校验
+  for(const r of req){
+    if(!hasShelf(r.good)){ toast("未布置 "+GOODS[r.good]+r.good+" 货架（去📈经营布置）","karma"); return; }
+    if(S.goods[r.good] < r.n){ toast("货仓缺 "+GOODS[r.good]+r.good+"×"+r.n+"（去📦货仓进货）","karma"); return; }
+  }
   if(b.costFaith && S.faithCurrent < b.costFaith){ toast("信仰之力不足（需"+b.costFaith+"）","karma"); return; }
   for(const r of req){ S.goods[r.good]-=r.n; }
   const totalReq = req.reduce((s,r)=>s+r.n,0);
-  const mul = (1 + 0.2*(totalReq-1)) * planeBonus().allMul * comboMul();
+  const reqMul = Math.max(...req.map(r=>shelfMul(r.good)));
+  const mul = (1 + 0.2*(totalReq-1)) * reqMul * hotMul(req) * (cust.big?1.8:1) * planeBonus().allMul * comboMul();
   const isPref = req.some(r=>r.good===b.pref);
+  const loyal = (S.beings[b.id].rep>=50);
   const succ = b.succ ? (Math.random() < succPenalty(b.succ)) : true;
   if(succ){
     if(b.costFaith) S.faithCurrent-=b.costFaith;
@@ -602,8 +672,9 @@ function serve(cust){
     if(b.payFaithGamble){ if(Math.random()<0.5){ const g=Math.round(S.faithCurrent*rand(3,10)); gotFaith=g; } else { S.faithCurrent=0; gotFaith=-1; } }
     if(b.payNature) gotNature=b.payNature;
     const crit = Math.random() < (0.15 + (S.critLuck||0));
-    if(gotFaith>0) gotFaith=Math.round(gotFaith*faithBonus()*mul*(isPref?1.3:1)*(crit?2:1));
-    if(gotNature>0) gotNature=Math.round(gotNature*mul*(isPref?1.3:1)*(crit?2:1));
+    const prefCrit = (isPref?1.3:1)*(loyal?1.2:1)*(crit?2:1);
+    if(gotFaith>0) gotFaith=Math.round(gotFaith*faithBonus()*mul*prefCrit);
+    if(gotNature>0) gotNature=Math.round(gotNature*mul*prefCrit);
     if(gotFaith>0){ S.faithCurrent+=gotFaith; S.faithTotal+=gotFaith; }
     if(gotNature>0){ S.natureCurrency+=gotNature; }
     if(b.boon==="丰穰"){ S.buffs.丰穰=3; }
@@ -613,7 +684,6 @@ function serve(cust){
     S.beings[b.id].rep=Math.min(100,S.beings[b.id].rep+10+(isPref?2:0));
     S.reputation+=2; S.deals++;
     if(S.critLuck>0) S.critLuck=0;
-    // 连击
     S.combo++; if(S.combo>S.comboMax) S.comboMax=S.combo;
     if(Math.random() < dropChance(b)){
       S.relics[b.relic]=(S.relics[b.relic]||0)+1;
@@ -621,7 +691,7 @@ function serve(cust){
       else toast("获得超凡物品 "+RELICS[b.relic].name+RELICS[b.relic].icon,"energy");
     }
     let msg=""; if(gotFaith>0) msg+="+"+gotFaith+" 信仰 "; if(gotNature>0) msg+="+"+gotNature+" 自然 ";
-    if(isPref) msg+="·偏爱! "; if(b.boon) msg+="· "+b.boon; if(gotFaith===-1) msg="破财！信仰清零";
+    if(isPref) msg+="·偏爱! "; if(loyal) msg+="·熟客 "; if(cust.big) msg+="·大单 "; if(b.boon) msg+="· "+b.boon; if(gotFaith===-1) msg="破财！信仰清零";
     cust.state="happy"; cust.el.classList.remove("wait"); cust.el.classList.add("happy");
     const bub=cust.el.querySelector(".bubble"); if(bub) bub.textContent="💗";
     if(crit && gotFaith>0){ floatText(cust,"暴击! "+msg,"crit"); sfx('crit'); } else { floatText(cust,msg,"faith"); sfx('serve'); }
@@ -646,7 +716,8 @@ const DEITY_COST=[0,200,500,1200,3000,6000];
 function shopUp(){
   const lv=S.shop.level; if(lv>=5){ toast("店铺已满级","faith"); return; }
   const cost=SHOP_COST[lv]; if(S.natureCurrency<cost){ toast("自然货币不足（需"+cost+"）","nature"); return; }
-  S.natureCurrency-=cost; S.shop.level++; toast("店铺升至 Lv"+S.shop.level,"faith"); sfx('level'); afterAction();
+  S.natureCurrency-=cost; S.shop.level++; ensureShelves();
+  toast("店铺升至 Lv"+S.shop.level+"（货架槽+"+(S.shop.level>lv?1:0)+"）","faith"); sfx('level'); afterAction();
 }
 function deityUp(){
   const lv=S.deityLevel; if(lv>=6){ toast("神格已满级","faith"); return; }
@@ -654,7 +725,7 @@ function deityUp(){
   S.faithCurrent-=cost; S.deityLevel++; toast("神格升至 Lv"+S.deityLevel+"（产出+8%）","faith"); sfx('level'); afterAction();
 }
 
-/* ============ 渲染（静态页） ============ */
+/* ============ 渲染 ============ */
 let TAB="shop";
 function afterAction(){ save(); render(); }
 function render(){
@@ -683,15 +754,16 @@ function render(){
 }
 function renderGoods(){
   let h=`<div class="card"><h3>📦 货仓（现实采集的平凡货品 · 非货币）</h3>
-    <div class="muted small">共 ${goodsTotal()} 件，用于满足诸天生物的需求</div><div class="grid" style="margin-top:8px">`;
-  GOODS_ORDER.forEach(k=>{ h+=`<div class="merit"><div class="e">${GOODS[k]}</div>${k}<div class="c">×${S.goods[k]}</div></div>`; });
+    <div class="muted small">共 ${goodsTotal()} 件。只有<b>已布置货架</b>的品类才能被顾客买走</div><div class="grid" style="margin-top:8px">`;
+  GOODS_ORDER.forEach(k=>{ const ok=hasShelf(k);
+    h+=`<div class="merit" style="${ok?"":"opacity:.55"}"><div class="e">${GOODS[k]}</div>${k}<div class="c">×${S.goods[k]}${ok?"":"·无货架"}</div></div>`; });
   h+=`</div></div>`;
   h+=`<div class="card"><h3>🛒 进货（消耗自然货币购入货品）</h3>
-    <div class="muted small">店铺可主动补货，让诸天生物随时有货可换</div><div style="margin-top:6px">`;
+    <div class="muted small">预判「热销」备货能吃红利；只进有货架的品类，避免积压</div><div style="margin-top:6px">`;
   GOODS_ORDER.forEach(k=>{
     const p=RESTOCK[k]||5;
     h+=`<div class="row" style="padding:8px 0;border-bottom:1px solid #0001">
-      <div style="flex:1;font-size:14px">${GOODS[k]} ${k} <span class="muted small">库存 ${S.goods[k]}</span></div>
+      <div style="flex:1;font-size:14px">${GOODS[k]} ${k} <span class="muted small">库存 ${S.goods[k]}${hasShelf(k)?"":" · 无货架"}</span></div>
       <div style="display:flex;gap:6px">
         <button class="act" style="width:auto;margin:0;padding:6px 10px" onclick="buyGood('${k}',1)">+1 ·${p}❀</button>
         <button class="act" style="width:auto;margin:0;padding:6px 10px" onclick="buyGood('${k}',5)">+5 ·${p*5}❀</button>
@@ -749,6 +821,24 @@ function renderManage(){
       onerror="this.style.display='none'">
     <div style="flex:1"><h3 style="margin:0 0 6px">🌸 美少女店主</h3>
     <div class="muted small">诸天位面商城的少女店主。某天她发现：超凡物品竟能炼化成<b style="color:#5a2da0">无所不能的能量</b>——于是开始一点一点收集能量，走向无敌之路。</div></div></div>`;
+  // 热销/预告（市场博弈）
+  h+=`<div class="card"><div class="row"><h3>🔥 本波热销：${GOODS[S.hot.good]||"?"} ${S.hot.good}</h3><span class="muted small">${Math.max(0,Math.ceil(S.hot.t))}s</span></div>
+    <div class="muted small">热销品类成交收益 ×1.5，顾客需求也更偏向它。下一波预告：<b>${GOODS[S.hotNext]||"?"} ${S.hotNext}</b> —— 提前布置货架、备货吃红利。</div>
+    <div class="bar"><i style="width:${Math.max(0,Math.min(100,S.hot.t/70*100))}%"></i></div></div>`;
+  // 货架槽位配置（战略核心）
+  h+=`<div class="card"><div class="row"><h3>🗄 货架配置（${S.shelves.length}/${shelfCount()} 槽）</h3>
+    <button class="mini" onclick="openShelf()">开新槽 ·❀${SHELF_OPEN_COST[S.shelves.length-3]||900}</button></div>
+    <div class="muted small">顾客只买「已布置货架」的品类；货架等级越高收益越高（Lv1×1 / Lv2×1.3 / Lv3×1.6）。</div>`;
+  S.shelves.forEach((s,i)=>{
+    const opts = GOODS_ORDER.map(g=>`<option value="${g}" ${s.good===g?"selected":""}>${GOODS[g]}${g}</option>`).join("");
+    const upCost = s.level>=3?"已满级":("升级 ·❀"+(SHELF_UP_COST[s.level]||160));
+    h+=`<div class="shelf"><span class="sl">槽${i+1}</span>
+      <span class="gi">${s.good?GOODS[s.good]:"❔"}</span>
+      <span class="gn">${s.good?s.good:'<span class="muted">未布置</span>'}<br><span class="lv">Lv${s.level} · 收益×${[1,1,1.3,1.6][s.level]}</span></span>
+      <select onchange="setShelf(${i},this.value)"><option value="">—空—</option>${opts}</select>
+      <button class="mini" onclick="upShelf(${i})">${upCost}</button></div>`;
+  });
+  h+=`</div>`;
   // 新手任务
   h+=`<div class="card"><h3>📜 新手指引</h3>`;
   TUTORIAL.forEach(t=>{
@@ -757,21 +847,21 @@ function renderManage(){
       <div class="td">${t.desc}</div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
   });
   h+=`</div>`;
+  // 投资与扩张
   const sc=SHOP_COST[S.shop.level]||null;
   const dc=DEITY_COST[S.deityLevel]||null;
-  h+=`<div class="card"><div class="row"><h3>🏠 万法商铺 Lv${S.shop.level}</h3>
-    <button class="act" style="width:auto" onclick="shopUp()">${sc?("升级·自然"+sc):"已满级"}</button></div>
-    <div class="muted small">同时容纳顾客 ${S.shop.level+1} 人 · 上门更快 · 转化更高效</div></div>`;
-  h+=`<div class="card"><div class="row"><h3>🔱 神格 Lv${S.deityLevel}</h3>
-    <button class="act" style="width:auto" onclick="deityUp()">${dc?("升级·信仰"+dc):"已满级"}</button></div>
-    <div class="muted small">当前产出加成 +${Math.round((faithBonus()-1)*100)}% · 仅消耗信仰之力</div></div>`;
+  h+=`<div class="card"><h3>💼 投资与扩张</h3>
+    <button class="act" onclick="shopUp()">🏠 升级店铺（+1货架槽）${sc?`<span class="sub">自然货币 ${sc} · 当前 Lv${S.shop.level}</span>`:'<span class="sub">已满级</span>'}</button>
+    <button class="act" onclick="deityUp()">🔱 提升神格（产出+8%）${dc?`<span class="sub">信仰之力 ${dc} · 当前 Lv${S.deityLevel}</span>`:'<span class="sub">已满级</span>'}</button>
+    <button class="act" onclick="advertise()">📢 投放招客广告<span class="sub">自然货币 60 · 立即引来高阶客，抢占先机</span></button>
+    </div>`;
   h+=`<div class="card"><h3>★ 声望 ${S.reputation}</h3><div class="muted small">声望越高，越高阶的诸天生物愿上门；失败/放走会下降</div></div>`;
   h+=`<div class="card"><h3>🔮 能量 ${Math.round(S.energy)}</h3><div class="muted small">源能来自超凡物品炼化（🔮炼化页）；用于提升位格直至无敌</div></div>`;
   h+=`<div class="card"><h3>🐾 诸天生物（已解锁 ${BEINGS.filter(b=>beingUnlocked(b,S)).length}/${BEINGS.length}）</h3>`;
   BEINGS.forEach(b=>{
     const un=beingUnlocked(b,S);
     h+=`<div class="being"><div class="ic">${un?b.icon:"❔"}</div><div style="flex:1">
-      <div class="nm">${un?b.name:"？？？"} <span class="muted small">${un?("声望"+S.beings[b.id].rep+" · 偏爱"+(GOODS[b.pref]||b.pref)):("阶层"+b.tier+"未解锁")}</span></div>
+      <div class="nm">${un?b.name:"？？？"} <span class="muted small">${un?("关系"+S.beings[b.id].rep+(S.beings[b.id].rep>=50?"·熟客":"")+" · 偏爱"+(GOODS[b.pref]||b.pref)):("阶层"+b.tier+"未解锁")}</span></div>
       <div class="muted small">${un?b.desc:"提升店铺等级/声望后解锁"}</div></div></div>`;
   });
   h+=`</div>`;
@@ -783,6 +873,7 @@ function renderManage(){
   if(S.plane>=10) ach.push("🌟无敌");
   if((S.counts.善行||0)>=100) ach.push("百善");
   if(S.comboMax>=10) ach.push("连击宗师");
+  if(S.shelves.filter(s=>s.level>=3).length>=3) ach.push("货架大师");
   h+=`<div class="card"><h3>🏅 成就</h3><div>${ach.length?ach.map(a=>`<span class="ach">${a}</span>`).join(""):'<span class="muted small">暂无，继续经营吧</span>'}</div>`;
   if(S.invincible) h+=`<div class="muted small">🎉 你已无敌，诸天万界皆来光顾！</div>`;
   h+=`<button class="act" onclick="resetGame()">🗑 重置存档（Demo）</button></div>`;
@@ -797,7 +888,7 @@ function setupShop(){
   stage=$("#shopStage"); if(!stage){ showErr('找不到 #shopStage'); return; }
   custLayer=$("#custLayer"); floatLayer=$("#floatLayer"); orbEl=$("#energyOrb"); girlEl=$("#shopGirl");
   stageW=Math.max(280, stage.clientWidth||480);
-  decorateStage();
+  decorateStage(); ensureShelves();
   if(girlEl) girlEl.classList.toggle("girl-aura", S.plane>=3);
   updateOrb(); updateShopTop();
 }
@@ -825,40 +916,36 @@ function updateOrb(){
 function updateShopTop(){
   const t=$("#shopTop"); if(!t) return;
   let comboHtml = S.combo>1? `<div class="combo">🔥连击 ×${S.combo}（收益+${Math.round((comboMul()-1)*100)}%）</div>` : "";
+  let hotHtml = (S.hot&&S.hot.good)? `<div class="hot">🔥热销 ${GOODS[S.hot.good]}×1.5 ｜ 预告 ${GOODS[S.hotNext]||"?"}</div>` : "";
   t.innerHTML=`<div class="t1">万法商铺 Lv${S.shop.level}</div>
-    ${comboHtml}
+    ${comboHtml}${hotHtml}
     <div>${S.karma>0?("☣业障 "+Math.round(S.karma)):"✿ 营业中"}</div>
     <div style="color:#c79bff">🔮能量 ${Math.round(S.energy)} · 位格${S.plane}</div>`;
 }
 function maxCust(){ return Math.min(6, S.shop.level+1); }
-function patienceMax(urgent){ return (urgent?14000:(45+S.shop.level*5)*1000); }
+function patienceMax(urgent,big){ return ((urgent?14000:(big?26000:40000))+S.shop.level*1000); }
 function spawnInterval(){ let base=Math.max(2500, 7000 - S.shop.level*900); if(planeBonus().attractHigh) base*=0.8; return base; }
 function slotX(i,n){ if(n<=1) return stageW/2; const pad=120, span=Math.max(40,stageW-pad*2); return pad+span*i/(n-1); }
 function freeSlot(){
   const n=maxCust(), used=new Set(customers.filter(c=>(c.state==="enter"||c.state==="wait")).map(c=>c.slot));
   for(let i=0;i<n;i++) if(!used.has(i)) return i; return -1;
 }
-function trySpawn(){
-  if(eventActive) return;
-  if(customers.filter(c=>(c.state==="enter"||c.state==="wait")).length>=maxCust()) return;
-  let pool=BEINGS.filter(b=>beingUnlocked(b,S)); if(!pool.length) return;
-  let b;
-  if(planeBonus().attractHigh){ const hi=pool.filter(x=>x.tier>=3); b=(hi.length&&Math.random()<0.6)?hi[rand(0,hi.length-1)]:pool[rand(0,pool.length-1)]; }
-  else b=pool[rand(0,pool.length-1)];
-  const slot=freeSlot(); if(slot<0) return;
+function spawnOne(b,slot,opts){
+  opts=opts||{};
+  const urgent=opts.urgent, big=opts.big;
   const tx=slotX(slot,maxCust()), req=genReq(b), voice=VOICES[b.id][rand(0,VOICES[b.id].length-1)];
-  // 急单：tier>=2 时 12% 概率
-  const urgent = b.tier>=2 && Math.random()<0.12;
   const col = b.tier>=4?"#fff0a0":(b.tier>=3?"#ffcf4d":(b.tier>=2?"#9be0c8":"#ffd0e6"));
-  const el=document.createElement("div"); el.className="customer"+(urgent?" urgentc":"");
+  const el=document.createElement("div"); el.className="customer"+(urgent?" urgentc":"")+(big?" bigc":"");
   el.style.setProperty("--cc",col);
   el.style.setProperty("--tx",(stageW+80)+"px");
   const reqTxt=req.map(r=>GOODS[r.good]+"×"+r.n).join(" ");
-  let ret=""; if(b.payFaith||b.payFaithGamble) ret+="✦"; if(b.payNature) ret+="❀"; if(b.boon) ret+="·"+b.boon;
+  let ret=""; if(b.payFaith||b.payFaithGamble) ret+="✦"; if(b.payNature) ret+="❀"; if(b.boon) ret+="·"+b.boon; if(big) ret+="·大单";
   const prefHtml=`<div class="pref">偏爱 ${GOODS[b.pref]||b.pref}</div>`;
+  const loyalHtml=(S.beings[b.id].rep>=50)?`<div class="loyal">熟客 · 带礼</div>`:"";
   const urgentHtml=urgent?`<div class="urgent">⚡急单 · 高价</div>`:"";
+  const bigHtml=big?`<div class="big">📦大单 · 量大利厚</div>`:"";
   el.innerHTML=`<div class="bubble">${reqTxt} <b style="color:#9a7400">${ret}</b></div>
-    ${prefHtml}${urgentHtml}
+    ${prefHtml}${loyalHtml}${urgentHtml}${bigHtml}
     <div class="voice">${voice}</div>
     <div class="ring"><svg viewBox="0 0 60 60"><circle class="bg" cx="30" cy="30" r="26"></circle><circle class="fg" cx="30" cy="30" r="26"></circle></svg></div>
     <div class="body"></div><div class="face">${b.icon}</div><div class="plate">${b.name}</div>`;
@@ -866,10 +953,29 @@ function trySpawn(){
   const circ=el.querySelector(".ring .fg");
   const C=2*Math.PI*26;
   if(circ){ circ.style.strokeDasharray=C; circ.style.strokeDashoffset=0; }
-  const cust={el,being:b,req,state:"enter",slot,patience:patienceMax(urgent),maxPatience:patienceMax(urgent),tx,wait:0,auto:0,urgent};
+  const cust={el,being:b,req,state:"enter",slot,patience:patienceMax(urgent,big),maxPatience:patienceMax(urgent,big),tx,wait:0,auto:0,urgent,big};
   customers.push(cust);
   requestAnimationFrame(()=>{ if(el&&el.isConnected){ el.style.setProperty("--tx",tx+"px"); } });
   el.addEventListener("click",()=>{ if(cust.state==="wait") serve(cust); });
+  return cust;
+}
+function trySpawn(){
+  if(eventActive) return;
+  if(customers.filter(c=>(c.state==="enter"||c.state==="wait")).length>=maxCust()) return;
+  let pool=BEINGS.filter(b=>beingUnlocked(b,S)); if(!pool.length) return;
+  let b;
+  const adPulse = S.adPulse>0;
+  if(adPulse){ const hi=pool.filter(x=>x.tier>=2); b=(hi.length)?hi[rand(0,hi.length-1)]:pool[rand(0,pool.length-1)]; S.adPulse--; }
+  else if(planeBonus().attractHigh){ const hi=pool.filter(x=>x.tier>=3); b=(hi.length&&Math.random()<0.6)?hi[rand(0,hi.length-1)]:pool[rand(0,pool.length-1)]; }
+  else b=pool[rand(0,pool.length-1)];
+  const slot=freeSlot(); if(slot<0) return;
+  const urgent = b.tier>=2 && Math.random()<0.12;
+  const big = b.tier>=2 && !urgent && Math.random()<0.14;
+  spawnOne(b,slot,{urgent,big});
+  // 熟客带客：关系>=50 的顾客 40% 概率带一位同类
+  if(S.beings[b.id].rep>=50 && Math.random()<0.4){
+    const s2=freeSlot(); if(s2>=0) spawnOne(b,s2,{});
+  }
 }
 function removeCust(c){ if(c.el&&c.el.parentNode) c.el.remove(); customers=customers.filter(x=>x!==c); }
 function floatText(cust,text,cls){
@@ -899,7 +1005,7 @@ function triggerEvent(){
   const modal=$("#eventModal"); if(!modal){ eventActive=false; return; }
   $("#evIcon").textContent=ev.icon; $("#evTitle").textContent=ev.title; $("#evDesc").textContent=ev.desc;
   const box=$("#evChoices"); box.innerHTML="";
-  ev.choices.forEach((ch,idx)=>{
+  ev.choices.forEach((ch)=>{
     const btn=document.createElement("button"); btn.className="ev-choice";
     btn.innerHTML=ch.label+`<span class="ce">${ch.ce}</span>`;
     btn.onclick=()=>{ const res=ch.effect(); S.eventsDone++; eventActive=false; modal.style.display="none"; toast(res,"disc"); sfx('event'); checkTasks(); afterAction(); };
@@ -909,29 +1015,31 @@ function triggerEvent(){
 }
 function tick(dt){
   clock+=dt;
+  // 热销波动（市场博弈）
+  if(S.hot){ S.hot.t-=dt/1000; if(S.hot.t<=0){ S.hot={good:S.hotNext,t:rand(40,70)}; const others=GOODS_ORDER.filter(g=>g!==S.hot.good); S.hotNext=others[rand(0,others.length-1)]; toast("🔥 热销切换为 "+GOODS[S.hot.good]+S.hot.good+"，下一波预告 "+GOODS[S.hotNext],"hot"); updateShopTop(); } }
   if(!eventActive){
     eventTimer-=dt; if(eventTimer<=0){ eventTimer=55000+Math.random()*45000; triggerEvent(); }
   }
   const pb=planeBonus();
-  if(pb.passiveEnergy){ S.peTimer=(S.peTimer||0)+dt; const rate=pb.invincible?900:3000; if(S.peTimer>=rate){ S.peTimer=0; const a=pb.invincible?3:1; S.energy+=a; updateOrb(); if(Math.random()<0.3) toast("能量共鸣 +"+a,"energy"); } }
+  if(pb.passiveEnergy){ S.peTimer=(S.peTimer||0)+dt; const rate=pb.invincible?900:3000; if(S.peTimer>=rate){ S.peTimer=0; const a=pb.invincible?3:1; S.energy+=a; updateOrb(); } }
   if(!eventActive){
     spawnTimer-=dt; if(spawnTimer<=0){ spawnTimer=spawnInterval(); trySpawn(); }
   }
   for(const c of customers){
     if(c.state==="enter"){ c.wait+=dt; if(c.wait>=1100){ c.state="wait"; c.el.classList.add("wait"); } }
     else if(c.state==="wait"){
-      const can=c.req.every(r=>S.goods[r.good]>=r.n);
+      const can=canServe(c);
       if(pb.autoServe && can){ c.auto+=dt; if(c.auto>=1200){ serve(c); continue; } }
       c.patience-=dt; const pr=Math.max(0,c.patience/c.maxPatience);
       const circ=c.el.querySelector(".ring .fg"); if(circ){ const C=2*Math.PI*26; circ.style.strokeDashoffset=(C*(1-pr)).toFixed(1); }
-      if(c.patience<=0){ c.state="sad"; c.el.classList.remove("wait"); c.el.classList.add("sad"); if(can) S.reputation=Math.max(0,S.reputation-1); S.combo=0; afterAction(); setTimeout(()=>removeCust(c),950); }
+      if(c.patience<=0){ c.state="sad"; c.el.classList.remove("wait"); c.el.classList.add("sad"); S.reputation=Math.max(0,S.reputation-1); S.combo=0; afterAction(); setTimeout(()=>removeCust(c),950); }
     }
   }
 }
 function loop(t){
   if(!shopRunning) return;
   if(!lastT) lastT=t; let dt=t-lastT; lastT=t; if(dt>100) dt=100;
-  try{ tick(dt); }catch(e){ /* 单帧异常不终止主循环 */ }
+  try{ tick(dt); }catch(e){}
   requestAnimationFrame(loop);
 }
 function startShop(){
@@ -939,7 +1047,7 @@ function startShop(){
   customers.forEach(c=>c.el&&c.el.remove()); customers=[];
   shopRunning=true; lastT=0; spawnTimer=400; eventTimer=55000+Math.random()*45000;
   if(girlEl) girlEl.classList.toggle("girl-aura", S.plane>=3);
-  updateOrb(); updateShopTop();
+  ensureShelves(); updateOrb(); updateShopTop();
   trySpawn(); trySpawn(); trySpawn();
   requestAnimationFrame(loop);
 }
@@ -950,16 +1058,15 @@ document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{
   if(TAB!=="shop"){ shopRunning=false; }
   initAudio(); render();
 });
-document.querySelectorAll("#shopStage .shop-girl"); // 少女引用在 setupShop 内
 
-/* ============ 启动（开场 splash → 序章剧情 → 点「开始营业」进店） ============ */
+/* ============ 启动 ============ */
 window.addEventListener('resize',()=>{ if(TAB==="shop"&&shopRunning&&stage){ stageW=Math.max(280,stage.clientWidth||480); customers.forEach(c=>{ if(c.state==="wait"){ c.tx=slotX(c.slot,maxCust()); c.el.style.setProperty("--tx",c.tx+"px"); } }); } });
 const _splash=document.getElementById('splash'), _startBtn=document.getElementById('startBtn');
 const _story=document.getElementById('story'), _storyNext=document.getElementById('storyNext'), _storyText=document.getElementById('storyText');
 const STORY_PAGES=[
   "「万法商铺」开张第七日。少女店主守着这间诸天位面商城，卖些人间的平凡货品，换些零碎的信仰与自然货币。",
   "直到那日——一位土地公成交后，竟留下一枚温润的「神土」。她随手将它投入炼化炉，炉火骤亮，化出一缕<b>无所不能的能量</b>。",
-  "原来诸天生物的馈赠，皆可炼为能量。而能量，能让她一阶一阶，走向<b>无敌</b>。\n\n于是她决定：开张迎客，收集能量，直到诸天万界皆来臣服。",
+  "原来诸天生物的馈赠，皆可炼为能量。而能量，能让她一阶一阶，走向<b>无敌</b>。\n\n于是她决定：开张迎客，运筹货架，收集能量，直到诸天万界皆来臣服。",
 ];
 let _storyIdx=0;
 function showStory(){
