@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>诸天争霸 · 信仰战争</title>
+<meta name="description" content="诸天游苑出品 · 国风实时战略：采集信仰、研习神谕科技、占领灵脉领地、统领神君英雄，与魔渊/炽炎/幽冥众神决战诸天。">
+<style>
+  :root{
+    --bg1:#160a2e; --bg2:#241241; --ink:#ece3ff;
+    --player:#5fe0c8; --enemy:#ff6b7a; --gold:#ffd27a;
+    --panel:rgba(26,16,46,.72); --panel-solid:rgba(26,16,46,.92);
+    --line:rgba(180,150,255,.28); --line-soft:rgba(180,150,255,.16);
+    --glass:blur(14px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;background:#0c0720;color:var(--ink);
+    font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;
+    overflow:hidden;user-select:none;-webkit-user-select:none}
+  #wrap{position:fixed;inset:0;display:flex;flex-direction:column}
+  #top{display:flex;gap:10px;align-items:center;padding:8px 12px;
+    background:linear-gradient(180deg,rgba(46,28,76,.88),rgba(20,12,40,.74));
+    background-color:var(--panel);
+    backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+    border-bottom:1px solid var(--line);box-shadow:0 4px 22px rgba(0,0,0,.38);
+    font-size:12px;z-index:5}
+  .top-group{display:flex;gap:6px;align-items:center}
+  .top-group.war{margin-left:8px;padding-left:12px;border-left:1px solid var(--line-soft)}
+  .top-group.ops{margin-left:auto}
+  .stat{display:flex;gap:4px;align-items:center;background:rgba(255,255,255,.05);
+    border:1px solid var(--line-soft);border-radius:999px;padding:4px 11px;white-space:nowrap;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  .stat b{color:var(--gold);font-variant-numeric:tabular-nums}
+  .stat.ally b,.stat.enemy b{color:var(--ink)}
+  .hpbar{width:72px;height:8px;border-radius:6px;background:#3a2a55;overflow:hidden;display:inline-block;vertical-align:middle;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+  .hpbar>i{display:block;height:100%;transition:width .2s}
+  #techBtn{border:1px solid var(--line);background:linear-gradient(160deg,#7a5cff,#b07bff);
+    color:#fff;border-radius:999px;padding:6px 13px;font-size:12px;cursor:pointer;
+    box-shadow:0 2px 12px rgba(123,92,255,.42)}
+  #techBtn:hover{filter:brightness(1.12)}
+  #stageWrap{flex:1;position:relative;overflow:hidden;background:#0c0720}
+  canvas{display:block;width:100%;height:100%;touch-action:none}
+  #bottom{background:linear-gradient(0deg,rgba(46,28,76,.9),rgba(20,12,40,.74));
+    background-color:var(--panel);
+    backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
+    border-top:1px solid var(--line);padding:10px 12px;
+    display:flex;gap:10px;align-items:center;z-index:5;min-height:66px;
+    box-shadow:0 -4px 22px rgba(0,0,0,.38)}
+  .sel-badge{flex:0 0 auto;display:flex;align-items:center;gap:6px;
+    background:linear-gradient(160deg,rgba(123,92,255,.2),rgba(176,123,255,.12));
+    border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12px;
+    color:#e0d4ff;min-width:128px;max-width:210px;line-height:1.3;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+  .btn{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--ink);
+    border-radius:10px;padding:7px 11px;font-size:12px;cursor:pointer;line-height:1.25;text-align:left;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06);transition:background .15s,transform .1s,border-color .15s}
+  .btn small{display:block;color:#bca9e6;font-size:10px;margin-top:1px;font-variant-numeric:tabular-nums}
+  .btn:hover{background:rgba(255,255,255,.14)}
+  .btn:active{transform:translateY(1px)}
+  .btn.on{background:linear-gradient(160deg,#7a5cff,#b07bff);border-color:#c9b3ff;color:#fff}
+  .btn.dis{opacity:.4;cursor:not-allowed}
+  .btn.cat-build{border-left:3px solid var(--player)}
+  .btn.cat-unit{border-left:3px solid var(--gold)}
+  .btn.cat-special{border-left:3px solid var(--enemy)}
+  #hint{font-size:12px;color:#c9b8ee;flex:1;min-width:150px;line-height:1.45}
+  #actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center;flex:0 0 auto}
+  #toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(18,10,38,.92);
+    border:1px solid var(--line);border-radius:10px;padding:7px 15px;font-size:13px;pointer-events:none;
+    opacity:0;transition:opacity .3s;z-index:8;white-space:nowrap;box-shadow:0 6px 22px rgba(0,0,0,.4)}
+  #overlay{position:absolute;inset:0;
+    background:radial-gradient(125% 105% at 50% 0%,rgba(48,24,82,.93),rgba(8,4,20,.95));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+    z-index:20;text-align:center;padding:30px;overflow:auto}
+  #overlay h1{font-size:34px;margin:0;background:linear-gradient(160deg,#ff7ec0,#9b7be0);
+    -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px;
+    text-shadow:0 2px 26px rgba(155,123,224,.32)}
+  #overlay .subtitle{font-size:13px;color:#b9a8e6;letter-spacing:3px;margin-top:-10px}
+  #overlay p{margin:0;color:#cdbcff;max-width:500px;line-height:1.75;font-size:14px}
+  #overlay .btn{font-size:16px;padding:12px 26px;text-align:center;border-radius:999px;
+    background:linear-gradient(160deg,#ffd9ee,#d9ccff);color:#4a2a6b;border:0;font-weight:700;
+    box-shadow:0 6px 22px rgba(199,179,255,.4)}
+  #ov-stats{color:#bca9e6;font-size:13px}
+  #ov-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;flex-direction:column;align-items:center;max-width:680px}
+  .ov-feats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%}
+  .ov-feat{flex:1 1 170px;max-width:200px;background:rgba(255,255,255,.05);
+    border:1px solid var(--line-soft);border-radius:14px;padding:14px 12px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+  .ov-feat-ic{font-size:26px}
+  .ov-feat-t{font-size:15px;font-weight:700;margin-top:6px;color:#fff}
+  .ov-feat-d{font-size:11px;color:#bca9e6;margin-top:3px;line-height:1.5}
+  .ov-modewrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+  .ov-mode-label{font-size:13px;color:#cdbcff}
+  .ov-modes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .ov-mode{width:120px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);
+    border-radius:14px;padding:12px 8px;cursor:pointer;text-align:center;transition:all .15s;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+  .ov-mode:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+  .ov-mode.on{background:linear-gradient(160deg,rgba(123,92,255,.34),rgba(176,123,255,.22));
+    border-color:#c9b3ff;box-shadow:0 4px 18px rgba(123,92,255,.42)}
+  .ov-mode-n{font-size:18px;font-weight:700}
+  .ov-mode-t{font-size:12px;color:#cdbcff;margin-top:2px}
+  .ov-mode-hint{font-size:12px;color:#bca9e6;line-height:1.6;max-width:500px}
+  .mini{font-size:11px;color:#a99bd0;margin-top:6px;line-height:1.6;max-width:560px}
+  #techPanel{display:none;position:absolute;right:10px;top:58px;width:272px;background:var(--panel-solid);
+    border:1px solid var(--line);border-radius:16px;z-index:15;max-height:74%;overflow:hidden;
+    box-shadow:0 12px 42px rgba(0,0,0,.55);
+    backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass)}
+  #techPanel .tp-head{display:flex;justify-content:space-between;align-items:center;
+    padding:11px 14px;background:linear-gradient(160deg,#7a5cff,#b07bff);color:#fff}
+  #techPanel .tp-body{padding:12px 14px;overflow:auto;max-height:calc(74vh - 46px)}
+  #techPanel b{color:#e9d9ff}
+  #pauseBox,#errBox{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
+    justify-content:center;gap:14px;z-index:25;text-align:center;padding:24px}
+  #pauseBox{background:rgba(8,4,20,.8);backdrop-filter:blur(4px)}
+  #errBox{background:rgba(38,6,12,.93)}
+  #pauseBox h1,#errBox h1{font-size:28px;margin:0}
+  #pauseBox h1{background:linear-gradient(160deg,#9b7be0,#ff7ec0);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #errBox h1{color:#ff8a8a}
+  #errMsg{background:rgba(0,0,0,.42);border:1px solid rgba(255,140,140,.4);border-radius:10px;
+    padding:10px 14px;max-width:560px;color:#ffd2d2;font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;white-space:pre-wrap;text-align:left;max-height:40vh;overflow:auto;line-height:1.5;margin:0}
+  .ctrl{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--ink);
+    border-radius:999px;padding:6px 13px;font-size:12px;cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:background .15s,transform .1s}
+  .ctrl:hover{background:rgba(255,255,255,.16)}
+  .ctrl:active{transform:translateY(1px)}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="top">
+    <div class="top-group res">
+      <div class="stat">✨ 信仰 <b id="s-gem">0</b></div>
+      <div class="stat">⚡ 灵能 <b id="s-pow">0/0</b></div>
+      <div class="stat">👥 人数 <b id="s-pop">0</b></div>
+      <div class="stat">🌟 时代 <b id="s-age">初阶</b></div>
+    </div>
+    <div class="top-group war">
+      <div class="stat">⏱ <b id="s-time">0:00</b></div>
+      <div class="stat ally">🏯 主神殿 <span class="hpbar"><i id="s-pHp" style="background:var(--player)"></i></span></div>
+      <div class="stat enemy">👿 敌核 <b id="s-eCores">3</b></div>
+      <div class="stat">⚔️ 兵力 <b id="s-army">0</b></div>
+    </div>
+    <div class="top-group ops">
+      <button id="techBtn" onclick="toggleTech()">⚙️ 科技树</button>
+      <button id="saveBtn" class="ctrl" onclick="saveGame()">💾 存档</button>
+      <button id="pauseBtn" class="ctrl" onclick="pauseGame()">⏸ 暂停</button>
+      <button id="exitBtn" class="ctrl" onclick="exitToMenu()">🚪 退出</button>
+    </div>
+  </div>
+  <div id="stageWrap">
+    <canvas id="cv"></canvas>
+    <div id="toast"></div>
+    <div id="techPanel">
+      <div class="tp-head"><b>⚙️ 神谕 · 灵能科技</b><button class="btn" style="padding:3px 9px;border:0;background:rgba(255,255,255,.2)" onclick="toggleTech()">✕</button></div>
+      <div class="tp-body"><div id="techBody"></div></div>
+    </div>
+    <div id="overlay">
+      <h1>诸天争霸 · 信仰战争</h1>
+      <div class="subtitle">国风 · 实时战略 · 诸天游苑出品</div>
+      <p id="ov-desc">你执掌 <b style="color:var(--player)">天庭</b>，统领诸神：在<b>随机生成</b>的诸天战场上采集信仰、研习神谕科技、抢占灵脉领地。选 <b>0</b> 即 🕊 和平模式专心发展，选 1~3 路外神则推平其主核取胜。</p>
+      <div id="ov-actions"></div>
+    </div>
+    <div id="pauseBox">
+      <h1>⏸ 战斗暂停</h1>
+      <p style="color:#cdbcff;margin:0;max-width:420px;line-height:1.7;font-size:14px">战斗已暂停，所有单位与建设进度冻结。<br>点击「继续」随时回到战场；也可重开一局或退出到主菜单。</p>
+      <div id="ov-pause-actions" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"></div>
+    </div>
+    <div id="errBox">
+      <h1>⚠️ 运行出错</h1>
+      <pre id="errMsg"></pre>
+      <div id="ov-err-actions" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"></div>
+    </div>
+  </div>
+  <div id="bottom">
+    <div id="selBadge" class="sel-badge">💡 未选中</div>
+    <div id="hint">点选你的单位或建筑，下方会显示可用指令。先建「兵营」爆天兵，占领中央灵脉，再指挥部队推平敌神核心。</div>
+    <div id="actions" style="display:flex;gap:7px;flex-wrap:wrap"></div>
+  </div>
+</div>
+<script>
+"use strict";
+const WORLD={w:2600,h:1800};
+const DEFS={
+  base:      {name:'主神殿',   hp:1800, cost:0,   build:0,  power:45, r:60, emoji:'🏯', kind:'building'},
+  refinery:  {name:'信仰神殿', hp:480,  cost:380, build:9,  power:-10,r:46, emoji:'⛩️', kind:'building', makes:'harvester'},
+  power:     {name:'聚灵阵',   hp:300,  cost:180, build:6,  power:65, r:36, emoji:'🔮', kind:'building'},
+  barracks:  {name:'兵营',     hp:560,  cost:320, build:10, power:-10,r:46, emoji:'⚔️', kind:'building', makes:'soldier'},
+  factory:   {name:'战车工坊', hp:700,  cost:560, build:14, power:-22,r:52, emoji:'🏭', kind:'building', makes:'tank', age:2},
+  tower:     {name:'守护法阵', hp:380,  cost:300, build:8,  power:-8, r:30, emoji:'🗼', kind:'building', tower:true, range:160, dmg:18, cd:0.5, age:1},
+  soldier:   {name:'天兵',     hp:85,   cost:100, train:3,  power:0,  r:13, emoji:'🗡️', kind:'unit', speed:86, range:82,  dmg:11, cd:0.6, aggro:210},
+  archer:    {name:'神射',     hp:62,   cost:140, train:4,  power:0,  r:13, emoji:'🏹', kind:'unit', speed:80, range:158, dmg:14, cd:0.8, aggro:185},
+  tank:      {name:'玄铁战车', hp:320,  cost:320, train:8,  power:0,  r:18, emoji:'🚙', kind:'unit', speed:58, range:108, dmg:30, cd:1.0, aggro:250},
+  harvester: {name:'信徒车',   hp:110,  cost:140, train:4,  power:0,  r:15, emoji:'🛒', kind:'unit', speed:66, carry:64, harvest:66},
+  hero:      {name:'神君',     hp:600,  cost:0,   train:0,  power:0,  r:20, emoji:'👑', kind:'unit', hero:true, speed:76, range:96, dmg:36, cd:0.7, aggro:290}
+};
+const AGES=[
+  {name:'初阶 · 创世', short:'初阶', faith:0,   sec:0},
+  {name:'中阶 · 兴盛', short:'中阶', faith:800, sec:12},
+  {name:'高阶 · 诸天', short:'高阶', faith:1600,sec:16}
+];
+const TECHS={
+  fengrui:{name:'锋锐', cat:'军备', desc:'全军攻击 +20%', faith:600, age:2},
+  jianbi: {name:'坚壁', cat:'军备', desc:'建筑生命 +25%', faith:600, age:2},
+  jixing: {name:'疾行', cat:'军备', desc:'全军移速 +15%', faith:700, age:3},
+  shenyu: {name:'神谕', cat:'发展', desc:'信仰采集 +30%', faith:700, age:3},
+  lingneng:{name:'灵能共振', cat:'灵能', desc:'灵能产能 +30%', faith:500, age:2},
+  chaopin:{name:'超频枢机', cat:'灵能', desc:'灵能不足时降速仅 65%', faith:600, age:3}
+};
+const FACTS=['player','moyuan','chiyan','youming'];
+const FACTION_INFO={
+  player:{name:'天庭', color:'#5fe0c8', colorD:'#1d6f63', hero:'玄霄神君', ai:null},
+  moyuan:{name:'魔渊', color:'#ff6b7a', colorD:'#7a2630', hero:'渊魔之主', ai:'aggr'},
+  chiyan:{name:'炽炎', color:'#ff9a3c', colorD:'#8a4a14', hero:'焚天炎君', ai:'rush'},
+  youming:{name:'幽冥', color:'#b07bff', colorD:'#4a2a7a', hero:'幽冥鬼帝', ai:'turtle'}
+};
+const AI_PROFILE={
+  aggr:  {wave:22, cap:12, towerW:0.40, waveSize:6},
+  rush:  {wave:17, cap:14, towerW:0.15, waveSize:8},
+  turtle:{wave:28, cap:10, towerW:0.70, waveSize:4}
+};
+const HLV=[0,120,320,640,1100];
+const COUNTER={soldier:'archer',archer:'tank',tank:'soldier'};
+
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+let cssW=0,cssH=0,dpr=1, zoom=1;
+let cam={x:0,y:0};
+let camTween=null, mmDrag=false;
+let mouseCss={x:-1,y:-1};
+const keys={};
+function resize(){
+  const r=cv.parentElement.getBoundingClientRect();
+  cssW=Math.max(320,r.width); cssH=Math.max(320,r.height);
+  dpr=Math.min(2,window.devicePixelRatio||1);
+  cv.width=Math.round(cssW*dpr); cv.height=Math.round(cssH*dpr);
+  cv.style.width=cssW+'px'; cv.style.height=cssH+'px';
+  zoom=1; clampCam();
+}
+window.addEventListener('resize',resize);
+function worldViewW(){ return cssW/zoom; }
+function worldViewH(){ return cssH/zoom; }
+function clampCam(){
+  const vw=worldViewW(), vh=worldViewH();
+  if(vw>=WORLD.w) cam.x=(WORLD.w-vw)/2; else cam.x=Math.max(0,Math.min(WORLD.w-vw,cam.x));
+  if(vh>=WORLD.h) cam.y=(WORLD.h-vh)/2; else cam.y=Math.max(0,Math.min(WORLD.h-vh,cam.y));
+}
+function panTo(wx,wy){
+  let tx=wx-worldViewW()/2, ty=wy-worldViewH()/2;
+  const vw=worldViewW(), vh=worldViewH();
+  if(vw>=WORLD.w) tx=(WORLD.w-vw)/2; else tx=Math.max(0,Math.min(WORLD.w-vw,tx));
+  if(vh>=WORLD.h) ty=(WORLD.h-vh)/2; else ty=Math.max(0,Math.min(WORLD.h-vh,ty));
+  camTween={x:tx,y:ty};
+}
+function s2w(cx,cy){ return {x: cam.x+cx/zoom, y: cam.y+cy/zoom}; }
+function fcol(f){ return FACTION_INFO[f].color; }
+function fcolD(f){ return FACTION_INFO[f].colorD; }
+function hexA(hex,a){ const n=parseInt(hex.slice(1),16); const r=(n>>16)&255,g=(n>>8)&255,b=n&255; return 'rgba('+r+','+g+','+b+','+a+')'; }
+
+let G=null, last=0, raf=0, autoSaveT=20, chosenEnemies=3, paused=false, errShown=false;
+
+function newGame(enemyCount){
+  if(enemyCount==null) enemyCount=chosenEnemies;
+  enemyCount=Math.max(0,Math.min(3,enemyCount|0));
+  const W=WORLD.w, H=WORLD.h;
+  const ids=shuffle(FACTS.filter(f=>f!=='player')).slice(0,enemyCount);
+  const factions=['player'].concat(ids);
+  G={
+    faith:{}, pow:{}, pf:{}, ageOf:{}, aiState:{}, techs:{}, pop:{}, mods:{atk:1,bhp:1,spd:1,harvest:1,powMul:1,pfFloor:0.4},
+    ores:[], buildings:[], units:[], projs:[], fx:[], nodes:[],
+    heroes:{}, heroRespawn:{}, baseXY:{}, factions, enemyCount,
+    sel:[], place:null, mouse:{x:WORLD.w/2,y:WORLD.h/2},
+    dragging:false, dragStart:null, dragNow:null, moved:false,
+    time:0, over:null, shown:false, nextId:1, ageT:0,
+    stats:{kills:0,builtUnits:0,builtBuildings:0,nodesCaptured:0,heroesLost:0,maxAge:1,techs:0,recruited:0}
+  };
+  factions.forEach(f=>{ G.faith[f]=600; G.pow[f]={prod:0,use:0}; G.pf[f]=1; G.heroRespawn[f]=0; G.ageOf[f]=1; G.pop[f]=8; });
+  factions.forEach(f=>{ if(f!=='player') G.aiState[f]={buildTimer:1+Math.random()*2, waveTimer:20+Math.random()*8,
+    cap:AI_PROFILE[FACTION_INFO[f].ai].cap, towerW:AI_PROFILE[FACTION_INFO[f].ai].towerW}; });
+  const slots={ player:{x:W*0.12,y:H*0.82} };
+  const enemySlots=[{x:W*0.87,y:H*0.18},{x:W*0.87,y:H*0.82},{x:W*0.5,y:H*0.13}];
+  ids.forEach((f,i)=> slots[f]=enemySlots[i]);
+  factions.forEach(f=> setupFaction(f, slots[f].x, slots[f].y));
+  genNodes(ids); genOres(ids);
+  const pb=G.baseXY.player;
+  cam.x=pb.x-worldViewW()/2; cam.y=pb.y-worldViewH()/2; clampCam();
+  if(enemyCount===0) toast('🕊 和平模式：专心收集信仰、发展领地');
+}
+function setupFaction(f,x,y){
+  const dir = f==='player'?1:-1;
+  addBuilding('base',f,x,y,true);
+  addBuilding('refinery',f,x+dir*185,y,true);
+  addUnit('harvester',f,x+dir*225,y-30);
+  const h=addUnit('hero',f,x,y-70); G.heroes[f]=h;
+  G.baseXY[f]={x,y};
+}
+function genOres(ids){
+  let oid=1000;
+  const add=(x,y)=>{ G.ores.push({id:oid++,x,y,amount:2000+Math.random()*900,r:30+Math.random()*6}); };
+  G.factions.forEach(f=>{ const b=G.baseXY[f]; const ang=Math.random()*6.2832;
+    add(b.x+Math.cos(ang)*235, b.y+Math.sin(ang)*235);
+    if(Math.random()<0.6) add(b.x+Math.cos(ang+2.3)*330, b.y+Math.sin(ang+2.3)*330);
+  });
+  const nScatter=6+Math.floor(Math.random()*5);
+  let tries=0, made=0;
+  while(made<nScatter && tries<nScatter*40){ tries++;
+    const x=140+Math.random()*(WORLD.w-280), y=140+Math.random()*(WORLD.h-280);
+    if(!farFromBases(x,y,210)) continue;
+    if(!farFromFeatures(x,y,128)) continue;
+    add(x,y); made++;
+  }
+}
+function genNodes(ids){
+  const kinds=['faith','faith','power','outpost'];
+  const pick=()=>kinds[Math.floor(Math.random()*kinds.length)];
+  const nTotal=6+ids.length;
+  let tries=0, made=0;
+  while(made<nTotal && tries<nTotal*50){ tries++;
+    const x=170+Math.random()*(WORLD.w-340), y=170+Math.random()*(WORLD.h-340);
+    if(!farFromBases(x,y,230)) continue;
+    if(!farFromFeatures(x,y,150)) continue;
+    G.nodes.push({x,y,r:54,owner:null,cap:0,kind:pick()}); made++;
+  }
+  let faithCount=G.nodes.filter(n=>n.kind==='faith').length, guard=0;
+  while(faithCount<2 && guard<60){ guard++;
+    const x=WORLD.w*0.5+(Math.random()-0.5)*360, y=WORLD.h*0.5+(Math.random()-0.5)*360;
+    if(farFromBases(x,y,200)&&farFromFeatures(x,y,150)){ G.nodes.push({x,y,r:54,owner:null,cap:0,kind:'faith'}); faithCount++; }
+  }
+}
+
+function addBuilding(type,faction,x,y,force){
+  const d=DEFS[type];
+  const b={id:G.nextId++,type,faction,x,y,def:d,
+    hp:force?d.hp:d.hp*G.mods.bhp, maxHp:d.hp*G.mods.bhp,
+    built:force||d.build===0, buildT:force?0:d.build, producing:null, cd:0};
+  if(faction==='player'&&!force) G.stats.builtBuildings++;
+  if(type==='refinery') G.pop[faction]=(G.pop[faction]||0)+10;
+  G.buildings.push(b); return b;
+}
+function addUnit(type,faction,x,y){
+  const d=DEFS[type];
+  x=Math.max(d.r,Math.min(WORLD.w-d.r,x));
+  y=Math.max(d.r,Math.min(WORLD.h-d.r,y));
+  const u={id:G.nextId++,type,faction,x,y,def:d,hp:d.hp,maxHp:d.hp,cd:0,
+    target:null,moveTarget:null,attackMove:true,state:'idle',carry:0,oreNode:null,
+    dmgBonus:0, level:1, xp:0, skillCd:0};
+  G.units.push(u); return u;
+}
+
+function gemGet(f){return G.faith[f];}
+function gemSet(f,v){G.faith[f]=v;}
+
+function alive(e){return e && e.hp>0;}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
+function isArmy(t){return t==='soldier'||t==='tank'||t==='archer';}
+function nodeKind(n){ return n.kind==='power'?'灵能节点':n.kind==='outpost'?'前哨营地':'信仰灵脉'; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function farFromBases(x,y,d){ for(const b of G.buildings){ if(dist({x,y},b)<d+b.def.r) return false; } return true; }
+function farFromFeatures(x,y,d){ for(const o of G.ores){ if(dist({x,y},o)<d+o.r) return false; } for(const n of G.nodes){ if(dist({x,y},n)<d+n.r) return false; } return true; }
+function nearestEnemy(u,range){
+  let best=null,bd=range;
+  for(const e of G.units){ if(e.faction===u.faction||!alive(e))continue;
+    const d=dist(u,e); if(d<bd){bd=d;best=e;} }
+  for(const b of G.buildings){ if(b.faction===u.faction||!alive(b))continue;
+    const d=dist(u,b); if(d<bd){bd=d;best=b;} }
+  return best;
+}
+function nearestBuilding(u,type,faction){
+  let best=null,bd=1e9;
+  for(const b of G.buildings){ if(b.type!==type||b.faction!==faction||!b.built)continue;
+    const d=dist(u,b); if(d<bd){bd=d;best=b;} }
+  return best;
+}
+function nearestOre(u){
+  let best=null,bd=1e9;
+  for(const o of G.ores){ if(o.amount<=0)continue;
+    const d=dist(u,o); if(d<bd){bd=d;best=o;} }
+  return best;
+}
+function freeAt(x,y,r,ignoreId){
+  if(x<r||y<r||x>WORLD.w-r||y>WORLD.h-r) return false;
+  for(const b of G.buildings){ if(b.id===ignoreId)continue;
+    if(dist({x,y},b) < r+b.def.r+6) return false; }
+  for(const o of G.ores){ if(dist({x,y},o) < r+o.r+8) return false; }
+  for(const n of G.nodes){ if(dist({x,y},n) < r+n.r) return false; }
+  return true;
+}
+
+function moveToward(u,tx,ty,sp){
+  const a=Math.atan2(ty-u.y,tx-u.x);
+  u.x+=Math.cos(a)*sp; u.y+=Math.sin(a)*sp;
+  u.x=Math.max(u.def.r,Math.min(WORLD.w-u.def.r,u.x));
+  u.y=Math.max(u.def.r,Math.min(WORLD.h-u.def.r,u.y));
+}
+
+function dmgOf(src){ return (src.def.dmg + (src.dmgBonus||0)) * G.mods.atk; }
+function dealDamage(src,dst){
+  let d=dmgOf(src);
+  if(src&&src.def.kind==='unit'&&dst&&dst.def&&dst.def.kind==='unit'&&COUNTER[src.type]===dst.type) d*=1.5;
+  dst.hp-=d;
+  if(src&&src.def.hero){ addXP(src, d*0.5); if(dst.hp<=0) addXP(src,40); }
+  if(src&&src.faction==='player'&&dst.faction!=='player'&&dst.hp<=0) G.stats.kills++;
+}
+function spawnProj(src,dst){
+  G.projs.push({x:src.x,y:src.y,tx:dst.x,ty:dst.y,t:0,dur:0.16,
+    col:src.faction==='player'?'#8ff0ff':'#ff9aa6'});
+}
+function startProduce(b,type){
+  if(b.producing) return false;
+  const d=DEFS[type]; if(gemGet(b.faction)<d.cost) return false;
+  gemSet(b.faction, gemGet(b.faction)-d.cost);
+  b.producing={type,t:d.train,total:d.train}; return true;
+}
+
+function addXP(u,amt){
+  if(!u.def.hero) return;
+  u.xp+=amt;
+  while(u.level<5 && u.xp>=HLV[u.level]){
+    u.xp-=HLV[u.level]; u.level++; u.maxHp+=130; u.hp=u.maxHp; u.dmgBonus+=9;
+    if(u.faction==='player') toast('⭐ '+FACTION_INFO.player.hero+' 晋升 Lv'+u.level);
+  }
+}
+function castHeroSkill(u){
+  if(!u||u.skillCd>0||!alive(u)) return;
+  u.skillCd=12;
+  const rad=145, mult=G.ageOf.player>=3?1.6:1, dmg=95*mult;
+  for(const e of G.units){ if(e.faction===u.faction)continue; if(dist(e,u)<rad) e.hp-=dmg; }
+  for(const b of G.buildings){ if(b.faction===u.faction)continue; if(dist(b,u)<rad+b.def.r) b.hp-=dmg; }
+  G.fx.push({x:u.x,y:u.y,t:0,dur:0.5,col:'#ffe08a',ring:rad});
+  if(u.faction==='player') toast('✨ 神罚降临！');
+}
+function castSelectedHero(){ const h=G.sel.find(u=>u.def.hero); if(h) castHeroSkill(h); buildActions(); }
+
+function applyTech(k){
+  if(k==='fengrui') G.mods.atk=1.2;
+  else if(k==='jianbi'){ G.mods.bhp=1.25; for(const b of G.buildings){ b.maxHp*=1.25; b.hp*=1.25; } }
+  else if(k==='jixing') G.mods.spd=1.15;
+  else if(k==='shenyu') G.mods.harvest=1.3;
+  else if(k==='lingneng') G.mods.powMul=1.3;
+  else if(k==='chaopin') G.mods.pfFloor=0.65;
+}
+
+function update(dt){
+  G.time+=dt;
+  reconcilePower();
+  for(const f of G.factions){ let inc=1; for(const b of G.buildings){ if(b.faction===f&&b.built&&b.type==='refinery') inc+=3; } inc += (G.pop[f]||0)*0.2; gemSet(f,gemGet(f)+inc*dt); }
+  if(G.ageT>0){ G.ageT-=dt; if(G.ageT<=0){ G.ageOf.player++; G.stats.maxAge=Math.max(G.stats.maxAge,G.ageOf.player); toast('🌟 晋升 · '+AGES[G.ageOf.player-1].name); renderTechIfOpen(); buildActions(); } }
+
+  for(const b of G.buildings){
+    if(!b.built){
+      b.buildT-=dt*G.pf[b.faction];
+      if(b.buildT<=0){ b.built=true; b.hp=b.maxHp; }
+      else b.hp=Math.max(1,b.maxHp*(1-b.buildT/b.def.build));
+    }
+    if(b.producing){
+      b.producing.t-=dt*G.pf[b.faction];
+      if(b.producing.t<=0){
+        const t=b.producing.type; b.producing=null;
+        const u=addUnit(t,b.faction,b.x,b.y+b.def.r+20);
+        if(b.faction==='player') G.stats.builtUnits++;
+        if(b.faction!=='player'&&isArmy(t)){
+          const pb=G.buildings.find(x=>x.faction==='player'&&x.type==='base');
+          if(pb) u.target=pb;
+        }
+      }
+    }
+    if(b.built&&b.def.tower){
+      b.cd-=dt;
+      if(b.cd<=0){ const tgt=nearestEnemy(b,b.def.range);
+        if(tgt){ b.cd=b.def.cd; tgt.hp-=b.def.dmg*G.mods.atk; spawnProj(b,tgt); } }
+    }
+  }
+
+  for(const u of G.units){
+    if(u.def.hero) u.skillCd=Math.max(0,u.skillCd-dt);
+    if(u.type==='harvester'){ updateHarvester(u,dt); continue; }
+    const sp=u.def.speed*G.mods.spd*dt;
+    let tgt=u.target;
+    if(tgt&&(!alive(tgt))){ u.target=null; tgt=null; }
+    if(!tgt&&u.attackMove){
+      if(u.faction==='player'){ const a=nearestEnemy(u,u.def.aggro); if(a)u.target=a; tgt=a; }
+      else {
+        let best=null,bd=u.def.aggro;
+        for(const e of G.units){ if(e.faction==='player'&&alive(e)){ const d=dist(u,e); if(d<bd){bd=d;best=e;} } }
+        for(const b of G.buildings){ if(b.faction==='player'&&alive(b)){ const d=dist(u,b); if(d<bd){bd=d;best=b;} } }
+        if(best){ u.target=best; tgt=best; }
+        else { u.target=null; const pb=G.buildings.find(b=>b.faction==='player'&&b.type==='base'); if(pb) u.moveTarget={x:pb.x,y:pb.y}; }
+      }
+    }
+    if(tgt){
+      const d=dist(u,tgt);
+      if(d<=u.def.range){
+        u.cd-=dt;
+        if(u.cd<=0){ u.cd=u.def.cd; dealDamage(u,tgt); spawnProj(u,tgt); }
+      } else moveToward(u,tgt.x,tgt.y,sp);
+    } else if(u.moveTarget){
+      if(dist(u,u.moveTarget)>6) moveToward(u,u.moveTarget.x,u.moveTarget.y,sp);
+      else u.moveTarget=null;
+    }
+  }
+
+  updateNodes(dt);
+  for(const p of G.projs){ p.t+=dt; if(p.t>=p.dur) spawnHit(p); }
+  updateFx(dt);
+
+  for(const f of G.factions){ if(f!=='player') aiFaction(f,dt); }
+
+  G.units=G.units.filter(u=>{
+    if(u.hp<=0){ if(u.def.hero){ G.heroes[u.faction]=null; G.heroRespawn[u.faction]=25; if(u.faction==='player') G.stats.heroesLost++; } return false; }
+    return true;
+  });
+  G.buildings=G.buildings.filter(b=>{
+    if(b.hp<=0){ if(G.sel.includes(b)) G.sel=G.sel.filter(s=>s!==b); return false; }
+    return true;
+  });
+  G.projs=G.projs.filter(p=>p.t<p.dur);
+
+  for(const f of G.factions){
+    if(!G.heroes[f]){
+      if(G.heroRespawn[f]>0){
+        G.heroRespawn[f]-=dt;
+        if(G.heroRespawn[f]<=0){
+          const b=G.buildings.find(x=>x.faction===f&&x.type==='base');
+          if(b){ const h=addUnit('hero',f,b.x,b.y-70); G.heroes[f]=h;
+            if(f==='player') toast('👑 '+FACTION_INFO.player.hero+' 于主神殿复活'); }
+        }
+      }
+    }
+  }
+
+  const pb=G.buildings.find(b=>b.faction==='player'&&b.type==='base');
+  if(!pb) G.over='lose';
+  else if(G.enemyCount>0 && G.factions.every(f=>f==='player'||!G.buildings.find(b=>b.faction===f&&b.type==='base'))) G.over='win';
+  if(G.over&&!G.shown){ G.shown=true; clearSave(); showOverlay(G.over); }
+}
+
+function updateHarvester(u,dt){
+  const fac=u.faction;
+  const ref=nearestBuilding(u,'refinery',fac)||nearestBuilding(u,'base',fac);
+  if(!u.oreNode||u.oreNode.amount<=0) u.oreNode=nearestOre(u);
+  if(u.state==='idle'||u.state==='toOre'){
+    if(u.carry>=u.def.carry) u.state='toRef';
+    else if(u.oreNode&&u.oreNode.amount>0){
+      if(dist(u,u.oreNode)>u.oreNode.r+10) moveToward(u,u.oreNode.x,u.oreNode.y,u.def.speed*dt);
+      else u.state='harvest';
+    }
+  }
+  if(u.state==='harvest'){
+    const amt=Math.min(u.def.harvest*G.mods.harvest*dt,u.oreNode.amount,u.def.carry-u.carry);
+    u.oreNode.amount-=amt; u.carry+=amt;
+    if(u.carry>=u.def.carry||u.oreNode.amount<=0) u.state='toRef';
+  }
+  if(u.state==='toRef'){
+    if(ref){
+      if(dist(u,ref)>ref.def.r+12) moveToward(u,ref.x,ref.y,u.def.speed*dt);
+      else { gemSet(fac, gemGet(fac)+Math.round(u.carry)); u.carry=0; u.state='toOre'; }
+    }
+  }
+}
+
+function updateNodes(dt){
+  for(const n of G.nodes){
+    const set=new Set();
+    for(const u of G.units){ if(dist(u,n)<n.r+u.def.r) set.add(u.faction); }
+    if(set.size===1){
+      const f=[...set][0];
+      if(n.owner===f) n.cap=Math.min(1,n.cap+dt*0.25);
+      else { n.cap-=dt*0.2; if(n.cap<=0){ n.owner=f; n.cap=0.02; if(f==='player'){ toast('📿 占领'+nodeKind(n)+'！'); G.stats.nodesCaptured++; } } }
+    } else if(set.size===0 && n.owner){
+      n.cap=Math.max(0,n.cap-dt*0.05);
+      if(n.cap<=0) n.owner=null;
+    }
+    if(n.owner){
+      if(n.kind==='faith') gemSet(n.owner, gemGet(n.owner)+9*dt);
+      else if(n.kind==='outpost'){
+        for(const u of G.units){ if(u.faction===n.owner && dist(u,n)<n.r+u.def.r && u.hp<u.maxHp) u.hp=Math.min(u.maxHp,u.hp+5*dt); }
+      }
+    }
+  }
+}
+
+function reconcilePower(){
+  for(const f of G.factions){
+    let prod=0,use=0;
+    for(const b of G.buildings){ if(b.faction!==f||!b.built)continue;
+      if(b.def.power>=0) prod+=b.def.power; else use+=(-b.def.power); }
+    for(const n of G.nodes){ if(n.owner===f&&n.kind==='power') prod+=22; }
+    const pProd=prod*G.mods.powMul;
+    G.pow[f].prod=pProd; G.pow[f].use=use; G.pf[f]= use>pProd?G.mods.pfFloor:1;
+  }
+}
+
+function aiFaction(f,dt){
+  const prof=AI_PROFILE[FACTION_INFO[f].ai];
+  const harvE=G.units.filter(u=>u.faction===f&&u.type==='harvester').length;
+  const refE=G.buildings.find(b=>b.faction===f&&b.type==='refinery'&&b.built);
+  if(refE&&harvE<3&&!refE.producing&&gemGet(f)>=DEFS.harvester.cost) startProduce(refE,'harvester');
+
+  while(G.ageOf[f]<3 && gemGet(f)>=AGES[G.ageOf[f]].faith){ gemSet(f, gemGet(f)-AGES[G.ageOf[f]].faith); G.ageOf[f]++; }
+
+  const S=G.aiState[f];
+  S.buildTimer-=dt; if(S.buildTimer<=0){ S.buildTimer=3; aiEnsure(f); }
+  const barE=G.buildings.find(b=>b.faction===f&&b.type==='barracks'&&b.built);
+  const facE=G.buildings.find(b=>b.faction===f&&b.type==='factory'&&b.built);
+  const armyE=G.units.filter(u=>u.faction===f&&isArmy(u.type)).length;
+  if(barE&&!barE.producing&&armyE<S.cap){
+    if(gemGet(f)>=DEFS.archer.cost+20 && Math.random()<0.4) startProduce(barE,'archer');
+    else if(gemGet(f)>=DEFS.soldier.cost) startProduce(barE,'soldier');
+  }
+  if(facE&&!facE.producing&&gemGet(f)>=DEFS.tank.cost+80&&armyE<S.cap) startProduce(facE,'tank');
+
+  const hero=G.heroes[f];
+  if(hero&&hero.skillCd<=0){
+    let c=0; for(const u of G.units){ if(u.faction!==f&&dist(u,hero)<170) c++; }
+    if(c>=3) castHeroSkill(hero);
+  }
+  S.waveTimer-=dt; if(S.waveTimer<=0){ S.waveTimer=prof.wave+Math.random()*6; launchWave(f); }
+}
+function aiEnsure(f){
+  const base=G.buildings.find(b=>b.faction===f&&b.type==='base'); if(!base)return;
+  const have=t=>G.buildings.some(b=>b.faction===f&&b.type===t);
+  const offs=[[120,-110],[-120,-110],[120,110],[-120,110],[150,0],[-150,0],[0,150],[0,-150]];
+  const tryB=(t)=>{ if(gemGet(f)<DEFS[t].cost)return;
+    for(const [dx,dy] of offs){ const x=base.x+dx,y=base.y+dy;
+      if(freeAt(x,y,DEFS[t].r)){ gemSet(f,gemGet(f)-DEFS[t].cost); addBuilding(t,f,x,y,false); return true; } } };
+  if(!have('power')) tryB('power');
+  else if(!have('barracks')) tryB('barracks');
+  else if(G.ageOf[f]>=2 && !have('factory')) tryB('factory');
+  else if(Math.random()<G.aiState[f].towerW && !have('tower')) tryB('tower');
+}
+function launchWave(f){
+  const pb=G.buildings.find(b=>b.faction==='player'&&b.type==='base'); if(!pb)return;
+  const army=G.units.filter(u=>u.faction===f&&isArmy(u.type));
+  const maxWave=AI_PROFILE[FACTION_INFO[f].ai].waveSize;
+  const home=G.baseXY[f];
+  army.forEach((u,i)=>{
+    if(i<maxWave){ u.target=pb; u.moveTarget=null; u.attackMove=true; }
+    else { u.target=null; u.moveTarget={x:home.x,y:home.y}; u.attackMove=true; }
+  });
+  const sent=Math.min(maxWave,army.length);
+  if(sent>0) toast('⚠️ '+FACTION_INFO[f].name+' 派兵来袭（'+sent+'）');
+}
+
+/* ---------- input ---------- */
+function topEntityAt(p){
+  for(let i=G.units.length-1;i>=0;i--){ const u=G.units[i];
+    if(dist(p,u)<u.def.r+6) return u; }
+  for(let i=G.buildings.length-1;i>=0;i--){ const b=G.buildings[i];
+    if(Math.abs(p.x-b.x)<b.def.r*1.7/2 && Math.abs(p.y-b.y)<b.def.r*1.7/2) return b; }
+  return null;
+}
+function selectBox(a,b){
+  const x1=Math.min(a.x,b.x),x2=Math.max(a.x,b.x),y1=Math.min(a.y,b.y),y2=Math.max(a.y,b.y);
+  G.sel=G.units.filter(u=>u.faction==='player'&&u.x>=x1&&u.x<=x2&&u.y>=y1&&u.y<=y2);
+  buildActions();
+}
+function clickAt(p){
+  const e=topEntityAt(p);
+  if(e&&e.faction==='player'){ G.sel=[e]; buildActions(); }
+  else if(e&&e.faction!=='player'){ commandUnits(e); }
+  else { commandUnits(null,p); }
+}
+function commandUnits(enemy,point){
+  if(G.sel.length===0) return;
+  const combat=G.sel.filter(u=>u.def.kind==='unit'&&u.type!=='harvester');
+  if(enemy){ combat.forEach(u=>{ u.target=enemy; u.moveTarget=null; u.attackMove=true; }); }
+  else if(point){ combat.forEach(u=>{ u.target=null; u.moveTarget={x:point.x,y:point.y}; u.attackMove=true; }); }
+  toast(combat.length+' 支部队受令');
+}
+function buildMode(t){
+  if(G.place&&G.place.type===t){ G.place=null; }
+  else { G.place={type:t}; }
+  buildActions();
+}
+function cancelPlace(){ G.place=null; buildActions(); }
+function tryPlace(x,y){
+  const t=G.place.type, d=DEFS[t];
+  if(!freeAt(x,y,d.r)){ toast('此处无法建造'); return; }
+  if(gemGet('player')<d.cost){ toast('信仰不足'); return; }
+  gemSet('player', gemGet('player')-d.cost); addBuilding(t,'player',x,y,false);
+  G.place=null; buildActions(); toast('建造 '+d.name);
+}
+function produce(t){
+  const b=G.sel[0];
+  if(!b||b.def.kind!=='building'||!b.built||b.producing) return;
+  if(gemGet('player')<DEFS[t].cost){ toast('信仰不足'); return; }
+  gemSet('player', gemGet('player')-DEFS[t].cost); b.producing={type:t,t:DEFS[t].train,total:DEFS[t].train};
+  buildActions(); toast('生产 '+DEFS[t].name);
+}
+
+cv.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  const r=cv.getBoundingClientRect();
+  const cx=e.clientX-r.left, cy=e.clientY-r.top;
+  mouseCss={x:cx,y:cy};
+  const rp=mmRect();
+  if(cx>=rp.x&&cx<=rp.x+rp.w&&cy>=rp.y&&cy<=rp.y+rp.h){
+    mmDrag=true;
+    const wx=(cx-rp.x)/rp.w*WORLD.w, wy=(cy-rp.y)/rp.h*WORLD.h;
+    panTo(wx,wy);
+    return;
+  }
+  const p=s2w(cx,cy);
+  G.mouse=p;
+  if(e.button===2){ if(G.place) cancelPlace(); else if(G.sel.length) commandUnits(null,p); return; }
+  if(G.place){ tryPlace(p.x,p.y); return; }
+  G.dragging=true; G.moved=false; G.dragStart=p; G.dragNow=p;
+});
+cv.addEventListener('pointermove',e=>{
+  const r=cv.getBoundingClientRect();
+  const cx=e.clientX-r.left, cy=e.clientY-r.top;
+  mouseCss={x:cx,y:cy};
+  const p=s2w(cx,cy);
+  G.mouse=p;
+  const rp=mmRect();
+  if(mmDrag){
+    const mx=Math.max(rp.x,Math.min(rp.x+rp.w,cx)), my=Math.max(rp.y,Math.min(rp.y+rp.h,cy));
+    const wx=(mx-rp.x)/rp.w*WORLD.w, wy=(my-rp.y)/rp.h*WORLD.h;
+    camTween=null; cam.x=wx-worldViewW()/2; cam.y=wy-worldViewH()/2; clampCam();
+    return;
+  }
+  if(G.dragging){ if(Math.hypot(p.x-G.dragStart.x,p.y-G.dragStart.y)>10) G.moved=true; G.dragNow=p; }
+});
+cv.addEventListener('pointerup',e=>{
+  const r=cv.getBoundingClientRect();
+  const p=s2w(e.clientX-r.left,e.clientY-r.top);
+  if(G.place){ G.dragging=false; return; }
+  if(G.dragging){
+    if(G.moved) selectBox(G.dragStart,p);
+    else clickAt(p);
+  }
+  G.dragging=false; G.dragStart=null; G.dragNow=null; G.moved=false; mmDrag=false;
+});
+cv.addEventListener('pointerleave',()=>{ mouseCss={x:-1,y:-1}; mmDrag=false; });
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+window.addEventListener('keydown',e=>{ keys[e.key.toLowerCase()]=true; if(e.key==='Escape') cancelPlace(); if(e.key.toLowerCase()==='p') pauseGame(); });
+window.addEventListener('keyup',e=>{ keys[e.key.toLowerCase()]=false; });
+
+/* ---------- UI ---------- */
+function updateSelBadge(){
+  const el=document.getElementById('selBadge'); if(!el) return;
+  if(G&&G.place){ el.textContent='📍 放置中：'+DEFS[G.place.type].name; return; }
+  if(!G||G.sel.length===0){ el.textContent='💡 未选中'; return; }
+  const e=G.sel[0];
+  if(G.sel.length===1){
+    if(e.def.kind==='building') el.textContent=(e.built?'🏛️ ':'🔨 ')+DEFS[e.type].name+(e.built?'':' · 建造中');
+    else if(e.def.hero) el.textContent='👑 '+DEFS[e.type].name+' Lv'+e.level;
+    else el.textContent=e.def.emoji+' '+DEFS[e.type].name+'（'+Math.ceil(e.hp)+'/'+Math.ceil(e.maxHp)+'）';
+  } else {
+    el.textContent='✅ 已选 '+G.sel.length+' 个部队';
+  }
+}
+function buildActions(){
+  updateSelBadge();
+  const a=document.getElementById('actions');
+  const hint=document.getElementById('hint');
+  if(G.place){
+    a.innerHTML='';
+    hint.textContent='放置模式：点击地图空地放下「'+DEFS[G.place.type].name+'」（Esc 或右键取消）。';
+    return;
+  }
+  if(G.sel.length===0){ a.innerHTML=''; hint.textContent='点选你的单位或建筑，下方会显示可用指令。'; return; }
+  const e=G.sel[0];
+  if(G.sel.length===1&&e.def.kind==='building'){
+    let h='';
+    if(e.type==='base'){
+      ['refinery','power','barracks','tower','factory'].forEach(t=>{
+        if(DEFS[t].age && G.ageOf.player<DEFS[t].age) h+=lockBtn(t); else h+=buildBtn(t);
+      });
+      h+=unitBtn('harvester'); h+=recruitBtn();
+    }     else if(e.type==='refinery'){ h+=unitBtn('harvester'); }
+    else if(e.type==='barracks'){ h+=unitBtn('soldier'); h+=unitBtn('archer'); }
+    else if(e.type==='factory'){ h+=unitBtn('tank'); }
+    a.innerHTML=h;
+    if(!e.built) hint.textContent=DEFS[e.type].name+' 建造中…';
+    else if(e.type==='base') hint.textContent='选择要建造的建筑，或生产信徒车（🛒 自动采集信仰）；「🙏 招募信徒」增加人口，人口越多信仰产出越高。';
+    else if(e.def.makes) hint.textContent=DEFS[e.type].name+' 已就绪，可生产 '+DEFS[e.def.makes].name+'。';
+    else hint.textContent=DEFS[e.type].name+'（防御/供能，无生产）。';
+    return;
+  }
+  const heroes=G.sel.filter(u=>u.def.hero);
+  if(heroes.length){
+    const hb=heroes[0];
+    if(hb.skillCd>0) a.innerHTML='<button class="btn dis cat-special">✨ 神罚<small>冷却 '+Math.ceil(hb.skillCd)+'s</small></button>';
+    else a.innerHTML='<button class="btn on cat-special" onclick="castSelectedHero()">✨ 神罚<small>范围歼灭</small></button>';
+    hint.textContent='神君 Lv'+hb.level+'：点击「神罚」对周围敌群造成范围重创（高阶时威力更强）。';
+    return;
+  }
+  a.innerHTML='';
+  hint.textContent='已选 '+G.sel.length+' 个单位。点击地图移动，点击敌人发起攻击。';
+}
+function buildBtn(t){
+  const d=DEFS[t]; const can=gemGet('player')>=d.cost;
+  return '<button class="btn cat-build '+(can?'':'dis')+(G.place&&G.place.type===t?' on':'')+'" onclick="buildMode(\''+t+'\')">🔨 '+d.name+'<small>✨'+d.cost+' · '+d.build+'s</small></button>';
+}
+function lockBtn(t){
+  const d=DEFS[t];
+  return '<button class="btn dis">🔒 '+d.name+'<small>需 '+AGES[d.age-1].short+'</small></button>';
+}
+function unitBtn(t){
+  const d=DEFS[t]; const b=G.sel[0];
+  const can=gemGet('player')>=d.cost&&b&&b.built&&!b.producing;
+  let extra=''; if(b&&b.producing) extra='（生产中 '+Math.ceil(b.producing.t)+'s）';
+  return '<button class="btn cat-unit '+(can?'':'dis')+'" onclick="produce(\''+t+'\')">➕ '+d.name+'<small>✨'+d.cost+' · '+d.train+'s'+extra+'</small></button>';
+}
+function recruitBtn(){
+  const pop=G.pop.player||0; const cost=40+pop*2; const cap=pop>=300;
+  const can=gemGet('player')>=cost&&!cap;
+  return '<button class="btn cat-special '+(can?'':'dis')+'" onclick="recruit()">🙏 招募信徒<small>'+(cap?'已满 '+pop:'✨'+cost+' · +4 人数')+'</small></button>';
+}
+function recruit(){
+  const pop=G.pop.player||0;
+  if(pop>=300){ toast('信徒已满（'+pop+'）'); return; }
+  const cost=40+pop*2;
+  if(gemGet('player')<cost){ toast('信仰不足'); return; }
+  gemSet('player',gemGet('player')-cost); G.pop.player=pop+4; G.stats.recruited=(G.stats.recruited||0)+4;
+  toast('🙏 信徒 +4（共 '+G.pop.player+' 人，信仰产出提升）'); buildActions();
+}
+function toggleTech(){
+  const p=document.getElementById('techPanel');
+  const show=p.style.display!=='block';
+  p.style.display=show?'block':'none';
+  if(show) renderTech();
+}
+function renderTechIfOpen(){ if(document.getElementById('techPanel').style.display==='block') renderTech(); }
+function renderTech(){
+  const body=document.getElementById('techBody'); if(!body)return;
+  const a=G.ageOf.player; const ag=AGES[a-1];
+  let h='<div style="margin-bottom:10px"><div style="font-size:13px">当前时代：<b style="color:var(--gold)">'+ag.name+'</b></div>';
+  if(a<3){ const nx=AGES[a];
+    if(G.ageT>0) h+='<div class="btn dis" style="margin-top:6px;width:100%;text-align:center">🔆 晋升中… '+Math.ceil(G.ageT)+'s</div>';
+    else { const can=gemGet('player')>=nx.faith;
+      h+='<button class="btn '+(can?'':'dis')+'" style="margin-top:6px;width:100%;text-align:center" onclick="startAgeUp()">🔆 晋升 '+nx.short+'<small>✨'+nx.faith+' 信仰</small></button>'; }
+  } else h+='<div class="mini" style="margin-top:6px">已臻至高之境</div>';
+  h+='</div><hr style="border:0;border-top:1px solid var(--line);margin:8px 0">';
+  const cats=['军备','发展','灵能'];
+  const byCat={}; for(const key in TECHS){ const t=TECHS[key]; (byCat[t.cat]=byCat[t.cat]||[]).push([key,t]); }
+  for(const cat of cats){ if(!byCat[cat])continue;
+    h+='<div style="font-size:11px;color:#9a8bc8;margin:4px 0 2px">▸ '+cat+'</div>';
+    for(const [key,t] of byCat[cat]){ const owned=G.techs[key];
+      const ok=!owned&&a>=t.age&&gemGet('player')>=t.faith;
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;margin:6px 0;gap:8px">'
+        +'<div><div style="font-size:13px">'+t.name+'</div><div class="mini">'+t.desc+' · 需'+AGES[t.age-1].short+'</div></div>'
+        +(owned?'<span style="color:var(--player)">已研</span>'
+          :('<button class="btn '+(ok?'':'dis')+'" onclick="buyTech(\''+key+'\')">✨'+t.faith+'</button>'))
+        +'</div>'; } }
+  body.innerHTML=h;
+}
+function startAgeUp(){
+  if(G.ageOf.player>=3||G.ageT>0) return;
+  const nx=AGES[G.ageOf.player];
+  if(gemGet('player')<nx.faith){ toast('信仰不足'); return; }
+  gemSet('player', gemGet('player')-nx.faith); G.ageT=nx.sec; renderTech(); buildActions();
+}
+function buyTech(k){
+  const t=TECHS[k];
+  if(G.techs[k]||G.ageOf.player<t.age||gemGet('player')<t.faith){ toast('暂不可研习'); return; }
+  gemSet('player', gemGet('player')-t.faith); G.techs[k]=true; applyTech(k); G.stats.techs++; renderTech();
+  toast('🔬 已研习 '+t.name);
+}
+
+/* ---------- save / load ---------- */
+const SAVE_KEY='ztyz_rts_save_v1';
+function serialize(){
+  const s={
+    ver:1, faith:G.faith, pow:G.pow, pf:G.pf, pop:G.pop, ageOf:G.ageOf, aiState:G.aiState,
+    techs:G.techs, mods:G.mods, factions:G.factions, enemyCount:G.enemyCount,
+    ores:G.ores.map(o=>({id:o.id,x:o.x,y:o.y,amount:o.amount,r:o.r})),
+    buildings:G.buildings.map(b=>({id:b.id,type:b.type,faction:b.faction,x:b.x,y:b.y,hp:b.hp,maxHp:b.maxHp,
+      built:b.built,buildT:b.buildT,producing:b.producing?{type:b.producing.type,t:b.producing.t,total:b.producing.total}:null,cd:b.cd})),
+    units:G.units.map(u=>({id:u.id,type:u.type,faction:u.faction,x:u.x,y:u.y,hp:u.hp,maxHp:u.maxHp,cd:u.cd,
+      target:(u.target&&u.target.id!=null)?u.target.id:null, moveTarget:u.moveTarget, attackMove:u.attackMove,
+      state:u.state, carry:u.carry, oreNode:(u.oreNode&&u.oreNode.id!=null)?u.oreNode.id:null,
+      dmgBonus:u.dmgBonus, level:u.level, xp:u.xp, skillCd:u.skillCd})),
+    nodes:G.nodes.map(n=>({x:n.x,y:n.y,r:n.r,owner:n.owner,cap:n.cap,kind:n.kind})),
+    heroes:{}, heroRespawn:G.heroRespawn, baseXY:G.baseXY,
+    time:G.time, over:G.over, shown:G.over?true:G.shown, nextId:G.nextId, ageT:G.ageT, stats:G.stats
+  };
+  for(const f in G.heroes) s.heroes[f]= G.heroes[f]? G.heroes[f].id : null;
+  return s;
+}
+function loadGame(s){
+  const ores=s.ores.map(o=>({id:o.id,x:o.x,y:o.y,amount:o.amount,r:o.r}));
+  const oreById={}; ores.forEach(o=>oreById[o.id]=o);
+  const buildings=s.buildings.map(b=>({id:b.id,type:b.type,faction:b.faction,x:b.x,y:b.y,def:DEFS[b.type],hp:b.hp,maxHp:b.maxHp,
+    built:b.built,buildT:b.buildT,producing:b.producing?{type:b.producing.type,t:b.producing.t,total:b.producing.total}:null,cd:b.cd}));
+  const bById={}; buildings.forEach(b=>bById[b.id]=b);
+  const units=s.units.map(u=>({id:u.id,type:u.type,faction:u.faction,x:u.x,y:u.y,def:DEFS[u.type],hp:u.hp,maxHp:u.maxHp,cd:u.cd,
+    target:u.target,moveTarget:u.moveTarget,attackMove:u.attackMove,state:u.state,carry:u.carry,oreNode:u.oreNode,
+    dmgBonus:u.dmgBonus,level:u.level,xp:u.xp,skillCd:u.skillCd}));
+  const uById={}; units.forEach(u=>uById[u.id]=u);
+  units.forEach(u=>{
+    u.target = u.target!=null ? (uById[u.target]||bById[u.target]||null) : null;
+    u.oreNode = u.oreNode!=null ? (oreById[u.oreNode]||null) : null;
+    if(u.state==='harvest' && !u.oreNode) u.state='idle';
+  });
+  const nodes=s.nodes.map(n=>({x:n.x,y:n.y,r:n.r,owner:n.owner,cap:n.cap,kind:n.kind}));
+  const heroes={}; for(const f in s.heroes) heroes[f]= s.heroes[f]!=null ? (uById[s.heroes[f]]||null) : null;
+  G={ faith:s.faith, pow:s.pow, pf:s.pf, ageOf:s.ageOf, aiState:s.aiState, techs:s.techs, mods:s.mods,
+    factions:s.factions||['player','moyuan','chiyan','youming'], enemyCount:(s.enemyCount!=null?s.enemyCount:3), pop:s.pop||{},
+    ores, buildings, units, projs:[], fx:[], nodes, heroes, heroRespawn:s.heroRespawn, baseXY:s.baseXY,
+    sel:[], place:null, mouse:{x:WORLD.w/2,y:WORLD.h/2}, dragging:false, dragStart:null, dragNow:null, moved:false,
+    time:s.time, over:s.over, shown:s.shown, nextId:s.nextId, ageT:s.ageT, stats:s.stats };
+}
+function saveGame(silent){
+  if(!G||G.over) { if(!silent) toast('当前无可保存的战局'); return false; }
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(serialize())); if(!silent) toast('💾 战局已存档'); return true; }
+  catch(e){ if(!silent) toast('存档失败（存储空间不足？）'); return false; }
+}
+function hasSave(){ try{ return !!localStorage.getItem(SAVE_KEY); }catch(e){ return false; } }
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+function continueGame(){
+  let s=null; try{ s=JSON.parse(localStorage.getItem(SAVE_KEY)); }catch(e){}
+  if(!s||s.ver!==1){ toast('没有可用的存档'); return; }
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('techPanel').style.display='none';
+  document.getElementById('pauseBox').style.display='none';
+  document.getElementById('errBox').style.display='none';
+  paused=false; errShown=false;
+  loadGame(s); autoSaveT=20; resize(); buildActions();
+  if(!raf){ last=0; raf=requestAnimationFrame(loop); }
+}
+function ovBtn(label, fn){
+  const b=document.createElement('button'); b.className='btn'; b.textContent=label;
+  b.style.fontSize='16px'; b.style.padding='12px 26px'; b.style.textAlign='center';
+  b.style.borderRadius='999px'; b.style.background='linear-gradient(160deg,#ffd9ee,#d9ccff)';
+  b.style.color='#4a2a6b'; b.style.border='0'; b.style.fontWeight='700';
+  b.onclick=fn; return b;
+}
+const START_H1='诸天争霸 · 信仰战争';
+const START_DESC_HTML=document.getElementById('ov-desc').innerHTML;
+function showStart(){
+  document.querySelector('#overlay h1').textContent=START_H1;
+  document.getElementById('ov-desc').innerHTML=START_DESC_HTML;
+  const act=document.getElementById('ov-actions'); act.innerHTML='';
+
+  const feats=document.createElement('div'); feats.className='ov-feats';
+  [['📿','收集信仰','信徒采矿 · 神殿供养 · 招募增产'],
+   ['🏯','发展领地','抢占灵脉 · 攀升时代 · 研习神谕'],
+   ['⚔️','信仰战争','统领神君 · 兵种克制 · 推平敌核']].forEach(([ic,t,d])=>{
+    const c=document.createElement('div'); c.className='ov-feat';
+    c.innerHTML='<div class="ov-feat-ic">'+ic+'</div><div class="ov-feat-t">'+t+'</div><div class="ov-feat-d">'+d+'</div>';
+    feats.appendChild(c);
+  });
+  act.appendChild(feats);
+
+  const modeWrap=document.createElement('div'); modeWrap.className='ov-modewrap';
+  const modeLabel=document.createElement('div'); modeLabel.className='ov-mode-label';
+  modeLabel.textContent='选择敌对神数量';
+  modeWrap.appendChild(modeLabel);
+  const row=document.createElement('div'); row.className='ov-modes';
+  const descs=['🕊 和平模式','⚔️ 轻度对抗','⚔️ 标准战役','🔥 诸天大战'];
+  [0,1,2,3].forEach((n,i)=>{
+    const b=document.createElement('button'); b.className='ov-mode'+(n===chosenEnemies?' on':'');
+    b.innerHTML='<div class="ov-mode-n">'+(n===0?'🕊 0':('👿 '+n))+'</div><div class="ov-mode-t">'+descs[i]+'</div>';
+    b.onclick=()=>{ chosenEnemies=n; showStart(); };
+    row.appendChild(b);
+  });
+  modeWrap.appendChild(row);
+  const hint=document.createElement('div'); hint.className='ov-mode-hint';
+  hint.innerHTML='<b style="color:var(--player)">0 = 🕊 和平模式</b>：专心收集信仰与发展领地，无外神来犯、无胜负判定。<br>选 1~3 路外神则开战，推平所有敌神核心即胜，主神殿被破则败。';
+  modeWrap.appendChild(hint);
+  act.appendChild(modeWrap);
+
+  const tip=document.createElement('div'); tip.className='mini';
+  tip.innerHTML='🗡️天兵克🏹神射 · 🏹神射克🚙战车 · 🚙战车克🗡️天兵（克制 ×1.5）。视野：屏幕<b>边缘</b> / <b>WASD·方向键</b> 平移；右下🗺️小地图可点击或拖动。框选圈兵，点选后点地图移动、点敌人进攻。';
+  act.appendChild(tip);
+
+  if(hasSave()){
+    act.appendChild(ovBtn('⚔️ 继续上局', continueGame));
+    act.appendChild(ovBtn('🆫 重开新局', startGame));
+  } else {
+    act.appendChild(ovBtn('⚔️ 进入战场', startGame));
+  }
+}
+
+let toastTimer=0;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>{t.style.opacity='0';},1500);
+}
+
+/* ---------- render ---------- */
+function render(){
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#0c0720'; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.setTransform(zoom*dpr,0,0,zoom*dpr,-cam.x*zoom*dpr,-cam.y*zoom*dpr);
+  const t=G.time||0;
+  drawBackground(t);
+  drawTerritory();
+  for(const o of G.ores){ if(o.amount>0) drawOre(o,t); }
+  for(const n of G.nodes) drawNode(n,t);
+  for(const b of G.buildings) drawBuilding(b,t);
+  for(const u of G.units) drawUnit(u,t);
+  drawProjs();
+  drawFx();
+  if(G.dragging&&G.moved&&G.dragStart&&G.dragNow){
+    const x=Math.min(G.dragStart.x,G.dragNow.x),y=Math.min(G.dragStart.y,G.dragNow.y);
+    const w=Math.abs(G.dragNow.x-G.dragStart.x),h=Math.abs(G.dragNow.y-G.dragStart.y);
+    ctx.fillStyle='rgba(123,255,154,.10)'; ctx.strokeStyle='rgba(123,255,154,.7)';
+    ctx.lineWidth=1.5; roundRect(x,y,w,h,6); ctx.fill(); ctx.stroke();
+  }
+  if(G.place){
+    const d=DEFS[G.place.type]; const ok=freeAt(G.mouse.x,G.mouse.y,d.r);
+    ctx.save(); ctx.globalAlpha=0.65;
+    ctx.fillStyle=ok?'rgba(95,224,200,.22)':'rgba(255,107,122,.22)';
+    ctx.strokeStyle=ok?'#5fe0c8':'#ff6b7a'; ctx.lineWidth=3;
+    const s=d.r*1.7; roundRect(G.mouse.x-s/2,G.mouse.y-s/2,s,s,12); ctx.fill(); ctx.stroke();
+    ctx.font=(d.r*1.05)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(d.emoji,G.mouse.x,G.mouse.y); ctx.restore();
+  }
+  drawMinimap();
+}
+function mmRect(){ const mw=188, mh=Math.round(mw*WORLD.h/WORLD.w), pad=12;
+  return {x:cssW-pad-mw,y:cssH-pad-mh,w:mw,h:mh}; }
+function drawMinimap(){
+  const rp=mmRect(), mx=rp.x, my=rp.y, mw=rp.w, mh=rp.h, sx=mw/WORLD.w, sy=mh/WORLD.h;
+  ctx.save(); ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle='rgba(10,5,24,.82)'; ctx.strokeStyle='rgba(180,150,255,.45)'; ctx.lineWidth=1;
+  roundRect(mx,my,mw,mh,8); ctx.fill(); ctx.stroke();
+  for(const n of G.nodes){ ctx.fillStyle=n.owner?fcol(n.owner):'#7a6fa0'; ctx.beginPath(); ctx.arc(mx+n.x*sx,my+n.y*sy,3.2,0,6.2832); ctx.fill(); }
+  for(const b of G.buildings){ ctx.fillStyle=fcol(b.faction); if(b.type==='base'){ ctx.fillRect(mx+b.x*sx-3.5,my+b.y*sy-3.5,7,7); } else ctx.fillRect(mx+b.x*sx-1.5,my+b.y*sy-1.5,3,3); }
+  for(const u of G.units){ ctx.fillStyle=fcol(u.faction); ctx.beginPath(); ctx.arc(mx+u.x*sx,my+u.y*sy,1.5,0,6.2832); ctx.fill(); }
+  ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=1.8;
+  ctx.strokeRect(mx+cam.x*sx, my+cam.y*sy, worldViewW()*sx, worldViewH()*sy);
+  ctx.restore();
+}
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function drawBar(x,y,w,frac,color,dark){
+  frac=Math.max(0,Math.min(1,frac));
+  const h=5, r=2.5;
+  ctx.fillStyle='rgba(0,0,0,.55)'; roundRect(x-1,y-1,w+2,h+2,r+1); ctx.fill();
+  ctx.fillStyle=dark||'rgba(255,255,255,.25)'; roundRect(x,y,w,h,r); ctx.fill();
+  ctx.fillStyle=color; roundRect(x,y,w*frac,h,r); ctx.fill();
+}
+
+/* ---------- visual upgrade pack ---------- */
+let _stars=null;
+function getStars(){
+  if(_stars) return _stars;
+  _stars=[];
+  const N=Math.round(150*WORLD.w*WORLD.h/(1280*720));
+  for(let i=0;i<N;i++) _stars.push({x:Math.random()*WORLD.w,y:Math.random()*WORLD.h,
+    r:Math.random()*1.8+0.7,a:Math.random()*0.5+0.35,ph:Math.random()*6.2831});
+  return _stars;
+}
+function factionGlow(x,y,hex){
+  const r=460, g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,hexA(hex,0.22)); g.addColorStop(1,hexA(hex,0));
+  ctx.fillStyle=g; ctx.fillRect(x-r,y-r,r*2,r*2);
+}
+function drawBackground(t){
+  const g=ctx.createLinearGradient(0,0,WORLD.w,WORLD.h);
+  g.addColorStop(0,'#1c0f38'); g.addColorStop(0.5,'#241147'); g.addColorStop(1,'#160a2e');
+  ctx.fillStyle=g; ctx.fillRect(0,0,WORLD.w,WORLD.h);
+  for(const f of G.factions){ const xy=G.baseXY[f]; if(xy) factionGlow(xy.x,xy.y,fcol(f)); }
+  const st=getStars(); ctx.save();
+  for(const s of st){ const a=s.a*(0.55+0.45*Math.sin(t*1.5+s.ph));
+    ctx.globalAlpha=a; ctx.fillStyle='#eaf2ff';
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.2832); ctx.fill(); }
+  ctx.restore();
+  ctx.strokeStyle='rgba(170,140,255,.05)'; ctx.lineWidth=1;
+  for(let x=0;x<=WORLD.w;x+=64){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,WORLD.h); ctx.stroke(); }
+  for(let y=0;y<=WORLD.h;y+=64){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(WORLD.w,y); ctx.stroke(); }
+  ctx.save();
+  const lg=ctx.createLinearGradient(WORLD.w/2-130,0,WORLD.w/2+130,0);
+  lg.addColorStop(0,'rgba(255,120,160,0)'); lg.addColorStop(0.5,'rgba(255,120,160,.18)'); lg.addColorStop(1,'rgba(255,120,160,0)');
+  ctx.fillStyle=lg; ctx.fillRect(WORLD.w/2-130,0,260,WORLD.h);
+  ctx.strokeStyle='rgba(255,140,180,.65)'; ctx.lineWidth=2.5; ctx.setLineDash([14,12]); ctx.lineDashOffset=-t*18;
+  ctx.beginPath(); ctx.moveTo(WORLD.w/2,0); ctx.lineTo(WORLD.w/2,WORLD.h); ctx.stroke();
+  ctx.setLineDash([]); ctx.restore();
+}
+function drawTerritory(){
+  for(const f of G.factions){
+    const pts=[]; const base=G.buildings.find(b=>b.faction===f&&b.type==='base'); if(base) pts.push(base);
+    for(const n of G.nodes) if(n.owner===f) pts.push(n);
+    if(pts.length<2) continue;
+    ctx.save(); ctx.strokeStyle=hexA(fcol(f),0.28); ctx.lineWidth=2; ctx.setLineDash([10,8]); ctx.lineDashOffset=-G.time*10;
+    ctx.beginPath();
+    for(let i=0;i<pts.length;i++){ const p=pts[i]; if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); }
+    ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+  }
+}
+function drawCrystal(x,y,s,tilt,top,bot){
+  ctx.save(); ctx.translate(x,y); ctx.rotate(tilt);
+  ctx.beginPath(); ctx.moveTo(0,-s); ctx.lineTo(s*0.62,0); ctx.lineTo(0,s); ctx.lineTo(-s*0.62,0); ctx.closePath();
+  const g=ctx.createLinearGradient(0,-s,0,s); g.addColorStop(0,top); g.addColorStop(1,bot);
+  ctx.fillStyle=g; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(0,-s); ctx.lineTo(s*0.62,0); ctx.lineTo(0,0); ctx.closePath();
+  ctx.fillStyle='rgba(255,255,255,.35)'; ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1; ctx.stroke();
+  ctx.restore();
+}
+function drawOre(o,t){
+  const sz=o.r*(0.5+0.5*Math.min(1,o.amount/2400));
+  const pulse=0.8+0.2*Math.sin(t*2+o.x*0.03);
+  ctx.save();
+  ctx.shadowColor='#b07bff'; ctx.shadowBlur=18*pulse;
+  const gg=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,sz*1.7);
+  gg.addColorStop(0,'rgba(176,123,255,.55)'); gg.addColorStop(1,'rgba(176,123,255,0)');
+  ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(o.x,o.y,sz*1.7,0,6.2832); ctx.fill();
+  ctx.shadowBlur=0;
+  drawCrystal(o.x,o.y,sz*1.0,-0.2,'#e9d4ff','#a877ff');
+  drawCrystal(o.x-sz*0.7,o.y+sz*0.3,sz*0.6,0.3,'#d9c2ff','#8f5fe0');
+  drawCrystal(o.x+sz*0.7,o.y+sz*0.25,sz*0.55,0.5,'#d9c2ff','#8f5fe0');
+  ctx.restore();
+}
+function drawNode(n,t){
+  const col = n.owner? fcol(n.owner) : '#cfc6ee';
+  const accent = n.kind==='power'?'#8fd0ff':n.kind==='outpost'?'#7bff9a':'#ffe08a';
+  ctx.save();
+  ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1.5; ctx.setLineDash([6,6]);
+  ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,6.2832); ctx.stroke(); ctx.setLineDash([]);
+  ctx.shadowColor=col; ctx.shadowBlur=12;
+  drawCrystal(n.x,n.y,n.r*0.5,Math.sin(t*0.5+n.x)*0.2, col, n.owner?fcolD(n.owner):'#6a5f8e');
+  ctx.shadowBlur=0;
+  if(n.owner){
+    ctx.strokeStyle=col; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(n.x,n.y,n.r*0.84,0,6.2832); ctx.stroke();
+    if(n.cap>0){ ctx.strokeStyle='#fff'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r*0.84,-1.5708,-1.5708+6.2832*n.cap); ctx.stroke(); }
+  }
+  ctx.strokeStyle=accent; ctx.lineWidth=1.5; ctx.globalAlpha=0.9;
+  ctx.beginPath(); ctx.arc(n.x,n.y,n.r*0.62,0,6.2832); ctx.stroke(); ctx.globalAlpha=1;
+  if(n.kind==='outpost'){
+    ctx.fillStyle=accent; ctx.font='bold 13px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('✚', n.x, n.y);
+  } else if(n.kind==='power'){
+    ctx.fillStyle=accent; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('🔆', n.x, n.y);
+  }
+  ctx.fillStyle='rgba(220,210,250,.72)'; ctx.font='10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(nodeKind(n), n.x, n.y+n.r+13);
+  ctx.restore();
+}
+function drawBuilding(b,t){
+  const d=b.def, s=d.r*1.7, half=s/2, fac=b.faction;
+  const col=fcol(fac), colD=fcolD(fac);
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath();
+  ctx.ellipse(b.x,b.y+half+4,s*0.5,8,0,0,6.2832); ctx.fill();
+  const bg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,s*1.1);
+  bg.addColorStop(0,hexA(col,0.18)); bg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(b.x,b.y,s*1.1,0,6.2832); ctx.fill();
+  roundRect(b.x-half,b.y-half,s,s,14);
+  const body=ctx.createLinearGradient(0,b.y-half,0,b.y+half);
+  body.addColorStop(0,'rgba(40,24,66,.96)'); body.addColorStop(1,'rgba(20,12,40,.96)');
+  ctx.fillStyle=body; ctx.fill();
+  ctx.lineWidth=3.5; ctx.strokeStyle=col; ctx.stroke();
+  ctx.lineWidth=1; ctx.strokeStyle='rgba(255,255,255,.18)'; roundRect(b.x-half+3,b.y-half+3,s-6,s-6,11); ctx.stroke();
+  if(!b.built){
+    ctx.fillStyle='rgba(6,3,16,.55)'; roundRect(b.x-half,b.y-half,s,s,14); ctx.fill();
+    const pr=1-b.buildT/d.build;
+    ctx.save(); ctx.lineWidth=4; ctx.strokeStyle=col; ctx.setLineDash([10,8]); ctx.lineDashOffset=-t*30;
+    ctx.beginPath(); ctx.arc(b.x,b.y,half+8,-1.5708,-1.5708+6.2832*pr); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+  }
+  ctx.font=(d.r*1.05)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(d.emoji,b.x,b.y-2);
+  ctx.restore();
+  if(b.built&&b.def.tower){
+    ctx.save();
+    const rg=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,d.range);
+    rg.addColorStop(0,'rgba(255,210,122,.06)'); rg.addColorStop(0.85,'rgba(255,210,122,.04)'); rg.addColorStop(1,'rgba(255,210,122,0)');
+    ctx.fillStyle=rg; ctx.beginPath(); ctx.arc(b.x,b.y,d.range,0,6.2832); ctx.fill();
+    ctx.strokeStyle='rgba(255,210,122,.22)'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.arc(b.x,b.y,d.range,0,6.2832); ctx.stroke(); ctx.restore();
+  }
+  if(b.hp<b.maxHp||b.type==='base') drawBar(b.x-half,b.y-half-11,s,b.hp/b.maxHp,col,colD);
+  if(b.producing){
+    const pr=1-b.producing.t/b.producing.total;
+    ctx.save(); ctx.strokeStyle='#ffd27a'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(b.x,b.y+half+10,s*0.18,-1.5708,-1.5708+6.2832*pr); ctx.stroke(); ctx.restore();
+  }
+}
+function drawUnit(u,t){
+  const d=u.def, fac=u.faction;
+  const col=fcol(fac), colD=fcolD(fac);
+  ctx.save();
+  ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath();
+  ctx.ellipse(u.x,u.y+d.r*0.9,d.r*0.9,d.r*0.35,0,0,6.2832); ctx.fill();
+  const gg=ctx.createRadialGradient(u.x,u.y,0,u.x,u.y,d.r*1.8);
+  gg.addColorStop(0,hexA(col,0.22)); gg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=gg; ctx.beginPath(); ctx.arc(u.x,u.y,d.r*1.8,0,6.2832); ctx.fill();
+  ctx.beginPath(); ctx.arc(u.x,u.y,d.r,0,6.2832);
+  const bg=ctx.createRadialGradient(u.x-d.r*0.3,u.y-d.r*0.3,1,u.x,u.y,d.r);
+  bg.addColorStop(0,'rgba(36,22,60,.98)'); bg.addColorStop(1,'rgba(14,8,30,.98)');
+  ctx.fillStyle=bg; ctx.fill();
+  ctx.lineWidth=2.5; ctx.strokeStyle=col; ctx.stroke();
+  ctx.lineWidth=1; ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.beginPath(); ctx.arc(u.x,u.y,d.r-2,0,6.2832); ctx.stroke();
+  ctx.font=(d.r*1.25)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(d.emoji,u.x,u.y+1);
+  ctx.restore();
+  if(u.hp<u.maxHp) drawBar(u.x-d.r,u.y-d.r-8,d.r*2,u.hp/u.maxHp,col,colD);
+  if(G.sel.includes(u)){
+    const pulse=0.5+0.5*Math.sin(t*6), rr=d.r+5+pulse*2;
+    ctx.save(); ctx.strokeStyle='#7bff9a'; ctx.lineWidth=2; ctx.globalAlpha=0.6+0.4*pulse;
+    ctx.setLineDash([4,4]); ctx.lineDashOffset=-t*20;
+    ctx.beginPath(); ctx.arc(u.x,u.y,rr,0,6.2832); ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+  }
+  if(u.def.hero){
+    ctx.save();
+    ctx.strokeStyle='#ffe08a'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.arc(u.x,u.y,d.r+4,0,6.2832); ctx.stroke();
+    ctx.strokeStyle='rgba(255,224,138,.4)'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(u.x,u.y,d.r+9,0,6.2832); ctx.stroke();
+    if(u.skillCd>0){ ctx.strokeStyle='#ffd27a'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.arc(u.x,u.y,d.r+9,-1.5708,-1.5708+6.2832*(1-u.skillCd/12)); ctx.stroke(); }
+    ctx.fillStyle='#ffe08a'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Lv'+u.level,u.x,u.y-d.r-15);
+    ctx.restore();
+  }
+}
+function drawProjs(){
+  for(const p of G.projs){
+    const k=p.t/p.dur, x=p.x+(p.tx-p.x)*k, y=p.y+(p.ty-p.y)*k;
+    const k0=Math.max(0,k-0.35), x0=p.x+(p.tx-p.x)*k0, y0=p.y+(p.ty-p.y)*k0;
+    ctx.save(); ctx.strokeStyle=p.col; ctx.globalAlpha=0.5; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x,y); ctx.stroke();
+    ctx.globalAlpha=1; ctx.fillStyle=p.col; ctx.shadowColor=p.col; ctx.shadowBlur=10;
+    ctx.beginPath(); ctx.arc(x,y,3.2,0,6.2832); ctx.fill(); ctx.restore();
+  }
+}
+function spawnHit(p){ G.fx.push({x:p.tx,y:p.ty,t:0,dur:0.32,col:p.col}); }
+function updateFx(dt){ for(const f of G.fx) f.t+=dt; G.fx=G.fx.filter(f=>f.t<f.dur); }
+function drawFx(){
+  for(const f of G.fx){ const k=f.t/f.dur, a=1-k;
+    ctx.save(); ctx.globalAlpha=a;
+    if(f.ring){
+      ctx.strokeStyle=f.col; ctx.lineWidth=3;
+      ctx.beginPath(); ctx.arc(f.x,f.y,4+k*f.ring,0,6.2832); ctx.stroke();
+    } else {
+      ctx.strokeStyle=f.col; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(f.x,f.y,4+k*16,0,6.2832); ctx.stroke();
+      ctx.globalAlpha=a*0.8; ctx.fillStyle=f.col;
+      for(let i=0;i<5;i++){ const a2=i/5*6.2832+k*2, rr=(4+k*18)*0.6;
+        ctx.beginPath(); ctx.arc(f.x+Math.cos(a2)*rr,f.y+Math.sin(a2)*rr,1.6,0,6.2832); ctx.fill(); }
+    }
+    ctx.restore();
+  }
+}
+
+function updateHUD(){
+  document.getElementById('s-gem').textContent=Math.floor(G.faith.player);
+  document.getElementById('s-pow').textContent=G.pow.player.use+'/'+G.pow.player.prod;
+  document.getElementById('s-pop').textContent=(G.pop.player||0);
+  document.getElementById('s-age').textContent=AGES[G.ageOf.player-1].short;
+  const mm=Math.floor(G.time/60), ss=Math.floor(G.time%60);
+  document.getElementById('s-time').textContent=mm+':'+(ss<10?'0':'')+ss;
+  const pb=G.buildings.find(b=>b.faction==='player'&&b.type==='base');
+  document.getElementById('s-pHp').style.width=(pb?Math.max(0,pb.hp/pb.maxHp*100):0)+'%';
+  let cores=0; for(const f of G.factions){ if(f!=='player'&&G.buildings.some(b=>b.faction===f&&b.type==='base'))cores++; }
+  document.getElementById('s-eCores').textContent=cores;
+  document.getElementById('s-army').textContent=G.units.filter(u=>u.faction==='player'&&(isArmy(u.type)||u.def.hero)).length;
+}
+
+/* ---------- loop & overlay ---------- */
+function updateCam(dt){
+  const sp=560*zoom*dt; let dx=0,dy=0; const edge=30;
+  if(mouseCss.x>=0&&mouseCss.x<=cssW&&mouseCss.y>=0&&mouseCss.y<=cssH){
+    if(mouseCss.x<edge) dx-=1; else if(mouseCss.x>cssW-edge) dx+=1;
+    if(mouseCss.y<edge) dy-=1; else if(mouseCss.y>cssH-edge) dy+=1;
+  }
+  if(keys['a']||keys['arrowleft']) dx-=1;
+  if(keys['d']||keys['arrowright']) dx+=1;
+  if(keys['w']||keys['arrowup']) dy-=1;
+  if(keys['s']||keys['arrowdown']) dy+=1;
+  if(dx||dy){ camTween=null; cam.x+=dx*sp; cam.y+=dy*sp; clampCam(); }
+  else if(camTween){
+    const k=Math.min(1,dt*7);
+    cam.x+=(camTween.x-cam.x)*k; cam.y+=(camTween.y-cam.y)*k; clampCam();
+    if(Math.hypot(camTween.x-cam.x,camTween.y-cam.y)<1.5){ cam.x=camTween.x; cam.y=camTween.y; camTween=null; }
+  }
+}
+/* ---------- pause / exit / error ---------- */
+function pauseGame(){
+  if(!G||G.over) return;
+  paused=!paused;
+  const box=document.getElementById('pauseBox');
+  if(paused){ buildPauseActions(); box.style.display='flex'; }
+  else box.style.display='none';
+}
+function resumeGame(){ paused=false; document.getElementById('pauseBox').style.display='none'; }
+function buildPauseActions(){
+  const act=document.getElementById('ov-pause-actions'); act.innerHTML='';
+  act.appendChild(ovBtn('▶ 继续',resumeGame));
+  act.appendChild(ovBtn('⚔️ 重开',restart));
+  act.appendChild(ovBtn('🚪 退出到菜单',exitToMenu));
+}
+function exitToMenu(){
+  paused=false; errShown=false;
+  if(raf){ cancelAnimationFrame(raf); raf=0; }
+  document.getElementById('pauseBox').style.display='none';
+  document.getElementById('errBox').style.display='none';
+  document.getElementById('techPanel').style.display='none';
+  G=null;
+  showStart();
+  document.getElementById('overlay').style.display='flex';
+}
+function showErr(msg){
+  paused=true;
+  if(!errShown){
+    errShown=true;
+    document.getElementById('errMsg').textContent=String(msg||'未知错误');
+    buildErrActions();
+    document.getElementById('errBox').style.display='flex';
+  }
+}
+function buildErrActions(){
+  const act=document.getElementById('ov-err-actions'); act.innerHTML='';
+  act.appendChild(ovBtn('🔄 忽略并继续',()=>{ document.getElementById('errBox').style.display='none'; paused=false; errShown=false; }));
+  act.appendChild(ovBtn('🚪 退出到菜单',exitToMenu));
+}
+window.addEventListener('error',e=>{ showErr((e.message||'脚本错误')+(e.filename?('\n@ '+String(e.filename).split('/').pop()+':'+e.lineno):'')); });
+window.addEventListener('unhandledrejection',e=>{ showErr('异步错误：'+((e.reason&&e.reason.message)||e.reason||'未知')); });
+
+function loop(ts){
+  if(!G){ raf=0; return; }
+  if(!last) last=ts;
+  let dt=(ts-last)/1000; last=ts;
+  if(dt>0.05) dt=0.05;
+  try{
+    if(!G.over && !paused) update(dt);
+    if(G && !G.over && !paused){ autoSaveT-=dt; if(autoSaveT<=0){ autoSaveT=20; saveGame(true); } }
+    updateCam(dt);
+    render(); updateHUD();
+  }catch(e){
+    showErr((e&&e.message)||('逻辑/渲染异常：'+e)); paused=true;
+  }
+  raf=requestAnimationFrame(loop);
+}
+function startGame(){
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('techPanel').style.display='none';
+  document.getElementById('pauseBox').style.display='none';
+  document.getElementById('errBox').style.display='none';
+  paused=false; errShown=false;
+  newGame(chosenEnemies); resize(); buildActions();
+  if(!raf){ last=0; raf=requestAnimationFrame(loop); }
+}
+function restart(){ document.getElementById('overlay').style.display='none'; startGame(); }
+function showOverlay(result){
+  paused=false;
+  document.getElementById('pauseBox').style.display='none';
+  document.getElementById('errBox').style.display='none';
+  const ov=document.getElementById('overlay');
+  const desc=document.getElementById('ov-desc');
+  const armyP=G.units.filter(u=>u.faction==='player'&&(isArmy(u.type)||u.def.hero)).length;
+  const cores=G.buildings.filter(b=>b.faction!=='player'&&b.type==='base').length;
+  const st=G.stats;
+  const timeStr=Math.floor(G.time/60)+' 分 '+Math.floor(G.time%60)+' 秒';
+  const report='<span id="ov-stats">⏱ 历时 '+timeStr+'　🔥 击破 '+st.kills+'　🏗️ 建造 '+st.builtBuildings
+    +'　📿 占点 '+st.nodesCaptured+'　🙏 招募 '+(st.recruited||0)+'<br>🪖 出兵 '+st.builtUnits+'　👑 失英 '+st.heroesLost
+    +'　🌟 巅峰时代 '+AGES[st.maxAge-1].short+'　🔬 科技 '+st.techs+'　🛡️ 残存兵力 '+armyP+'</span>';
+  if(result==='win'){
+    ov.querySelector('h1').textContent='🏆 天庭大捷！';
+    desc.innerHTML='你推平了三路外神核心，诸天重归一统。<br>'+report;
+  } else {
+    ov.querySelector('h1').textContent='💀 主神殿陷落';
+    desc.innerHTML='外神联军攻破了你的主神殿。<br><span class="mini">剩余敌核 '+cores+'。再整旗鼓，卷土重来。</span><br>'+report;
+  }
+  const act=document.getElementById('ov-actions'); act.innerHTML='';
+  act.appendChild(ovBtn('⚔️ 再战一局', restart));
+  ov.style.display='flex';
+}
+
+showStart();
+resize();
+</script>
+</body>
+</html>

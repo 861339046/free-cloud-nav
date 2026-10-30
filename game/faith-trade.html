@@ -1,0 +1,1767 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>信仰交易录 · 万法商铺 (v4.0 位面商城建造时代)</title>
+<style>
+  :root{
+    --faith:#f4c542; --nature:#4ec9a8; --energy:#b07bff; --karma:#e05a5a; --rep:#c98be0;
+    --bg1:#fbe9f3; --bg2:#e9e4fb; --card:#ffffffee; --ink:#4a3b55;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);
+    background:linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh}
+  #app{max-width:540px;margin:0 auto;padding:10px 12px 104px}
+  header{position:sticky;top:0;z-index:5;background:rgba(42,26,60,.55);
+    backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.14);border-radius:16px;
+    padding:10px 12px;box-shadow:0 6px 22px #160a2e66;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .stat{display:flex;gap:6px;flex-wrap:wrap;font-size:12px;flex:1}
+  .pill{border-radius:999px;padding:3px 9px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);color:#f2e9ff;box-shadow:0 1px 4px #0004;white-space:nowrap}
+  .pill.faith{color:#ffdf80;border-color:#f4c54288}
+  .pill.nature{color:#7fe6c8;border-color:#4ec9a888}
+  .pill.energy{color:#d9c2ff;border-color:#b07bff88}
+  .pill.karma{color:#ff9a9a;border-color:#e05a5a88}
+  .pill.rep{color:#e0bcff;border-color:#c98be088}
+  .pill.shop{color:#cbb6ff;border-color:#9b7be088}
+  .pill.combo{color:#ffb877;border-color:#ff9a4d99;font-weight:700}
+  .pill.hot{color:#ffb877;border-color:#ff9a4dcc;font-weight:700}
+  header .muted{color:#cdbbe6}
+  .gear{border:0;background:rgba(255,255,255,.12);color:#e7d4ff;width:34px;height:34px;border-radius:50%;font-size:17px;cursor:pointer;flex:0 0 auto;box-shadow:0 2px 6px #0004;transition:transform .2s;align-self:flex-start}
+  .gear:active{transform:rotate(45deg)}
+  nav{display:flex;gap:4px;position:fixed;bottom:0;left:0;right:0;max-width:540px;margin:0 auto;
+    background:#fff8;backdrop-filter:blur(8px);padding:8px;border-top:1px solid #fff;z-index:6}
+  nav button{flex:1;border:0;background:#fff;border-radius:11px;padding:8px 1px;font-size:11px;color:var(--ink);
+    box-shadow:0 2px 6px #0001;cursor:pointer}
+  nav button.active{background:linear-gradient(160deg,#ffd9ee,#d9ccff);font-weight:700}
+  .card{background:var(--card);border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 3px 12px #cdb6e044}
+  .card h3{margin:0 0 8px;font-size:15px}
+  button.act{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:0;border-radius:12px;
+    background:#fff;box-shadow:0 2px 6px #0001;cursor:pointer;font-size:14px;color:var(--ink)}
+  button.act:active{transform:scale(.98)}
+  button.act .sub{display:block;font-size:11px;color:#9a8aa5;margin-top:2px}
+  button.mini{border:0;background:#f6efff;color:#6a4bb0;border-radius:9px;padding:5px 10px;font-size:12px;cursor:pointer;box-shadow:0 2px 5px #0001}
+  button.mini.on{background:linear-gradient(160deg,#ffd9ee,#d9ccff);color:#4a2a6b;font-weight:700}
+  .tag{display:inline-block;font-size:11px;border-radius:8px;padding:1px 7px;margin-right:4px}
+  .t-faith{background:#f4c54222;color:#9a7400}
+  .t-nature{background:#4ec9a822;color:#1f7a63}
+  .t-energy{background:#b07bff22;color:#5a2da0}
+  .t-goods{background:#c98be022;color:#7a3fa0}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .merit{aspect-ratio:1;border-radius:12px;background:linear-gradient(160deg,#fff,#f3ecff);display:flex;
+    flex-direction:column;align-items:center;justify-content:center;font-size:12px;text-align:center;box-shadow:0 2px 6px #0001}
+  .merit .e{font-size:26px}
+  .merit .c{font-weight:700;color:#7a3fa0}
+  .bar{height:8px;border-radius:999px;background:#eee;overflow:hidden;margin-top:4px}
+  .bar>i{display:block;height:100%;background:linear-gradient(90deg,#ff9ecf,#9b7be0)}
+  .bar>i.energy{background:linear-gradient(90deg,#c79bff,#7b4bd0)}
+  #toast{position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:20;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+  .toast{background:#4a3b55ee;color:#fff;padding:7px 14px;border-radius:999px;font-size:13px;animation:pop .3s ease, fade 2.6s forwards}
+  .toast.faith{background:#9a7400ee}.toast.nature{background:#1f7a63ee}.toast.energy{background:#5a2da0ee}
+  .toast.karma{background:#a33232ee}.toast.rep{background:#7a3fa0ee}.toast.disc{background:#b07bffee}
+  .toast.crit{background:#e07b1fee;font-weight:800;font-size:15px}
+  .toast.hot{background:#e08a1fee}
+  @keyframes pop{from{transform:translateY(-8px) scale(.9);opacity:0}to{transform:none;opacity:1}}
+  @keyframes fade{0%,70%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+  .muted{color:#9a8aa5;font-size:12px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .being{display:flex;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid #0001}
+  .being .ic{font-size:22px;width:44px;height:44px;flex:0 0 44px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f3e9ff,#e4d4ff);border:1.5px solid #d9c7f5;box-shadow:0 2px 7px #6a3f9e26}
+  .being .ic img{width:100%;height:100%;object-fit:cover;display:block}
+  .being .ic.lock{color:#b9a8d6;background:#efe8fb;border-style:dashed}
+  .being .nm{font-size:13px;font-weight:600}
+  .small{font-size:12px}
+  .ach{display:inline-block;background:#ffe6f4;color:#a3447f;border-radius:8px;padding:3px 8px;margin:3px;font-size:12px}
+  .relic{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #0001}
+  .relic .ic{font-size:24px;width:30px;text-align:center}
+  .relic .nm{font-weight:600;font-size:13px}
+  .perk{font-size:12px;padding:4px 0;color:#5a2da0}
+  .perk.off{color:#bbaac9}
+  #err{position:fixed;left:8px;right:8px;top:8px;z-index:99;background:#a33232;color:#fff;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.5;white-space:pre-wrap;box-shadow:0 4px 14px #0006}
+  .helper{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #0001;font-size:13px}
+  .helper .hn{font-weight:600;width:44px}
+  .helper select{flex:1;border:1px solid #cdb6e0;border-radius:8px;padding:4px 6px;font-size:12px;color:var(--ink);background:#fff}
+
+  /* ===== 诸天杂货店（跨界倒卖线 · 双线并列） ===== */
+  .pill.coin{color:#ffe08a;border-color:#ffcf4d88}
+  .cust-board{margin-top:8px;background:linear-gradient(160deg,#fff,#f3ecff);box-shadow:0 2px 8px #0001;border-radius:12px;padding:10px;min-height:64px;display:flex;align-items:center}
+  .cust-board .cust{display:flex;gap:10px;align-items:center;animation:slideIn .4s ease;width:100%}
+  @keyframes slideIn{from{transform:translateX(-16px);opacity:0}to{transform:none;opacity:1}}
+  .cust .face{font-size:32px;width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f3e9ff,#e4d4ff);border:1.5px solid #d9c7f5;flex:0 0 52px}
+  .cust .say{font-size:13px;flex:1}
+  .cust .say b{color:#7a3fa0}
+  .real-good{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #0001}
+  .real-good .ic{font-size:24px;width:46px;height:46px;flex:0 0 46px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f3e9ff,#e4d4ff);border:1.5px solid #d9c7f5}
+  .real-good .nm{font-size:14px;font-weight:600}
+  .real-good .meta{font-size:11px;color:#9a8aa5}
+  .price-edit{display:flex;gap:4px;align-items:center}
+  .price-edit button{border:0;background:#f6efff;color:#6a4bb0;border-radius:8px;width:26px;height:26px;font-size:16px;line-height:1;cursor:pointer;box-shadow:0 2px 5px #0001}
+  .price-edit .pv{min-width:46px;text-align:center;font-weight:700;color:#7a3fa0}
+  .note{font-size:12px;padding:6px 8px;border-radius:10px;background:#fff3e6;border:1px solid #ffd9ee;margin:4px 0}
+  .deal-log{font-size:12px;color:#6a4bb0;padding:3px 0;border-bottom:1px dashed #0001}
+  .tag.cat{background:#b07bff22;color:#5a2da0}
+  .empty-hint{color:#9a8aa5;font-size:12px;text-align:center;padding:14px}
+
+  /* ===== 动态店铺 DOM 版（不依赖 canvas） ===== */
+  #shopWrap{position:relative;padding:0;overflow:hidden;border-radius:16px}
+  .shop-stage{position:relative;width:100%;height:400px;overflow:hidden;border-radius:16px;
+    background:url('assets/scene.webp') center 30%/cover no-repeat,#241a33;
+    box-shadow:0 4px 18px #cdb6e055}
+  .shop-stage::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+    background:linear-gradient(180deg,rgba(46,22,78,.40) 0%,rgba(22,12,40,.16) 42%,rgba(12,7,24,.74) 100%)}
+  .shop-stage::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:16px;
+    box-shadow:inset 0 0 130px rgba(0,0,0,0.55)}
+  .shop-window{position:absolute;right:18px;top:16px;width:140px;height:100px;border-radius:14px;overflow:hidden;z-index:2;
+    background:linear-gradient(180deg,#2a2350,#0e0a22);border:3px solid #6a5590;box-shadow:0 0 30px rgba(120,90,200,0.25)}
+  .shop-window .moon{position:absolute;right:18px;top:16px;width:26px;height:26px;border-radius:50%;
+    background:radial-gradient(circle at 40% 40%,#fff7d6,#ffe9a8);box-shadow:0 0 18px #fff7d655}
+  .shop-window .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:twinkle 2s infinite ease-in-out}
+  @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+  .lantern{position:absolute;top:28px;width:20px;height:26px;border-radius:50%;background:#ff6b6b;z-index:2;
+    box-shadow:0 0 26px 10px rgba(255,190,120,0.4);animation:sway 3s ease-in-out infinite;transform-origin:top center}
+  .lantern::before{content:"";position:absolute;left:50%;top:-12px;width:2px;height:14px;background:#7a5a3a;transform:translateX(-50%)}
+  .lantern::after{content:"";position:absolute;left:50%;bottom:-12px;width:2px;height:12px;background:#ffcf4d;transform:translateX(-50%)}
+  @keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+  .floor{position:absolute;left:0;right:0;bottom:0;height:74px;z-index:1;
+    background:repeating-linear-gradient(90deg,rgba(0,0,0,0.12) 0 1px,transparent 1px 24px),linear-gradient(180deg,#7a4f3a,#4a2f24)}
+  .counter{position:absolute;left:0;right:0;bottom:0;height:62px;z-index:6;border-top:3px solid #caa06a;
+    background-image:repeating-linear-gradient(90deg,rgba(0,0,0,0.12) 0 1px,transparent 1px 24px),linear-gradient(180deg,#9a6440,#5b3a29)}
+  .jar{position:absolute;width:14px;height:14px;border-radius:50%;background:currentColor;z-index:2;box-shadow:0 0 16px 4px currentColor}
+  .furnace{position:absolute;right:18px;bottom:70px;width:40px;height:54px;border-radius:10px;z-index:2;background:#3a2a4a;border:2px solid #5a4a7d;box-shadow:inset 0 4px 8px #0006}
+  .energy-orb{position:absolute;width:28px;height:28px;border-radius:50%;z-index:2;
+    background:radial-gradient(circle at 40% 40%,#f0e0ff,#b07bff);
+    box-shadow:0 0 26px 8px rgba(176,123,255,0.55);transition:all .4s ease;animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  .shop-girl{position:absolute;left:-28px;bottom:16px;width:158px;height:auto;z-index:4;pointer-events:none;
+    filter:drop-shadow(0 0 22px rgba(176,123,255,.55));animation:breathe 3.4s ease-in-out infinite;
+    -webkit-mask-image:radial-gradient(ellipse 60% 74% at 50% 50%,#000 58%,rgba(0,0,0,.7) 76%,transparent 93%);
+    mask-image:radial-gradient(ellipse 60% 74% at 50% 50%,#000 58%,rgba(0,0,0,.7) 76%,transparent 93%)}
+  @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .shop-window,.lantern,.jar,.furnace,.floor,.counter{display:none!important}
+  .shop-girl.nod{animation:nod .5s ease}
+  @keyframes nod{0%,100%{transform:translateY(0) rotate(0)}40%{transform:translateY(2px) rotate(3deg)}}
+  .shop-girl .eye{transform-origin:center;animation:blink 4.6s infinite}
+  @keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.12)}}
+  .girl-aura{filter:drop-shadow(0 0 12px rgba(176,123,255,0.7))}
+  /* 商城地块 */
+  .plot-band{position:absolute;left:136px;right:8px;top:28px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;z-index:3}
+  .plot{position:relative;height:56px;border-radius:10px;background:rgba(255,255,255,0.13);box-shadow:0 4px 12px #0003;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:9px;color:#f2e9ff;text-align:center;
+    line-height:1.25;padding:2px;border:1px solid rgba(255,255,255,0.24);backdrop-filter:blur(6px);text-shadow:0 1px 2px #0008;cursor:pointer;overflow:hidden}
+  .plot:active{transform:scale(.96)}
+  .plot .pi{font-size:19px;line-height:1;display:flex;align-items:center;justify-content:center}
+  .plot .pi img{width:100%;max-width:30px;height:26px;object-fit:contain;display:block;filter:drop-shadow(0 1px 2px #0004)}
+  .plot .plv{display:flex;gap:2px;margin-top:2px}
+  .plot .plv i{width:4px;height:4px;border-radius:50%;background:#b07bff}
+  .plot .ph{position:absolute;top:2px;left:4px;font-size:8px;background:#7a5aa8;color:#fff;border-radius:6px;padding:0 4px}
+  .plot.empty{background:rgba(255,255,255,0.07);border:1.5px dashed rgba(255,255,255,0.35);color:#ffffffcc;box-shadow:none}
+  .cust-layer{position:absolute;inset:0;z-index:5}
+  .customer{position:absolute;bottom:70px;left:0;margin-left:-32px;width:64px;height:104px;z-index:5;
+    transform:translateX(var(--tx,560px));transition:transform 1.2s cubic-bezier(.25,.9,.3,1),opacity .6s;cursor:pointer}
+  .customer .body{display:none}
+  .customer .face{position:absolute;left:50%;top:17px;transform:translateX(-50%);width:54px;height:54px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:30px;line-height:1;background:radial-gradient(circle at 50% 35%,#2a1b45,#120a20);border:2px solid var(--cc,#ffd0e6);box-shadow:0 0 14px 1px var(--cc,#ffd0e6),0 3px 8px #0007}
+  .customer .face img{width:100%;height:100%;object-fit:cover;display:block}
+  .customer .plate{position:absolute;left:50%;top:74px;transform:translateX(-50%);white-space:nowrap;
+    background:rgba(0,0,0,0.52);color:#fff;font-size:11px;padding:1px 7px;border-radius:8px;box-shadow:0 2px 5px #0005}
+  .customer .bubble{position:absolute;left:50%;top:-30px;transform:translateX(-50%);white-space:nowrap;
+    background:#ffffffe8;color:#4a3b55;font-size:13px;padding:3px 8px;border-radius:9px;box-shadow:0 2px 6px #0002;font-weight:600}
+  .customer .pref{position:absolute;left:50%;top:-52px;transform:translateX(-50%);white-space:nowrap;
+    background:#fff4d6;color:#9a7400;font-size:10px;padding:1px 6px;border-radius:7px;border:1px solid #f4c54266}
+  .customer .loyal{position:absolute;left:50%;top:-52px;transform:translateX(-50%);white-space:nowrap;
+    background:#e6d6ff;color:#5a2da0;font-size:10px;padding:1px 6px;border-radius:7px;border:1px solid #b07bff66}
+  .customer .voice{position:absolute;left:50%;top:-72px;transform:translateX(-50%);white-space:nowrap;max-width:170px;
+    background:rgba(123,75,160,0.92);color:#fff;font-size:10px;padding:2px 6px;border-radius:8px}
+  .customer .urgent{position:absolute;left:50%;top:-92px;transform:translateX(-50%);white-space:nowrap;
+    background:#ff6b3d;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;animation:flash .8s infinite}
+  .customer .big{position:absolute;left:50%;top:-92px;transform:translateX(-50%);white-space:nowrap;
+    background:#3d7bff;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;animation:flash .8s infinite}
+  @keyframes flash{0%,100%{opacity:1}50%{opacity:.5}}
+  .customer .ring{position:absolute;left:-3px;top:9px;width:70px;height:70px;z-index:-1}
+  .customer .ring circle{fill:none;stroke-width:4;stroke-linecap:round}
+  .customer .ring .bg{stroke:rgba(0,0,0,0.3)}
+  .customer .ring .fg{stroke:#4ec9a8;transition:stroke-dashoffset .1s linear}
+  .customer.urgentc .ring .fg{stroke:#ff8a4d}
+  .customer.bigc .ring .fg{stroke:#6ba6ff}
+  .customer.happy{transform:translateX(-260px)!important;opacity:0;transition:transform .9s ease-in,opacity .9s}
+  .customer.sad{transform:translateX(660px)!important;opacity:0;transition:transform .9s ease-in,opacity .9s}
+  .float-layer{position:absolute;inset:0;pointer-events:none;z-index:8}
+  .float{position:absolute;font-weight:700;font-size:15px;text-shadow:0 1px 3px #0009;animation:floatUp 1.4s ease-out forwards}
+  .float.crit{font-size:22px;color:#ffb84d!important;text-shadow:0 0 8px #ff7a1f,0 1px 3px #0009}
+  @keyframes floatUp{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-46px) scale(1.1)}}
+  .particle{position:absolute;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:9;
+    animation:burst .7s ease-out forwards}
+  @keyframes burst{from{opacity:1;transform:translate(0,0) scale(1)}to{opacity:0;transform:translate(var(--px),var(--py)) scale(.3)}}
+  .shop-top{position:relative;margin:0 0 10px;padding:9px 13px;color:#fff;font-size:12px;line-height:1.55;
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.17);border-radius:14px;
+    backdrop-filter:blur(10px);box-shadow:0 6px 18px #0003;text-shadow:0 1px 2px #0008;pointer-events:none;z-index:7}
+  .shop-top .t1{font-size:15px;font-weight:700}
+  .shop-top .combo{color:#ffb84d;font-weight:800}
+  .shop-top .hot{color:#ffb84d;font-weight:700;background:rgba(255,154,77,.20);padding:2px 8px;border-radius:8px;display:inline-block;box-shadow:0 1px 6px #0004}
+  .shop-top .guide{margin-top:6px;font-size:12px;color:#ffd9a0;font-weight:600;text-shadow:0 1px 4px #0007;background:rgba(176,123,255,.16);padding:4px 10px;border-radius:9px;display:inline-block;box-shadow:0 1px 6px #0003}
+  .shop-top .guide.done{color:#9be0c8;background:rgba(120,224,160,.14)}
+  @media (max-width:600px){
+    #app{padding:8px 8px 92px}
+    nav button{font-size:13px;padding:9px 4px;min-height:50px;border-radius:12px}
+    .card{padding:12px 12px 14px}
+    header{padding:8px 10px}
+    .stat{gap:5px}
+    .pill{font-size:11px;padding:3px 7px}
+    .shop-stage{height:340px}
+    .shop-top{font-size:12px;line-height:1.5}
+    .customer .voice{font-size:10px;max-width:140px}
+    .gear{width:34px;height:34px;font-size:16px}
+    #eventModal .ev-card,#plotModal .ev-card,#settingsModal .set-card{padding:16px 13px}
+  }
+  @media (max-width:380px){
+    nav button{font-size:12px;padding:8px 2px;min-height:46px}
+    .pill{font-size:10px;padding:2px 6px}
+    .shop-stage{height:300px}
+  }
+
+  /* 矢量氛围：星云 / 视差星空 / 上升光尘 */
+  .nebula{position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(240px 140px at 78% 12%,rgba(176,123,255,.22),transparent 70%),
+               radial-gradient(200px 120px at 12% 20%,rgba(255,158,207,.14),transparent 70%),
+               radial-gradient(260px 160px at 50% 92%,rgba(255,205,90,.10),transparent 70%)}
+  .starfield{position:absolute;inset:0;z-index:1;pointer-events:none}
+  .starfield .s{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:twinkle 3s ease-in-out infinite}
+  .spark{position:absolute;width:4px;height:4px;border-radius:50%;z-index:2;pointer-events:none;
+    background:radial-gradient(circle,#ffffff88 0%,currentColor 45%,transparent 70%);
+    animation:rise linear infinite;opacity:.85}
+  @keyframes rise{from{transform:translateY(0);opacity:.9}70%{opacity:.7}to{transform:translateY(-180px);opacity:0}}
+  .energy-orb::after{content:"";position:absolute;inset:-7px;border-radius:50%;
+    border:1.5px dashed rgba(255,255,255,.5);animation:orbit 6s linear infinite}
+  @keyframes orbit{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  /* 开场标题 + 序章剧情 */
+  #splash,#story{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+    background:url('assets/title.webp') center/cover no-repeat;transition:opacity .5s}
+  #splash::before,#story::before{content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(20,10,35,0) 28%,rgba(20,10,35,.8) 76%,rgba(20,10,35,.94))}
+  #splash .t-wrap,#story .t-wrap{position:relative;z-index:1;text-align:center;color:#fff;padding:0 20px 42px}
+  #splash h1{margin:0;font-size:34px;letter-spacing:6px;text-shadow:0 2px 18px rgba(176,123,255,.9),0 1px 3px #000}
+  #splash .t-sub{margin-top:6px;font-size:13px;color:#e8d9ff;text-shadow:0 1px 3px #000}
+  #splash .t-desc{margin-top:10px;font-size:12px;color:#d9c9f5;max-width:330px;margin:10px auto 0;line-height:1.7;text-shadow:0 1px 2px #000}
+  .start{margin-top:18px;border:0;cursor:pointer;font-size:16px;font-weight:700;color:#4a2a6b;
+    background:linear-gradient(160deg,#ffe9a8,#f4c542);padding:12px 46px;border-radius:999px;
+    box-shadow:0 6px 22px rgba(244,197,66,.45);animation:pulse 2s ease-in-out infinite}
+  #story .story-text{font-size:14px;line-height:1.9;color:#f3e9ff;max-width:340px;margin:0 auto 16px;text-shadow:0 1px 3px #000;min-height:90px}
+  #story .story-next{margin-top:6px;border:0;cursor:pointer;font-size:15px;font-weight:700;color:#4a2a6b;
+    background:linear-gradient(160deg,#ffd9ee,#d9ccff);padding:10px 36px;border-radius:999px;box-shadow:0 4px 16px #0006}
+  .bye{opacity:0;pointer-events:none}
+
+  /* 事件抉择 / 地块操作 模态 */
+  #eventModal,#plotModal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(20,10,35,.72);backdrop-filter:blur(4px);padding:18px}
+  #eventModal .ev-card,#plotModal .ev-card{background:linear-gradient(160deg,#fff7fc,#efe9ff);border-radius:20px;padding:20px 18px;max-width:420px;width:100%;box-shadow:0 12px 40px #0008;animation:pop .35s ease;max-height:86vh;overflow:auto}
+  #eventModal .ev-icon{font-size:44px;text-align:center}
+  #eventModal h2{margin:8px 0 6px;font-size:18px;text-align:center;color:#5a2da0}
+  #eventModal .ev-desc{font-size:13px;line-height:1.7;color:#5a4b66;margin-bottom:14px;text-align:center}
+  #eventModal .ev-choice{display:block;width:100%;text-align:left;margin:8px 0;padding:11px 13px;border:0;border-radius:12px;
+    background:#fff;box-shadow:0 2px 6px #0001;cursor:pointer;font-size:13px;color:var(--ink)}
+  #eventModal .ev-choice:active{transform:scale(.98)}
+  #eventModal .ev-choice .ce{display:block;font-size:11px;color:#9a8aa5;margin-top:3px}
+  /* ===== 设置面板 ===== */
+  body.no-anim *{animation:none!important;transition:none!important}
+  body.no-anim .starfield{display:none}
+  #settingsModal{position:fixed;inset:0;z-index:45;display:none;align-items:center;justify-content:center;background:rgba(20,10,35,.72);backdrop-filter:blur(4px);padding:18px}
+  #settingsModal .set-card{background:linear-gradient(160deg,#2a1a3c,#3a2356);border:1px solid rgba(255,255,255,.16);color:#f2e9ff;border-radius:20px;padding:20px 18px;max-width:420px;width:100%;box-shadow:0 12px 40px #0008;animation:pop .35s ease;max-height:86vh;overflow:auto}
+  #settingsModal .set-card h2{margin:8px 0 6px;font-size:18px;text-align:center;color:#e7d4ff;text-shadow:0 1px 6px #0006}
+  #settingsModal .set-card h3{margin:6px 0 4px;font-size:14px;color:#e7d4ff}
+  #settingsModal .set-row{display:flex;align-items:center;gap:10px;margin:10px 0;font-size:14px}
+  #settingsModal .set-row>span:first-child{min-width:78px;color:#cdbbe6}
+  #settingsModal .set-btns{justify-content:flex-start;flex-wrap:wrap;gap:8px}
+  #settingsModal .set-sep{border-top:1px solid rgba(255,255,255,.14);margin:14px 0 6px}
+  #settingsModal .set-code{width:100%;height:58px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.18);border-radius:10px;color:#d9c2ff;font-size:11px;padding:6px;resize:none;box-sizing:border-box}
+  #settingsModal .mini{background:rgba(255,255,255,.14);color:#f2e9ff;border:1px solid rgba(255,255,255,.2)}
+  #settingsModal .mini.danger{background:rgba(224,90,90,.28);border-color:#e05a5a88;color:#ffd6d6}
+  #settingsModal .sw{display:flex;align-items:center;gap:6px;cursor:pointer;color:#e7d4ff}
+  #settingsModal .story-next{border:0;background:linear-gradient(160deg,#ffd9ee,#d9ccff);color:#4a2a6b;border-radius:10px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px #0004}
+  #settingsModal .story-next:active{transform:scale(.97)}
+  .pm-title{font-size:16px;font-weight:700;color:#5a2da0;text-align:center;margin-bottom:4px}
+  .pm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+  .pm-btn{border:0;background:#fff;border-radius:12px;padding:10px 4px;font-size:12px;color:var(--ink);
+    box-shadow:0 2px 6px #0001;cursor:pointer;text-align:center}
+  .pm-btn:active{transform:scale(.96)}
+  .pm-btn .pi{font-size:24px;display:block;line-height:1}
+  .pm-btn .pi img{width:38px;height:38px;object-fit:contain;display:block;margin:0 auto;filter:drop-shadow(0 2px 3px #0003)}
+  .pm-tico{width:17px;height:17px;object-fit:contain;vertical-align:-3px;margin-right:3px;filter:drop-shadow(0 1px 2px #0003)}
+  .pm-btn .pc{display:block;font-size:10px;color:#9a8aa5;margin-top:2px}
+  .pm-btn.locked{opacity:.45;cursor:not-allowed}
+  .pm-btn.sel{outline:2px solid #b07bff}
+  .pm-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0;font-size:13px}
+
+  /* 位格飞升仪式 */
+  #ascend{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 42%,rgba(90,45,160,.93),rgba(20,10,35,.97));padding:20px}
+  #ascend .asc-card{text-align:center;color:#fff;max-width:340px;animation:pop .5s ease}
+  #ascend .asc-icon{font-size:64px;filter:drop-shadow(0 0 24px #ffd86b);animation:pulse 1.6s ease-in-out infinite}
+  #ascend h2{margin:8px 0 2px;font-size:26px;letter-spacing:4px;text-shadow:0 0 18px #b07bff}
+  #ascend .asc-lv{font-size:42px;font-weight:800;color:#ffd86b;text-shadow:0 0 22px #ff9a3d}
+  #ascend .asc-perk{margin-top:10px;font-size:14px;color:#e8d9ff;line-height:1.7}
+  #ascend .asc-unlock{margin-top:6px;font-size:12px;color:#c79bff}
+
+  /* 任务横幅 */
+  .task{background:linear-gradient(160deg,#fff4fb,#f0e9ff);border-radius:12px;padding:9px 11px;margin-bottom:8px;box-shadow:0 2px 6px #cdb6e044}
+  .task .tn{font-size:13px;font-weight:700;color:#7a3fa0}
+  .task .td{font-size:11px;color:#9a8aa5;margin:2px 0 5px}
+  .task .bar{height:6px}
+  .task.done{opacity:.7}
+</style>
+</head>
+<body>
+<div id="splash">
+  <div class="t-wrap">
+    <h1>信仰交易录</h1>
+    <div class="t-sub">万法商铺 · 诸天位面商城建造时代</div>
+    <div class="t-desc">在一片空地上，建起你的诸天位面商城：货架、信仰祭坛、炼化炉、飞升祭坛……招募伙计、运筹四条资源线、收集无所不能的能量，直到无敌。</div>
+    <button class="start" id="startBtn">🌸 开始营业</button>
+  </div>
+</div>
+<div id="story" style="display:none">
+  <div class="t-wrap">
+    <div class="story-text" id="storyText"></div>
+    <button class="story-next" id="storyNext">继续</button>
+  </div>
+</div>
+<div id="app">
+  <header>
+    <div style="flex:1;min-width:0">
+    <div class="stat">
+      <span class="pill faith">✦信仰 <b id="s-faith">0</b></span>
+      <span class="pill nature">❀自然 <b id="s-nature">0</b></span>
+      <span class="pill energy">🔮能量 <b id="s-energy">0</b></span>
+      <span class="pill rep">★声望 <b id="s-rep">0</b></span>
+      <span class="pill karma">☣业障 <b id="s-karma">0</b></span>
+      <span class="pill coin">💠灵石 <b id="s-coin">0</b></span>
+      <span class="pill shop">🏠店Lv<b id="s-shop">1</b> · 位格<b id="s-plane">1</b></span>
+      <span class="pill combo" id="s-combo-wrap" style="display:none">🔥连击 <b id="s-combo">0</b></span>
+    </div>
+    <div class="muted small" style="margin-top:6px">神格 Lv<b id="s-deity">1</b> · 累计信仰 <b id="s-faithTotal">0</b> · 成交 <b id="s-deals">0</b> · 货仓 <b id="s-goods">0</b> · 伙计 <b id="s-helpers">0</b> · 无敌 <b id="s-inv">未</b></div>
+    </div>
+    <button class="gear" id="gearBtn" title="设置" onclick="openSettings()">⚙</button>
+  </header>
+  <main id="view" style="display:none"></main>
+  <div id="shopView" style="display:block">
+    <div class="card" id="shopWrap">
+      <div class="shop-top" id="shopTop"></div>
+      <div class="shop-stage" id="shopStage">
+        <div class="nebula"></div>
+        <div class="starfield" id="starfield"></div>
+        <div class="shop-window"><div class="moon"></div>
+          <div class="star" style="left:18%;top:30%"></div>
+          <div class="star" style="left:42%;top:18%;animation-delay:.6s"></div>
+          <div class="star" style="left:70%;top:46%;animation-delay:1.1s"></div>
+          <div class="star" style="left:30%;top:62%;animation-delay:1.6s"></div>
+          <div class="star" style="left:60%;top:24%;animation-delay:.3s"></div>
+        </div>
+        <div class="plot-band" id="plotBand"></div>
+        <div class="lantern" style="left:30%"></div>
+        <div class="lantern" style="left:74%;animation-delay:1.2s"></div>
+        <div class="jar" style="left:18px;top:120px;color:#ff9ecf"></div>
+        <div class="jar" style="left:18px;top:150px;color:#9be0c8"></div>
+        <div class="jar" style="right:18px;top:120px;color:#ffd86b"></div>
+        <div class="jar" style="right:18px;top:150px;color:#b07bff"></div>
+        <div class="floor"></div>
+        <div class="counter"></div>
+        <div class="furnace"></div>
+        <div class="energy-orb" id="energyOrb"></div>
+        <img class="shop-girl" id="shopGirl" src="assets/shopgirl.webp" alt="店主">
+        <div class="cust-layer" id="custLayer"></div>
+        <div class="float-layer" id="floatLayer"></div>
+        <!-- 新手指引已迁移至顶部信息栏 #shopTop，避免遮挡城主立绘 -->
+      </div>
+    </div>
+  </div>
+</div>
+<nav id="nav">
+  <button data-tab="shop" class="active">🏪商铺</button>
+  <button data-tab="goods">📦货仓</button>
+  <button data-tab="refine">🔮炼化</button>
+  <button data-tab="cult">🌱修行</button>
+  <button data-tab="manage">📈经营</button>
+  <button data-tab="store">🛒杂货</button>
+</nav>
+<div id="toast"></div>
+
+<div id="settingsModal" onclick="if(event.target===this)closeSettings()"><div class="ev-card set-card">
+  <div class="ev-icon">⚙️</div>
+  <h2>设置</h2>
+  <div class="set-row"><span>音效</span>
+    <label class="sw"><input type="checkbox" id="setSnd" onchange="SND_ENABLED=this.checked;saveSettings();if(this.checked&&actx)sfx('event')"> 开启</label>
+  </div>
+  <div class="set-row"><span>音量</span>
+    <input type="range" id="setVol" min="0" max="100" value="50" oninput="SND_VOL=this.value/100;document.getElementById('setVolVal').textContent=this.value+'%';saveSettings()" style="flex:1;accent-color:#b07bff">
+    <b id="setVolVal">50%</b>
+  </div>
+  <div class="set-row"><span>动画特效</span>
+    <label class="sw"><input type="checkbox" id="setAnim" onchange="ANIM_ON=this.checked;applyAnim();saveSettings()"> 开启</label>
+  </div>
+  <div class="set-sep"></div>
+  <h3>存档（换设备不丢进度）</h3>
+  <div class="set-row set-btns">
+    <button class="mini" onclick="exportSave()">⬇ 导出文件</button>
+    <button class="mini" onclick="document.getElementById('importFile').click()">⬆ 导入文件</button>
+    <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="if(this.files[0])importSaveFile(this.files[0])">
+  </div>
+  <div class="set-row" style="margin-top:10px"><span>分享码</span></div>
+  <textarea id="saveCode" class="set-code" readonly placeholder="点“生成分享码”生成后可复制"></textarea>
+  <div class="set-row set-btns" style="margin-top:6px">
+    <button class="mini" onclick="genCode()">生成分享码</button>
+    <button class="mini" onclick="copyCode()">复制</button>
+    <button class="mini" onclick="importCode()">从码导入</button>
+  </div>
+  <div class="set-sep"></div>
+  <div class="set-row set-btns">
+    <button class="mini danger" onclick="resetSave()">清空存档</button>
+    <button class="story-next" style="margin-top:0" onclick="closeSettings()">关闭</button>
+  </div>
+  <div class="muted small" id="setMsg" style="margin-top:8px;text-align:center;color:#bda9da"></div>
+</div></div>
+
+<div id="eventModal">
+  <div class="ev-card">
+    <div class="ev-icon" id="evIcon">✨</div>
+    <h2 id="evTitle"></h2>
+    <div class="ev-desc" id="evDesc"></div>
+    <div id="evChoices"></div>
+  </div>
+</div>
+
+<div id="plotModal"><div class="ev-card" id="plotCard"></div></div>
+
+<div id="ascend">
+  <div class="asc-card">
+    <div class="asc-icon">🛕</div>
+    <h2>位格飞升</h2>
+    <div class="asc-lv" id="ascLv">Lv2</div>
+    <div class="asc-perk" id="ascPerk"></div>
+    <div class="asc-unlock" id="ascUnlock"></div>
+    <button class="story-next" id="ascBtn" style="margin-top:18px">叩谢天地</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+function showErr(msg){
+  let e=document.getElementById('err');
+  if(!e){ e=document.createElement('div'); e.id='err'; document.body.appendChild(e); }
+  e.textContent='⚠ 运行出错（请把这行发我）：'+msg;
+}
+window.addEventListener('error',ev=>showErr((ev.message||'未知错误')+' @'+(ev.lineno||'')));
+window.addEventListener('unhandledrejection',ev=>showErr('Promise: '+(ev.reason&&ev.reason.message||ev.reason)));
+
+const SAVE_KEY = "faithTradeSave_v40";
+const SETTINGS_KEY = "faithTradeSettings";
+let SND_ENABLED=true, SND_VOL=0.5, ANIM_ON=true;
+function loadSettings(){
+  try{ const r=localStorage.getItem(SETTINGS_KEY); if(r){ const d=JSON.parse(r);
+    if(typeof d.snd==="boolean") SND_ENABLED=d.snd;
+    if(typeof d.vol==="number") SND_VOL=Math.max(0,Math.min(1,d.vol));
+    if(typeof d.anim==="boolean") ANIM_ON=d.anim; } }catch(e){}
+  if(!ANIM_ON) document.body.classList.add('no-anim');
+}
+function saveSettings(){ try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify({snd:SND_ENABLED,vol:SND_VOL,anim:ANIM_ON})); }catch(e){} }
+
+/* ============ 数据 ============ */
+const GOODS = {食物:"🍱", 知识:"📚", 旧物:"📦", 观想:"🌿", 灵物:"✨", 羁绊:"💞"};
+const GOODS_ORDER = ["食物","知识","旧物","观想","灵物","羁绊"];
+const RESTOCK = {食物:4, 知识:6, 旧物:3, 观想:5, 灵物:8, 羁绊:12};
+const SHELF_SWITCH_COST = 20;
+
+const VOICES = {
+  landongong:["小友，今儿地里的收成可好？","老朽带了些神土来换些吃食。","这烟火气，最是养人呐。"],
+  huxian:["嘻，你这铺子香得很~","本仙最爱人间的热闹。","换点灵物，我便助你一臂之力。"],
+  longwang:["四海之水，皆可为凭。","唤雨的本事，换你些观想可好？","水润万物，你且看。"],
+  yuelao:["红线千结，缘分天定。","一段良缘，换你情意绵绵。","红线牵错了，可别怪我~"],
+  chenghuang:["城隍护一方安宁。","阴德护符，予你有备无患。","善恶有报，不过是时辰。"],
+  shanshen:["山林之精，寄于此身。","旧物与知识，最合我意。","山水有清音，你可知否？"],
+  caishen:["财气嘛，来得快去得也快。","敢赌否？横财或破财，一念间。","富贵险中求，小友。"],
+  tianting:["天威浩荡，非同小可。","飞升之门，只待有缘人。","诸天之上，还有诸天。"],
+};
+
+const RELICS = {
+  landongong:{name:"神土",icon:"🟫",energy:6,col:"#caa15a"},
+  huxian:{name:"狐丹",icon:"🦊",energy:8,col:"#ff9a6b"},
+  longwang:{name:"龙鳞",icon:"🐉",energy:7,col:"#5bc8e0"},
+  yuelao:{name:"月华",icon:"🌕",energy:12,col:"#ffd86b"},
+  chenghuang:{name:"城隍令",icon:"🏯",energy:14,col:"#d98b5a"},
+  shanshen:{name:"山精",icon:"🌿",energy:9,col:"#7fd07a"},
+  caishen:{name:"财气",icon:"💰",energy:20,col:"#ffcf4d"},
+  tianting:{name:"天威",icon:"☀️",energy:40,col:"#fff0a0"},
+};
+
+const CULTS = [
+  {id:"checkin",name:"每日签到",nature:10,streak:true,sub:"连签递增至25（位格高时翻倍）"},
+  {id:"food",name:"拍今天的食物",good:"食物",n:1,nature:5,sub:"入货仓·食物"},
+  {id:"book",name:"拍登记一本书",good:"知识",n:1,nature:5,sub:"入货仓·知识"},
+  {id:"old",name:"拍旧物/断舍离",good:"旧物",n:1,nature:5,sub:"入货仓·旧物"},
+  {id:"view",name:"拍自然/天空观想",good:"观想",n:1,nature:5,sub:"入货仓·观想"},
+  {id:"ling",name:"场景打卡/拾取灵物",good:"灵物",n:1,nature:5,sub:"入货仓·灵物"},
+  {id:"photo",name:"周末家庭/好友合影",good:"羁绊",n:1,nature:10,sub:"入货仓·羁绊·周常"},
+  {id:"gratitude",name:"记一件感恩的事",faith:12,sub:"非自然心性→信仰"},
+  {id:"help",name:"拍助人瞬间",faith:15,count:"善行",sub:"非自然心性→信仰"},
+  {id:"habit",name:"记戒除的坏习惯",faith:20,sub:"非自然心性→信仰·修行"},
+];
+
+const BEINGS = [
+  {id:"landongong",name:"土地公",icon:"👴",img:"assets/beings/landongong.webp",tier:1,relic:"landongong",payNature:20,pref:"食物",desc:"随机需求 → 自然+20"},
+  {id:"huxian",name:"狐仙",icon:"🦊",img:"assets/beings/huxian.webp",tier:1,relic:"huxian",payFaith:15,pref:"灵物",desc:"随机需求 → 信仰+15"},
+  {id:"longwang",name:"龙王",icon:"🐉",img:"assets/beings/longwang.webp",tier:1,relic:"longwang",payNature:25,pref:"观想",desc:"随机需求 → 自然+25"},
+  {id:"yuelao",name:"月老",icon:"💕",img:"assets/beings/yuelao.webp",tier:2,relic:"yuelao",payFaith:25,boon:"神谕·良缘",succ:0.7,fail:{imp:-12,karma:10},pref:"羁绊",desc:"随机需求 → 信仰+25 · 神谕(70%)"},
+  {id:"chenghuang",name:"城隍",icon:"🏯",img:"assets/beings/chenghuang.webp",tier:2,relic:"chenghuang",payFaith:30,boon:"阴德护符",pref:"旧物",desc:"随机需求 → 信仰+30 · 阴德护符"},
+  {id:"shanshen",name:"山神",icon:"🌲",img:"assets/beings/shanshen.webp",tier:2,relic:"shanshen",payNature:30,pref:"知识",desc:"随机需求 → 自然+30"},
+  {id:"caishen",name:"财神",icon:"💰",img:"assets/beings/caishen.webp",tier:3,relic:"caishen",payFaithGamble:true,succ:0.5,fail:{imp:-15,consume:true},pref:"旧物",desc:"随机需求 → 横财/破财(50%)"},
+  {id:"tianting",name:"天庭使者",icon:"☀️",img:"assets/beings/tianting.webp",tier:4,relic:"tianting",costFaith:100,boon:"飞升",succ:0.6,fail:{imp:-25,consume:true,karma:20},pref:"知识",desc:"随机需求+信仰100 → 飞升(60%)"},
+];
+function genReq(b){
+  let nItems = b.tier<=1 ? 1 : (Math.random()<0.5?1:2);
+  const req=[]; const used=new Set();
+  for(let i=0;i<nItems;i++){
+    let g, tries=0;
+    if(i===0 && S.hot && S.hot.good && Math.random()<0.5){ g=S.hot.good; }
+    else { do{ g=GOODS_ORDER[rand(0,GOODS_ORDER.length-1)]; tries++; }while(used.has(g)&&tries<6); }
+    used.add(g);
+    req.push({good:g, n: rand(1, 2+b.tier)});
+  }
+  return req;
+}
+function beingUnlocked(b,S){
+  if(b.tier===1) return true;
+  if(b.tier===2) return S.shop.level>=2;
+  if(b.tier===3) return S.shop.level>=3;
+  if(b.tier===4) return S.shop.level>=3 && S.reputation>=30;
+  return false;
+}
+
+/* ============ 建筑（建造时代核心） ============ */
+const BUILDINGS = {
+  shelf:    {name:"货架",      icon:"🗄",img:"assets/buildings/shelf.webp",cost:40, plane:1,desc:"专精一个货品类；顾客只买「已上架」品类"},
+  altar:    {name:"信仰祭坛",  icon:"⛩",img:"assets/buildings/altar.webp",cost:60, plane:1,desc:"持续产出信仰之力；分配伙计可提速"},
+  furnace:  {name:"炼化炉",    icon:"🔥",img:"assets/buildings/furnace.webp",cost:70, plane:1,desc:"炼化超凡物品的必备建筑；等级提升炼化收益"},
+  temple:   {name:"飞升祭坛",  icon:"🛕",img:"assets/buildings/temple.webp",cost:150,plane:2,desc:"位格飞升的必备建筑；等级降低飞升消耗"},
+  warehouse:{name:"仓库",      icon:"📮",img:"assets/buildings/warehouse.webp",cost:80, plane:2,desc:"货品上限 +10/级（防爆仓、可囤货居奇）"},
+  sign:     {name:"招客招牌",  icon:"🏮",img:"assets/buildings/sign.webp",cost:50, plane:3,desc:"顾客到访提速（每座 -15% 间隔）"},
+  camp:     {name:"伙计营地",  icon:"🏕",img:"assets/buildings/camp.webp",cost:100,plane:4,desc:"伙计上限 +2/级"},
+};
+const UP_COST = {shelf:[80,160],altar:[100,200],warehouse:[120,240],sign:[70,140],camp:[150,300],furnace:[90,180],temple:[200,400]};
+const HELPER_NAMES = ["小灯","阿账","青叶","团子","阿墨","铃儿","小算","灵犀","阿禾","年年","贰贰","叁叁"];
+
+/* ============ 诸天杂货店（跨界倒卖线 · 与炼化双线并列） ============ */
+const REAL_CATS = {发热:"🔥",光明:"💡",饮食:"🍱",数码:"📟",日用:"🧴",趣味:"🎲"};
+const REAL_GOODS = [
+  {id:"paomian",  name:"泡面",   icon:"🍜", cost:3,  cat:"饮食"},
+  {id:"baowen",   name:"保温杯", icon:"☕", cost:8,  cat:"发热"},
+  {id:"shoudi",   name:"手电筒", icon:"🔦", cost:6,  cat:"光明"},
+  {id:"luosi",    name:"螺蛳粉", icon:"🍲", cost:5,  cat:"饮食"},
+  {id:"chongdian",name:"充电宝", icon:"🔋", cost:15, cat:"数码"},
+  {id:"shouji",   name:"手机",   icon:"📱", cost:40, cat:"数码"},
+  {id:"yusan",    name:"雨伞",   icon:"☂️", cost:7,  cat:"日用"},
+  {id:"chuangke", name:"创可贴", icon:"🩹", cost:2,  cat:"日用"},
+  {id:"majiang",  name:"麻将",   icon:"🀄", cost:18, cat:"趣味"},
+  {id:"lingshi",  name:"零食",   icon:"🍪", cost:4,  cat:"饮食"},
+];
+// 八界顾客对“类别”的偏好——隐藏估值倍率的来源（匹配→高价，否则低价）
+const REAL_WORLDS = {
+  landongong:{name:"土地公",face:"👴",pref:"饮食"},
+  huxian:    {name:"狐仙",  face:"🦊",pref:"趣味"},
+  longwang:  {name:"龙王",  face:"🐉",pref:"日用"},
+  yuelao:    {name:"月老",  face:"💕",pref:"趣味"},
+  chenghuang:{name:"城隍",  face:"🏯",pref:"日用"},
+  shanshen:  {name:"山神",  face:"🌲",pref:"饮食"},
+  caishen:   {name:"财神",  face:"💰",pref:"数码"},
+  tianting:  {name:"天庭",  face:"☀️",pref:"光明"},
+};
+function realWorldIds(){ return Object.keys(REAL_WORLDS); }
+// 隐藏估值倍率：匹配偏好类→高价(8~26倍)，否则低价(1~2倍)。基于(world,good)确定性，玩家靠交易发现
+function valuationOf(worldId, goodId){
+  const g=REAL_GOODS.find(x=>x.id===goodId); if(!g) return 1;
+  const w=REAL_WORLDS[worldId]; if(!w) return 1;
+  let h=0; const s=worldId+goodId; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0;
+  const r=(h%100)/100;
+  if(g.cat===w.pref) return 8 + Math.round(r*18);   // 8~26 倍
+  return 1 + (r<0.5?0:1);                            // 1~2 倍
+}
+
+function plotCount(){ return S.plane>=10?18:(S.plane>=7?15:(S.plane>=4?12:(S.plane>=2?9:6))); }
+function emptyPlot(){ return {b:null,lv:1,good:null,help:null}; }
+function ensurePlots(){ const n=plotCount(); while(S.plots.length<n) S.plots.push(emptyPlot()); }
+function builtCount(){ return S.plots.filter(p=>p.b).length; }
+function maxLvOf(type){ let lv=0; S.plots.forEach(p=>{ if(p.b===type&&p.lv>lv) lv=p.lv; }); return lv; }
+function furnaceLv(){ return maxLvOf("furnace"); }
+function templeLv(){ return maxLvOf("temple"); }
+function refineMul(){ return [1,1,1.2,1.5][furnaceLv()]||1; }
+function goodsCap(){ return 12 + 10*S.plots.reduce((s,p)=>s+(p.b==="warehouse"?p.lv:0),0); }
+function helperCap(){ return 2*S.plots.reduce((s,p)=>s+(p.b==="camp"?p.lv:0),0); }
+function signCount(){ return S.plots.filter(p=>p.b==="sign").length; }
+function altarRate(){
+  let sum=0;
+  S.plots.forEach(p=>{ if(p.b==="altar"){ sum += (1+(p.lv-1)*0.8+(p.help!=null?1.2:0))*faithBonus()*planeBonus().allMul; } });
+  return sum/5;
+}
+function plotLabel(i){ const p=S.plots[i]; if(!p||!p.b) return "空地"+(i+1);
+  const def=BUILDINGS[p.b];
+  return (p.b==="shelf"&&p.good)? (GOODS[p.good]+p.good) : def.name; }
+
+function buildOn(i,type){
+  const def=BUILDINGS[type]; if(!def){ return; }
+  if(S.plane<def.plane){ toast("位格 Lv"+def.plane+" 解锁","karma"); return; }
+  if(S.plots[i]&&S.plots[i].b){ toast("该地块已有建筑"); return; }
+  if(S.natureCurrency<def.cost){ toast("自然货币不足（需"+def.cost+"）","nature"); return; }
+  S.natureCurrency-=def.cost;
+  S.plots[i]={b:type,lv:1,good:null,help:null};
+  S.builds=(S.builds||0)+1;
+  sfx('build'); checkTasks();
+  if(type==="shelf"){ afterAction(); openPlot(i); }
+  else { afterAction(); closePlot(); toast("建造完成："+def.icon+def.name,"rep"); }
+}
+function upPlot(i){
+  const p=S.plots[i]; if(!p||!p.b){ return; }
+  const def=BUILDINGS[p.b];
+  if(p.lv>=3){ toast(def.name+"已满级（Lv3）"); return; }
+  const cost=(UP_COST[p.b]&&UP_COST[p.b][p.lv-1])||160;
+  if(S.natureCurrency<cost){ toast("自然货币不足（升级需"+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; p.lv++;
+  toast(def.icon+def.name+" 升至 Lv"+p.lv,"rep"); sfx('level');
+  afterAction(); openPlot(i);
+}
+function setPlotGood(i,good){
+  const p=S.plots[i]; if(!p||p.b!=="shelf"){ return; }
+  if(p.good===good){ return; }
+  if(S.plots.some((q,j)=>j!==i&&q.b==="shelf"&&q.good===good)){ toast("该品类已有货架——分散品类才能接住更多顾客","karma"); return; }
+  if(p.good && S.natureCurrency<SHELF_SWITCH_COST){ toast("自然货币不足（换品类需"+SHELF_SWITCH_COST+"）","nature"); return; }
+  if(p.good) S.natureCurrency-=SHELF_SWITCH_COST;
+  p.good=good;
+  toast("货架上架 "+GOODS[good]+good,"rep"); sfx('serve');
+  afterAction(); openPlot(i);
+}
+function demolish(i){
+  const p=S.plots[i]; if(!p||!p.b){ return; }
+  const def=BUILDINGS[p.b];
+  if(p.help!=null){ const h=S.helpers.find(x=>x.id===p.help); if(h) h.plot=null; }
+  const refund=Math.floor(def.cost/2);
+  S.natureCurrency+=refund;
+  S.plots[i]=emptyPlot();
+  toast("拆除 "+def.icon+def.name+" · 返还 ❀"+refund,"nature");
+  afterAction(); closePlot();
+}
+function recruitHelper(){
+  const cap=helperCap();
+  if(S.helpers.length>=cap){ toast("伙计上限 "+cap+"——去建 🏕伙计营地（位格4解锁）","karma"); return; }
+  const cost=50+S.helpers.length*30;
+  if(S.natureCurrency<cost){ toast("自然货币不足（招募需"+cost+"）","nature"); return; }
+  S.natureCurrency-=cost;
+  const used=new Set(S.helpers.map(h=>h.name));
+  const nm=HELPER_NAMES.find(n=>!used.has(n))||"伙计"+(S.helpers.length+1);
+  S.helperSeq=(S.helperSeq||S.helpers.length)+1;
+  S.helpers.push({id:S.helperSeq,name:nm,plot:null});
+  toast("招募伙计「"+nm+"」！点建筑即可分配差事","rep"); sfx('level');
+  checkTasks(); afterAction();
+}
+let currentPlot=-1;
+function assignHelperToPlot(v, plotIdx){
+  if(!S.plots[plotIdx]){ return; }
+  const hid = v===""?null:parseInt(v,10);
+  if(hid!=null){
+    const h=S.helpers.find(x=>x.id===hid);
+    if(!h){ return; }
+    if(h.plot!=null && S.plots[h.plot]) S.plots[h.plot].help=null;
+    h.plot=plotIdx;
+  } else {
+    const cur=S.helpers.find(x=>x.plot===plotIdx);
+    if(cur) cur.plot=null;
+  }
+  S.plots[plotIdx].help=hid;
+  checkTasks(); afterAction();
+}
+function assignHelperTo(v){
+  if(currentPlot<0||!S.plots[currentPlot]){ return; }
+  assignHelperToPlot(v,currentPlot);
+  openPlot(currentPlot);
+}
+function assignPlotToHelper(hid,v){
+  const h=S.helpers.find(x=>x.id===hid); if(!h){ return; }
+  const plotIdx = v===""?null:parseInt(v,10);
+  if(h.plot!=null && S.plots[h.plot]) S.plots[h.plot].help=null;
+  h.plot=plotIdx;
+  if(plotIdx!=null && S.plots[plotIdx]) S.plots[plotIdx].help=hid;
+  checkTasks(); afterAction();
+}
+function openPlot(i){
+  currentPlot=i;
+  const p=S.plots[i]; if(!p){ return; }
+  const card=$("#plotCard"); if(!card){ return; }
+  let h="";
+  if(!p.b){
+    h+=`<div class="pm-title">🏗 空地 ${i+1}</div>
+      <div class="muted small" style="text-align:center">自然货币 ❀${Math.round(S.natureCurrency)} · 点击建筑立即建造</div>
+      <div class="pm-grid">`;
+    Object.keys(BUILDINGS).forEach(k=>{
+      const def=BUILDINGS[k];
+      if(S.plane<def.plane){
+        h+=`<button class="pm-btn locked" disabled><span class="pi">🔒</span>${def.name}<span class="pc">位格${def.plane}解锁</span></button>`;
+      } else {
+        h+=`<button class="pm-btn" onclick="buildOn(${i},'${k}')"><span class="pi"><img src="${def.img}" alt=""></span>${def.name}<span class="pc">❀${def.cost}</span></button>`;
+      }
+    });
+    h+=`</div><div class="muted small" style="text-align:center">货架决定能卖什么；祭坛产信仰；炼化炉炼能量；飞升祭坛升位格</div>`;
+  } else {
+    const def=BUILDINGS[p.b];
+    h+=`<div class="pm-title"><img class="pm-tico" src="${def.img}" alt="">${def.name} Lv${p.lv}</div>
+      <div class="muted small" style="text-align:center">${def.desc}</div>`;
+    if(p.b==="shelf"){
+      if(!p.good){
+        h+=`<div class="muted small" style="text-align:center;margin:8px 0">选择上架品类（之后更换需 ❀${SHELF_SWITCH_COST}）</div><div class="pm-grid">`;
+        GOODS_ORDER.forEach(g=>{
+          const dup=S.plots.some((q,j)=>j!==i&&q.b==="shelf"&&q.good===g);
+          h+=`<button class="pm-btn ${dup?"locked":""}" ${dup?"disabled":""} onclick="setPlotGood(${i},'${g}')"><span class="pi">${GOODS[g]}</span>${g}<span class="pc">${dup?"已有货架":"点击上架"}</span></button>`;
+        });
+        h+=`</div>`;
+      } else {
+        h+=`<div class="pm-row"><span>当前上架：${GOODS[p.good]} <b>${p.good}</b>（收益 ×${[1,1,1.3,1.6][p.lv]}）</span></div>
+          <div class="pm-grid">`;
+        GOODS_ORDER.forEach(g=>{
+          const dup=S.plots.some((q,j)=>j!==i&&q.b==="shelf"&&q.good===g);
+          h+=`<button class="pm-btn ${p.good===g?"sel":""} ${dup?"locked":""}" ${dup?"disabled":""} onclick="setPlotGood(${i},'${g}')"><span class="pi">${GOODS[g]}</span>${g}<span class="pc">${p.good===g?"当前":(dup?"已有货架":"❀"+SHELF_SWITCH_COST+"换")}</span></button>`;
+        });
+        h+=`</div>`;
+      }
+    }
+    if(p.b==="altar"){
+      h+=`<div class="pm-row"><span>产出</span><span>每5秒 +${Math.max(1,Math.round((1+(p.lv-1)*0.8+(p.help!=null?1.2:0))*faithBonus()*planeBonus().allMul))} 信仰${p.help!=null?"（伙计提速）":""}</span></div>`;
+    }
+    if(p.b==="furnace"){
+      h+=`<div class="pm-row"><span>炼化收益</span><span>×${[1,1,1.2,1.5][p.lv]}</span></div>`;
+    }
+    if(p.b==="temple"){
+      h+=`<div class="pm-row"><span>飞升消耗</span><span>×${(1-0.08*(p.lv-1)).toFixed(2)}</span></div>`;
+    }
+    if(p.b==="warehouse"){
+      h+=`<div class="pm-row"><span>货品上限</span><span>${goodsCap()}（本级 +10）</span></div>`;
+    }
+    if(p.b==="sign"){
+      h+=`<div class="pm-row"><span>顾客到访</span><span>间隔 -15%</span></div>`;
+    }
+    if(p.b==="camp"){
+      h+=`<div class="pm-row"><span>伙计上限</span><span>${helperCap()}</span></div>`;
+    }
+    if(p.lv<3){
+      const cost=(UP_COST[p.b]&&UP_COST[p.b][p.lv-1])||160;
+      h+=`<div class="pm-row"><button class="mini" onclick="upPlot(${i})">⬆ 升级 · ❀${cost}</button><span class="muted small">升至 Lv${p.lv+1}</span></div>`;
+    } else {
+      h+=`<div class="pm-row"><span class="muted small">已满级 Lv3</span></div>`;
+    }
+    h+=`<div class="pm-row"><span>分配伙计</span><select onchange="assignHelperTo(this.value)"><option value="">— 空闲 —</option>`;
+    S.helpers.forEach(hh=>{
+      h+=`<option value="${hh.id}" ${p.help===hh.id?"selected":""}>${hh.name}${hh.plot!=null&&hh.plot!==i?"（在他处）":""}</option>`;
+    });
+    h+=`</select></div>
+      <button class="act" style="text-align:center" onclick="demolish(${i})">拆除（返还 ❀${Math.floor(def.cost/2)}）</button>`;
+  }
+  card.innerHTML=h;
+  $("#plotModal").style.display="flex";
+}
+function closePlot(){ currentPlot=-1; const m=$("#plotModal"); if(m) m.style.display="none"; }
+
+/* ============ 位格（能量驱动 → 无敌成长轴） ============ */
+const PLANE_COST = [0, 30, 80, 160, 280, 460, 760, 1200, 1800, 2700];
+const PLANE_PERK = {
+  2:"🌱 修行所得翻倍 · 商城扩张至9地块",
+  3:"✨ 自动进货（货品低于阈值自动补）",
+  4:"💠 超凡物品掉落提升50% · 商城扩张至12地块",
+  5:"🤲 自动接待（有货自动成交）",
+  6:"🔆 能量共鸣（店铺持续溢出源能）",
+  7:"✦ 信仰共鸣（信仰收益 +50%）· 商城扩张至15地块",
+  8:"🌌 吸引高阶（更常迎来高阶生物）",
+  9:"👑 趋近神位（全收益 +25%）",
+  10:"🌟 无敌！诸天万界皆臣服于你 · 商城扩张至18地块",
+};
+function planeBonus(){
+  const p=S.plane;
+  return {
+    cultMul: p>=2?2:1,
+    dropMul: p>=4?2:1,
+    autoServe: p>=5,
+    passiveEnergy: p>=6,
+    faithMul: p>=7?1.5:1,
+    attractHigh: p>=8,
+    allMul: p>=9?1.25:1,
+    invincible: p>=10
+  };
+}
+
+/* ============ 事件（诸天奇遇·抉择） ============ */
+const EVENTS = [
+  {id:"merchant",icon:"🪙",title:"诸天商会来收购",desc:"一位神秘商人愿高价收购你手中的超凡物品，换成大量自然货币——但你将失去炼化它们的能量潜力。",
+    choices:[
+      {label:"① 卖给她（清空超凡物品）",ce:"自然货币 +120，超凡物品清零",effect:()=>{ BEINGS.forEach(b=>S.relics[b.relic]=0); S.natureCurrency+=120; return "商会收走所有超凡物品，你获 +120 自然"; }},
+      {label:"② 婉拒（守护能量）",ce:"声望 +3，业障 -3",effect:()=>{ S.reputation+=3; S.karma=Math.max(0,S.karma-3); return "你婉拒了商人，守护了能量的可能。声望 +3"; }},
+    ]},
+  {id:"lostgod",icon:"🕯️",title:"迷途神灵求助",desc:"一位落魄的小神在店门外徘徊，他只想要一份平凡的温暖。",
+    choices:[
+      {label:"① 赠他一份货品",ce:"自然 -8，声望 +5",effect:()=>{ S.natureCurrency=Math.max(0,S.natureCurrency-8); S.reputation+=5; return "你递出一份货品，小神感激离去。声望 +5"; }},
+      {label:"② 请他入店歇脚",ce:"信仰 +20，声望 +2",effect:()=>{ const g=Math.round(20*faithBonus()); S.faithCurrent+=g;S.faithTotal+=g; S.reputation+=2; return "小神讲述诸天见闻，你悟得信仰 +"+g; }},
+      {label:"③ 婉言送客",ce:"无变化",effect:()=>{ return "你礼貌送客，门庭依旧。"; }},
+    ]},
+  {id:"tide",icon:"🌊",title:"能量潮汐降临",desc:"一股狂暴的源能涌入店内，冒险汲取可获大量能量，但稍有差池便沾染业障。",
+    choices:[
+      {label:"① 冒险汲取",ce:"能量 +60，业障 +15（50%概率）",effect:()=>{ if(Math.random()<0.5){ S.energy+=60; return "你成功汲取狂暴源能，能量 +60！"; } else { S.karma=Math.min(100,S.karma+15); return "能量反噬，业障 +15……"; } }},
+      {label:"② 稳妥导引",ce:"能量 +18，安全",effect:()=>{ S.energy+=18; return "你缓缓导引，稳妥获能量 +18。"; }},
+    ]},
+  {id:"oracle",icon:"🔮",title:"古老预言浮现",desc:"柜台上的水晶自行亮起，浮现一道关于「无敌之路」的预言。",
+    choices:[
+      {label:"① 聆听预言",ce:"信仰 +25，下一笔成交暴击率提升",effect:()=>{ const g=Math.round(25*faithBonus()); S.faithCurrent+=g;S.faithTotal+=g; S.critLuck=1; return "预言回荡心头，信仰 +"+g+"，你感到暴击将至。"; }},
+      {label:"② 抹去预言",ce:"业障 -5",effect:()=>{ S.karma=Math.max(0,S.karma-5); return "你抹去预言，心静如初。业障 -5"; }},
+    ]},
+];
+
+/* ============ 新手指引任务 ============ */
+const TUTORIAL = [
+  {id:"serve1",name:"接待第一位顾客",desc:"点击排队中的诸天生物，完成一次交易",goal:1,prog:()=>S.deals,reward:{nature:30},rw:"自然+30"},
+  {id:"build1",name:"建造第一座建筑",desc:"点击商铺里的空地，建一座货架/祭坛/炼化炉",goal:1,prog:()=>S.builds||0,reward:{nature:40},rw:"自然+40"},
+  {id:"helper1",name:"分配一位伙计",desc:"伙计能加速祭坛产信仰、自动补货；点建筑即可分配",goal:1,prog:()=>S.helpers.filter(h=>h.plot!=null).length,reward:{nature:40},rw:"自然+40"},
+  {id:"refine1",name:"炼化第一件超凡物品",desc:"先建🔥炼化炉；成交获超凡物品后到🔮炼化页炼成能量",goal:1,prog:()=>S.refinedTotal,reward:{energy:20},rw:"能量+20"},
+  {id:"plane2",name:"初窥门径（位格2）",desc:"建🛕飞升祭坛，攒够能量飞升位格 Lv2",goal:2,prog:()=>S.plane,reward:{faith:50},rw:"信仰+50"},
+  {id:"event1",name:"经历一次诸天奇遇",desc:"等待或触发事件抉择，并做出选择",goal:1,prog:()=>S.eventsDone,reward:{nature:50},rw:"自然+50"},
+  {id:"combo5",name:"连击大师（连击×5）",desc:"连续成交不失败，累积连击至 5",goal:5,prog:()=>S.comboMax,reward:{rep:10},rw:"声望+10"},
+];
+
+/* ============ 状态 ============ */
+function defaultState(){
+  const relics={}; BEINGS.forEach(b=>relics[b.relic]=0);
+  const tasks={}; TUTORIAL.forEach(t=>tasks[t.id]=false);
+  return {
+    faithTotal:0, faithCurrent:0, natureCurrency:220, energy:0, karma:0, coin:200,
+    deityLevel:1, shop:{level:1}, reputation:0, plane:1, invincible:false, discovered:false,
+    goods:{食物:2,知识:2,旧物:2,观想:2,灵物:2,羁绊:2},
+    counts:{}, relics:relics, tasks:tasks,
+    beings:{}, deals:0, streak:{checkin:0}, lastActionTs:{}, inventory:{}, buffs:{丰穰:0},
+    achievements:[], flying:false, log:[], peTimer:0,
+    combo:0, comboMax:0, refinedTotal:0, eventsDone:0, critLuck:0, storySeen:false,
+    hot:{good:"食物",t:50}, hotNext:"知识", shelfUps:0, adsUsed:0,
+    plots:[
+      {b:"shelf",lv:1,good:"食物",help:null},
+      {b:"shelf",lv:1,good:"知识",help:null},
+      {b:"shelf",lv:1,good:"旧物",help:null},
+      emptyPlot(),emptyPlot(),emptyPlot()
+    ],
+    helpers:[{id:1,name:"小灯",plot:null},{id:2,name:"阿账",plot:null}],
+    helperSeq:2, builds:0, altarT:0, restockT:{}, lastSeenTs:Date.now(),
+    store:{inv:{}, price:{}, notes:[], log:[], lastTs:Date.now()}
+  };
+}
+let S = load();
+(function(){
+  if(!S.store||typeof S.store!=="object") S.store={inv:{},price:{},notes:[],log:[],lastTs:Date.now()};
+  S.store.inv=S.store.inv||{}; S.store.price=S.store.price||{}; S.store.notes=S.store.notes||[]; S.store.log=S.store.log||[]; S.store.lastTs=S.store.lastTs||Date.now();
+  if(typeof S.coin!=="number") S.coin=200;
+})();
+loadSettings();
+function load(){
+  try{ const r=localStorage.getItem(SAVE_KEY); if(r){ const d=JSON.parse(r); const base=defaultState();
+    Object.assign(base,d);
+    const relics={}; BEINGS.forEach(b=>relics[b.relic]=(d.relics&&d.relics[b.relic])||0); base.relics=relics;
+    const tasks={}; TUTORIAL.forEach(t=>tasks[t.id]=(d.tasks&&d.tasks[t.id])||false); base.tasks=tasks;
+    BEINGS.forEach(b=>{ if(!base.beings[b.id]) base.beings[b.id]={rep:0}; });
+    // —— 旧档迁移：v30 货架槽 → v40 商城地块 ——
+    if(!Array.isArray(base.plots)||base.plots.length<6){
+      const old=(Array.isArray(d.shelves)&&d.shelves.length)?d.shelves:defaultState().shelves||[];
+      const plots=[];
+      for(let i=0;i<6;i++){ const s=old[i]; plots.push(s&&s.good?{b:"shelf",lv:s.level||1,good:s.good,help:null}:emptyPlot()); }
+      base.plots=plots;
+    }
+    base.plots=base.plots.map(p=>({b:p.b||null,lv:p.lv||1,good:p.good||null,help:(p.help==null?null:p.help)}));
+    if(!Array.isArray(base.helpers)||base.helpers.length===0){ base.helpers=[{id:1,name:"小灯",plot:null},{id:2,name:"阿账",plot:null}]; base.helperSeq=2; }
+    base.helpers.forEach(h=>{ if(h.plot!=null&&(!base.plots[h.plot]||!base.plots[h.plot].b)) h.plot=null; });
+    if(!base.restockT) base.restockT={};
+    ensurePlots();
+    if(!base.hot||!base.hot.good){ base.hot={good:GOODS_ORDER[0],t:50}; base.hotNext=GOODS_ORDER[1]; }
+    return base; } }catch(e){}
+  const s=defaultState(); BEINGS.forEach(b=>s.beings[b.id]={rep:0}); return s;
+}
+function save(){ try{ S.lastSeenTs=Date.now(); localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){} }
+
+/* ============ 离线收益（放置核心：离开时商铺仍在运转） ============ */
+function applyOffline(){
+  const now=Date.now();
+  const last=S.lastSeenTs||now;
+  let sec=(now-last)/1000;
+  S.lastSeenTs=now;
+  if(sec<60) return;                 // 不足 1 分钟不结算
+  if(sec>8*3600) sec=8*3600;         // 最多累计 8 小时，防止挂机刷爆
+  const ar=altarRate();              // 祭坛离线信仰（信仰/秒）
+  let faith=ar>0?Math.floor(ar*sec):0;
+  let energy=0;
+  const pb=planeBonus();
+  if(pb.passiveEnergy){ const rate=pb.invincible?900:3000; const amt=pb.invincible?3:1; energy=Math.floor(sec/(rate/1000))*amt; }
+  if(faith<=0&&energy<=0) return;
+  if(faith>0){ S.faithCurrent+=faith; S.faithTotal+=faith; }
+  if(energy>0){ S.energy+=energy; }
+  save();
+  showOfflineReport(sec, faith, energy);
+}
+function showOfflineReport(sec, faith, energy){
+  const timeTxt = sec>=3600 ? ((sec/3600).toFixed(1)+" 小时") : (Math.floor(sec/60)+" 分钟");
+  const modal=document.createElement("div");
+  modal.id="offlineModal";
+  modal.style.cssText="position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;background:rgba(20,10,35,.72);backdrop-filter:blur(4px);padding:18px";
+  modal.innerHTML=`<div class="ev-card" style="text-align:center">
+    <div class="ev-icon" style="font-size:44px">🌙</div>
+    <h2 style="color:#5a2da0;margin:8px 0 6px">离线收益</h2>
+    <div class="ev-desc" style="font-size:13px;line-height:1.7;color:#5a4b66;margin-bottom:14px">你离开了 <b>${timeTxt}</b>，商铺仍在运转——</div>
+    <div style="font-size:15px;line-height:1.9;color:#5a4b66;margin:10px 0">${faith>0?("✦ 信仰 +"+faith+"<br>"):""}${energy>0?("🔮 能量 +"+energy+"<br>"):""}</div>
+    <button class="story-next" style="background:linear-gradient(160deg,#ffd9ee,#d9ccff);color:#4a2a6b;border:0;cursor:pointer;font-size:15px;font-weight:700;padding:10px 36px;border-radius:999px;box-shadow:0 4px 16px #0006" onclick="this.closest('#offlineModal').remove()">收下</button>
+  </div>`;
+  document.body.appendChild(modal);
+}
+
+/* ============ 工具 ============ */
+const $ = s=>document.querySelector(s);
+function penalty(){ return 1 - Math.min(0.30, S.karma*0.003); }
+function succPenalty(rate){ return Math.max(0.05, rate*(1 - Math.min(0.50, S.karma*0.005))); }
+function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function faithBonus(){ return (1 + 0.08*(S.deityLevel-1)) * planeBonus().faithMul * planeBonus().allMul; }
+function dropChance(b){ return Math.min(0.6, (0.14 + b.tier*0.07) * (planeBonus().dropMul>1?1.5:1)); }
+function comboMul(){ return Math.min(2, 1 + S.combo*0.05); }
+function goodsTotal(){ return GOODS_ORDER.reduce((s,k)=>s+S.goods[k],0); }
+function toast(msg,cls){ const t=document.createElement("div"); t.className="toast "+(cls||""); t.textContent=msg; const box=$("#toast"); if(box) box.appendChild(t); setTimeout(()=>t.remove(),2600); }
+
+/* ============ 货架（地块上的货架建筑） ============ */
+function hasShelf(good){ return S.plots.some(p=>p.b==="shelf"&&p.good===good); }
+function bestShelfLevel(good){ let lv=0; S.plots.forEach(p=>{ if(p.b==="shelf"&&p.good===good&&p.lv>lv) lv=p.lv; }); return lv; }
+function shelfMul(good){ return [1,1,1.3,1.6][bestShelfLevel(good)||0]; }
+function hotMul(req){ return (S.hot&&S.hot.good&&req.some(r=>r.good===S.hot.good))?1.5:1; }
+
+function checkTasks(){
+  TUTORIAL.forEach(t=>{
+    if(!S.tasks[t.id] && t.prog()>=t.goal){
+      S.tasks[t.id]=true;
+      if(t.reward.nature) S.natureCurrency+=t.reward.nature;
+      if(t.reward.energy) S.energy+=t.reward.energy;
+      if(t.reward.faith){ const g=Math.round(t.reward.faith*faithBonus()); S.faithCurrent+=g;S.faithTotal+=g; }
+      if(t.reward.rep) S.reputation+=t.reward.rep;
+      toast("🏅 任务完成："+t.name+" · "+t.rw,"rep");
+      sfx('level');
+    }
+  });
+}
+function refineOne(id){
+  if((S.relics[id]||0)<=0){ toast("没有 "+RELICS[id].name,"karma"); return; }
+  if(furnaceLv()<1){ toast("先建造 🔥炼化炉 才能炼化","karma"); return; }
+  S.relics[id]--; const e=Math.round(RELICS[id].energy*refineMul()); S.energy+=e; S.refinedTotal++;
+  toast("炼化 "+RELICS[id].name+" → +"+e+" 能量","energy"); sfx('refine'); afterAction();
+}
+function refineAll(){
+  let total=0; BEINGS.forEach(b=>{ const c=S.relics[b.relic]||0; if(c>0){ total+=c*RELICS[b.relic].energy; S.relics[b.relic]=0; } });
+  if(total<=0){ toast("暂无可炼化的超凡物品","karma"); return; }
+  if(furnaceLv()<1){ toast("先建造 🔥炼化炉 才能炼化","karma"); return; }
+  total=Math.round(total*refineMul()); S.energy+=total; S.refinedTotal++;
+  toast("全部炼化 → +"+total+" 能量","energy"); sfx('refine'); afterAction();
+}
+function planeUp(){
+  const p=S.plane; if(p>=10){ toast("已是位格巅峰·无敌","energy"); return; }
+  if(templeLv()<1){ toast("需先建造 🛕飞升祭坛 才能飞升","karma"); return; }
+  const cost=Math.round(PLANE_COST[p]*(1-0.08*(templeLv()-1)));
+  if(S.energy<cost){ toast("能量不足（需"+cost+"）","energy"); return; }
+  S.energy-=cost; S.plane++;
+  const before=S.plots.length;
+  ensurePlots();
+  if(S.plane>=10){ S.invincible=true; }
+  showAscend(S.plane, before);
+  sfx('level'); afterAction();
+}
+function showAscend(lv, plotsBefore){
+  const m=$("#ascend"); if(!m){ return; }
+  $("#ascLv").textContent="Lv"+lv;
+  $("#ascPerk").textContent=PLANE_PERK[lv]||"";
+  const grew=plotCount()>plotsBefore;
+  $("#ascUnlock").textContent=(grew?("🏗 商城扩张！地块 "+plotsBefore+" → "+plotCount()):"")+(S.plane>=10?" · 诸天万界，皆来臣服":"");
+  m.style.display="flex";
+  const btn=$("#ascBtn");
+  if(btn) btn.onclick=()=>{ m.style.display="none"; };
+}
+
+/* ============ 音效 ============ */
+let actx=null;
+function initAudio(){ if(actx) return; try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ actx=null; } }
+function sfx(type){
+  if(!actx || !SND_ENABLED || SND_VOL<=0) return;
+  const now=actx.currentTime;
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.connect(g); g.connect(actx.destination);
+  let f=440, dur=.15, vol=.12, wave='sine';
+  if(type==='serve'){ f=660; dur=.12; }
+  else if(type==='crit'){ f=990; dur=.2; wave='triangle'; vol=.16; }
+  else if(type==='refine'){ f=330; dur=.35; wave='sawtooth'; }
+  else if(type==='level'){ f=523; dur=.3; wave='triangle'; }
+  else if(type==='fail'){ f=160; dur=.25; wave='square'; }
+  else if(type==='event'){ f=440; dur=.2; wave='sine'; }
+  else if(type==='build'){ f=392; dur=.18; wave='triangle'; }
+  o.type=wave; o.frequency.setValueAtTime(f,now);
+  if(type==='serve'||type==='crit'||type==='level'||type==='build') o.frequency.exponentialRampToValueAtTime(f*1.5,now+dur);
+  if(type==='fail') o.frequency.exponentialRampToValueAtTime(f*0.5,now+dur);
+  g.gain.setValueAtTime(vol*SND_VOL,now); g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
+  o.start(now); o.stop(now+dur+0.02);
+}
+
+/* ============ 修行采集 ============ */
+function doCult(id){
+  const c=CULTS.find(x=>x.id===id); if(!c) return;
+  const now=Date.now();
+  if(S.lastActionTs[id] && now-S.lastActionTs[id]<30000){ toast("操作过快，请稍候","karma"); return; }
+  S.lastActionTs[id]=now;
+  const pb=planeBonus();
+  let mult = (S.buffs.丰穰>0 ? 1.5 : 1) * pb.cultMul * pb.allMul;
+  if(c.streak){ S.streak.checkin++; const v=Math.min(25,10+(S.streak.checkin-1)*3); S.natureCurrency+=Math.round(v*mult); toast("+ "+Math.round(v*mult)+" 自然","nature"); }
+  if(c.good){ const cap=goodsCap(); const room=cap-S.goods[c.good];
+    if(room<=0){ toast("货仓已满（上限"+cap+"）——建 📮仓库 或先消耗","karma"); }
+    else { const add=Math.min(c.n,room); S.goods[c.good]+=add; toast("入库 "+GOODS[c.good]+c.good+"×"+add+(add<c.n?"（货仓将满）":""),"rep"); } }
+  if(c.nature && !c.streak){ S.natureCurrency+=Math.round(c.n*mult); toast("+ "+Math.round(c.n*mult)+" 自然","nature"); }
+  if(c.faith){ const g=Math.round(c.faith*faithBonus()*penalty()*mult); S.faithCurrent+=g; S.faithTotal+=g; toast("+ "+g+" 信仰","faith"); }
+  if(c.count){ S.counts[c.count]=(S.counts[c.count]||0)+1; }
+  if(S.buffs.丰穰>0) S.buffs.丰穰--;
+  if(S.plane>=3) autoRestock();
+  sfx('serve'); afterAction();
+}
+function autoRestock(){
+  const cap=goodsCap();
+  GOODS_ORDER.forEach(k=>{ while(S.goods[k]<2 && S.goods[k]<cap && S.natureCurrency>=(RESTOCK[k]||5)){ S.natureCurrency-=(RESTOCK[k]||5); S.goods[k]++; } });
+}
+function buyGood(good,n){
+  n=n||1; const cap=goodsCap(); const room=cap-S.goods[good];
+  if(room<=0){ toast("货仓已满（上限"+cap+"）——建 📮仓库 扩容","karma"); return; }
+  n=Math.min(n,room);
+  const price=(RESTOCK[good]||5)*n;
+  if(S.natureCurrency<price){ toast("自然货币不足（需"+price+"）","nature"); return; }
+  S.natureCurrency-=price; S.goods[good]+=n;
+  toast("进货 "+GOODS[good]+good+"×"+n+" · -"+price+"自然","rep");
+  afterAction();
+}
+
+/* ============ 接待顾客（含货架/热销/偏爱/暴击/连击） ============ */
+function canServe(cust){
+  return cust.req.every(r=>hasShelf(r.good) && S.goods[r.good]>=r.n) && !(cust.being.costFaith && S.faithCurrent<cust.being.costFaith);
+}
+function serve(cust){
+  const b=cust.being, req=cust.req;
+  for(const r of req){
+    if(!hasShelf(r.good)){ toast("未上架 "+GOODS[r.good]+r.good+"（点商铺里的货架布置）","karma"); return; }
+    if(S.goods[r.good] < r.n){ toast("货仓缺 "+GOODS[r.good]+r.good+"×"+r.n+"（去📦货仓进货）","karma"); return; }
+  }
+  if(b.costFaith && S.faithCurrent < b.costFaith){ toast("信仰之力不足（需"+b.costFaith+"）","karma"); return; }
+  for(const r of req){ S.goods[r.good]-=r.n; }
+  const totalReq = req.reduce((s,r)=>s+r.n,0);
+  const reqMul = Math.max(...req.map(r=>shelfMul(r.good)));
+  const mul = (1 + 0.2*(totalReq-1)) * reqMul * hotMul(req) * (cust.big?1.8:1) * planeBonus().allMul * comboMul();
+  const isPref = req.some(r=>r.good===b.pref);
+  const loyal = (S.beings[b.id].rep>=50);
+  const succ = b.succ ? (Math.random() < succPenalty(b.succ)) : true;
+  if(succ){
+    if(b.costFaith) S.faithCurrent-=b.costFaith;
+    let gotFaith=0, gotNature=0;
+    if(b.payFaith){ gotFaith=b.payFaith; }
+    if(b.payFaithGamble){ if(Math.random()<0.5){ const g=Math.round(S.faithCurrent*rand(3,10)); gotFaith=g; } else { S.faithCurrent=0; gotFaith=-1; } }
+    if(b.payNature) gotNature=b.payNature;
+    const crit = Math.random() < (0.15 + (S.critLuck||0));
+    const prefCrit = (isPref?1.3:1)*(loyal?1.2:1)*(crit?2:1);
+    if(gotFaith>0) gotFaith=Math.round(gotFaith*faithBonus()*mul*prefCrit);
+    if(gotNature>0) gotNature=Math.round(gotNature*mul*prefCrit);
+    if(gotFaith>0){ S.faithCurrent+=gotFaith; S.faithTotal+=gotFaith; }
+    if(gotNature>0){ S.natureCurrency+=gotNature; }
+    if(b.boon==="丰穰"){ S.buffs.丰穰=3; }
+    if(b.boon==="阴德护符"){ S.karma=0; S.inventory.阴德护符=(S.inventory.阴德护符||0)+1; }
+    if(b.boon==="神谕·良缘"){ S.log.push("神谕·良缘"); }
+    if(b.boon==="飞升"){ S.flying=true; }
+    S.beings[b.id].rep=Math.min(100,S.beings[b.id].rep+10+(isPref?2:0));
+    S.reputation+=2; S.deals++;
+    if(S.critLuck>0) S.critLuck=0;
+    S.combo++; if(S.combo>S.comboMax) S.comboMax=S.combo;
+    if(Math.random() < dropChance(b)){
+      S.relics[b.relic]=(S.relics[b.relic]||0)+1;
+      if(!S.discovered){ S.discovered=true; toast("✨你发现：超凡物品竟能炼化成无所不能的能量！","disc"); }
+      else toast("获得超凡物品 "+RELICS[b.relic].name+RELICS[b.relic].icon,"energy");
+    }
+    let msg=""; if(gotFaith>0) msg+="+"+gotFaith+" 信仰 "; if(gotNature>0) msg+="+"+gotNature+" 自然 ";
+    if(isPref) msg+="·偏爱! "; if(loyal) msg+="·熟客 "; if(cust.big) msg+="·大单 "; if(b.boon) msg+="· "+b.boon; if(gotFaith===-1) msg="破财！信仰清零";
+    cust.state="happy"; cust.el.classList.remove("wait"); cust.el.classList.add("happy");
+    const bub=cust.el.querySelector(".bubble"); if(bub) bub.textContent="💗";
+    if(crit && gotFaith>0){ floatText(cust,"暴击! "+msg,"crit"); sfx('crit'); } else { floatText(cust,msg,"faith"); sfx('serve'); }
+    burstParticles(cust, crit?"#ffb84d":"#ffe08a");
+    if(girlEl){ girlEl.classList.remove("nod"); void girlEl.offsetWidth; girlEl.classList.add("nod"); }
+    setTimeout(()=>removeCust(cust),950);
+  } else {
+    S.beings[b.id].rep=Math.max(0,S.beings[b.id].rep+(b.fail.imp||0));
+    S.reputation=Math.max(0,S.reputation-2); S.combo=0;
+    if(b.fail.karma) S.karma=Math.min(100,S.karma+(b.fail.karma||0));
+    cust.state="sad"; cust.el.classList.remove("wait"); cust.el.classList.add("sad");
+    let msg="契约失败"; if(b.fail.consume) msg+="·货品损毁"; if(b.fail.karma) msg+="·业障+"+b.fail.karma;
+    floatText(cust,msg,"karma"); sfx('fail');
+    setTimeout(()=>removeCust(cust),950);
+  }
+  checkTasks(); afterAction();
+}
+
+/* ============ 店铺升级 / 神格 ============ */
+const SHOP_COST=[0,200,500,1200,3000];
+const DEITY_COST=[0,200,500,1200,3000,6000];
+function shopUp(){
+  const lv=S.shop.level; if(lv>=5){ toast("店铺已满级","faith"); return; }
+  const cost=SHOP_COST[lv]; if(S.natureCurrency<cost){ toast("自然货币不足（需"+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; S.shop.level++;
+  toast("店铺升至 Lv"+S.shop.level+"（服务位+1 · 解锁更高阶生物）","faith"); sfx('level'); afterAction();
+}
+function deityUp(){
+  const lv=S.deityLevel; if(lv>=6){ toast("神格已满级","faith"); return; }
+  const cost=DEITY_COST[lv]; if(S.faithCurrent<cost){ toast("信仰之力不足（需"+cost+"）","faith"); return; }
+  S.faithCurrent-=cost; S.deityLevel++; toast("神格升至 Lv"+S.deityLevel+"（产出+8%）","faith"); sfx('level'); afterAction();
+}
+function advertise(){
+  const cost=60;
+  if(S.natureCurrency<cost){ toast("自然货币不足（广告需"+cost+"）","nature"); return; }
+  S.natureCurrency-=cost; S.adsUsed=(S.adsUsed||0)+1;
+  toast("📢 广告生效：高阶客将至！","disc"); sfx('event');
+  S.adPulse=2; afterAction();
+}
+
+/* ============ 渲染 ============ */
+let TAB="shop";
+function afterAction(){ save(); render(); }
+function updateStats(){
+  $("#s-faith").textContent=Math.round(S.faithCurrent);
+  $("#s-nature").textContent=Math.round(S.natureCurrency);
+  $("#s-energy").textContent=Math.round(S.energy);
+  $("#s-rep").textContent=Math.round(S.reputation);
+  $("#s-karma").textContent=Math.round(S.karma);
+  $("#s-coin").textContent=Math.round(S.coin);
+  $("#s-shop").textContent=S.shop.level;
+  $("#s-plane").textContent=S.plane;
+  $("#s-deity").textContent=S.deityLevel;
+  $("#s-faithTotal").textContent=Math.round(S.faithTotal);
+  $("#s-deals").textContent=S.deals;
+  $("#s-goods").textContent=goodsTotal();
+  $("#s-helpers").textContent=S.helpers.length;
+  $("#s-inv").textContent=S.invincible?"已达成":"未";
+  const cw=$("#s-combo-wrap");
+  if(cw){ cw.style.display=S.combo>1?"":"none"; $("#s-combo").textContent=S.combo; }
+}
+function render(){
+  updateStats();
+  const v=$("#view"), sv=$("#shopView");
+  if(TAB==="shop"){ sv.style.display="block"; v.style.display="none"; renderPlots(); updateShopTop(); updateOrb(); if(!shopRunning) startShop(); }
+  else { sv.style.display="none"; v.style.display="block";
+    if(TAB==="goods") v.innerHTML=renderGoods();
+    else if(TAB==="refine") v.innerHTML=renderRefine();
+    else if(TAB==="cult") v.innerHTML=renderCult();
+    else if(TAB==="manage") v.innerHTML=renderManage();
+    else if(TAB==="store"){ startStore(); v.innerHTML=renderStore(); }
+  }
+}
+function renderGoods(){
+  let h=`<div class="card"><h3>📦 货仓（现实采集的平凡货品 · 非货币）</h3>
+    <div class="muted small">共 ${goodsTotal()} 件 · 上限 <b>${goodsCap()}</b>（建 📮仓库 扩容）。只有<b>已上架货架</b>的品类才能被顾客买走</div><div class="grid" style="margin-top:8px">`;
+  GOODS_ORDER.forEach(k=>{ const ok=hasShelf(k);
+    h+=`<div class="merit" style="${ok?"":"opacity:.55"}"><div class="e">${GOODS[k]}</div>${k}<div class="c">×${S.goods[k]}${ok?"":"·未上架"}</div></div>`; });
+  h+=`</div></div>`;
+  h+=`<div class="card"><h3>🛒 进货（消耗自然货币购入货品）</h3>
+    <div class="muted small">预判「热销」备货能吃红利；只进有货架的品类，避免积压</div><div style="margin-top:6px">`;
+  GOODS_ORDER.forEach(k=>{
+    const p=RESTOCK[k]||5;
+    h+=`<div class="row" style="padding:8px 0;border-bottom:1px solid #0001">
+      <div style="flex:1;font-size:14px">${GOODS[k]} ${k} <span class="muted small">库存 ${S.goods[k]}${hasShelf(k)?"":" · 未上架"}</span></div>
+      <div style="display:flex;gap:6px">
+        <button class="act" style="width:auto;margin:0;padding:6px 10px" onclick="buyGood('${k}',1)">+1 ·${p}❀</button>
+        <button class="act" style="width:auto;margin:0;padding:6px 10px" onclick="buyGood('${k}',5)">+5 ·${p*5}❀</button>
+      </div>
+    </div>`;
+  });
+  h+=`</div><div class="muted small" style="margin-top:8px">自然货币来自「🌱修行」与接待顾客；信仰之力主要来自祭坛产出与服务超凡生物</div></div>`;
+  return h;
+}
+function renderRefine(){
+  let h=`<div class="card"><h3>🔮 超凡物品炼化炉</h3>
+    <div class="muted small">成交后诸天生物会留下「超凡物品」，在此炼化成<b style="color:#5a2da0">无所不能的能量</b>。能量用于提升<b>位格</b>，直至<b style="color:#5a2da0">无敌</b>。</div>`;
+  const fl=furnaceLv();
+  h+=`<div class="muted small" style="margin:6px 0">炼化炉 Lv${fl}${fl<1?"（未建造——先在商铺建 🔥炼化炉）":" · 炼化收益 ×"+refineMul()}</div>`;
+  const have = BEINGS.filter(b=>(S.relics[b.relic]||0)>0);
+  if(have.length===0){
+    h+=`<div class="muted small" style="margin-top:10px">暂未持有超凡物品——去🏪商铺接待诸天生物，成交后即可获得。</div>`;
+  } else {
+    have.forEach(b=>{
+      const r=RELICS[b.relic];
+      h+=`<div class="relic"><div class="ic">${r.icon}</div><div style="flex:1">
+        <div class="nm">${r.name} <span class="muted small">×${S.relics[b.relic]} · 每件炼化 +${Math.round(r.energy*refineMul())} 能量</span></div></div>
+        <button class="act" style="width:auto;margin:0;padding:6px 12px" onclick="refineOne('${b.relic}')">炼化×1</button></div>`;
+    });
+    h+=`<button class="act" onclick="refineAll()" style="background:linear-gradient(160deg,#efe4ff,#e0d2ff);font-weight:700">🔥 全部炼化</button>`;
+  }
+  h+=`</div>`;
+  const gotCount=BEINGS.filter(b=>(S.relics[b.relic]||0)>0).length;
+  h+=`<div class="card"><h3>📖 超凡物品图鉴（收集 ${gotCount}/${BEINGS.length}）</h3>
+    <div class="grid" style="margin-top:6px">`;
+  BEINGS.forEach(b=>{ const r=RELICS[b.relic]; const got=(S.relics[b.relic]||0)>0;
+    h+=`<div class="merit" style="${got?"":"opacity:.45"}"><div class="e">${got?r.icon:"❔"}</div>${got?r.name:"未知"}<div class="c">${got?("+"+r.energy+"能量"):"未获得"}</div></div>`; });
+  h+=`</div><div class="muted small" style="margin-top:6px">成交诸天生物有概率留下超凡物品；集齐图鉴也是乐趣。</div></div>`;
+  const p=S.plane, tl=templeLv(), cost=Math.round((PLANE_COST[p]||0)*(1-0.08*(tl-1))), pct=p>=10?100:Math.round(p/10*100);
+  h+=`<div class="card"><div class="row"><h3>🌟 位格 Lv${p}${S.invincible?" · 无敌":""}</h3>
+    <button class="act" style="width:auto" onclick="planeUp()">${p>=10?"已达巅峰":("飞升·能量"+cost)}</button></div>
+    <div class="bar"><i class="energy" style="width:${pct}%"></i></div>
+    <div class="muted small" style="margin-top:6px">${p>=10?"你已无敌：诸天万界皆来臣服，能量源源不绝。":("飞升需 🛕飞升祭坛（Lv"+tl+"·消耗×"+(1-0.08*(tl-1)).toFixed(2)+"）｜距无敌还需 "+(10-p)+" 级位格")}</div></div>`;
+  h+=`<div class="card"><h3>👑 位格神通（能量解锁）</h3>`;
+  for(let i=2;i<=10;i++){ const ok=S.plane>=i; h+=`<div class="perk ${ok?"":"off"}">${ok?"✅":"🔒"} Lv${i} ${PLANE_PERK[i]}</div>`; }
+  h+=`</div>`;
+  return h;
+}
+function renderCult(){
+  let h=`<div class="card"><h3>🌱 修行（采集货品 + 修养心性）</h3><div class="muted small">拍照/记录现实，货品入仓；非自然心性直接转化少量信仰之力</div>`;
+  CULTS.forEach(c=>{
+    const tag = c.faith?`<span class="tag t-faith">信仰</span>`:(c.good?`<span class="tag t-goods">货品</span>`:`<span class="tag t-nature">自然</span>`);
+    h+=`<button class="act" onclick="doCult('${c.id}')">${c.name} ${tag}<span class="sub">${c.sub}</span></button>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+function renderManage(){
+  let h=`<div class="card" style="display:flex;gap:12px;align-items:center">
+    <img src="assets/girl.webp" alt="店主" loading="lazy"
+      style="width:86px;height:122px;object-fit:cover;border-radius:12px;box-shadow:0 3px 10px #cdb6e066"
+      onerror="this.style.display='none'">
+    <div style="flex:1"><h3 style="margin:0 0 6px">🌸 美少女店主</h3>
+    <div class="muted small">诸天位面商城的少女城主。从一片空地开始，建货架、请伙计、立祭坛——收集无所不能的能量，一阶一阶，走向无敌之路。</div></div></div>`;
+  // 位格飞升（时代演进核心）
+  const tl=templeLv(), pcost=Math.round((PLANE_COST[S.plane]||0)*(1-0.08*(tl-1)));
+  h+=`<div class="card"><div class="row"><h3>🛕 位格飞升 Lv${S.plane}</h3>
+    <button class="mini" onclick="planeUp()">${S.plane>=10?"巅峰":("飞升·🔮"+pcost)}</button></div>
+    <div class="muted small">${S.plane>=10?"诸天万界皆来臣服。":"需先建 🛕飞升祭坛（当前 Lv"+tl+"，飞升消耗 ×"+(1-0.08*(tl-1)).toFixed(2)+"）｜每阶位格解锁新建筑与地块"}</div>
+    <div class="muted small" style="margin-top:4px">下一阶扩张：${plotCount()<9?"位格2 → 9地块":(plotCount()<12?"位格4 → 12地块":(plotCount()<15?"位格7 → 15地块":(plotCount()<18?"位格10 → 18地块":"已达最大"))) }</div></div>`;
+  // 伙计系统（自动化经营）
+  const cap=helperCap();
+  const rc=50+S.helpers.length*30;
+  h+=`<div class="card"><div class="row"><h3>👥 伙计（${S.helpers.length}/${cap||0}）</h3>
+    <button class="mini" onclick="recruitHelper()">招募 · ❀${rc}</button></div>
+    <div class="muted small">伙计驻守建筑可自动经营：祭坛产信仰提速、货架自动补货。上限靠 🏕伙计营地（位格4解锁）提升。</div>`;
+  S.helpers.forEach(hh=>{
+    h+=`<div class="helper"><span class="hn">${hh.name}</span>
+      <select onchange="assignPlotToHelper(${hh.id},this.value)">
+        <option value="">— 空闲 —</option>
+        ${S.plots.map((p,i)=>p.b?`<option value="${i}" ${hh.plot===i?"selected":""}>${plotLabel(i)}</option>`:"").join("")}
+      </select></div>`;
+  });
+  if(cap===0) h+=`<div class="muted small">提示：暂无伙计营地，当前上限 0——新伙计需先建营地</div>`;
+  h+=`</div>`;
+  // 热销波动
+  h+=`<div class="card"><div class="row"><h3>🔥 本波热销：${GOODS[S.hot.good]||"?"} ${S.hot.good}</h3><span class="muted small">${Math.max(0,Math.ceil(S.hot.t))}s</span></div>
+    <div class="muted small">热销品类成交收益 ×1.5，顾客需求也更偏向它。下一波预告：<b>${GOODS[S.hotNext]||"?"} ${S.hotNext}</b> —— 提前上架货架、备货吃红利。</div>
+    <div class="bar"><i style="width:${Math.max(0,Math.min(100,S.hot.t/70*100))}%"></i></div></div>`;
+  // 商城概览
+  const counts={}; S.plots.forEach(p=>{ if(p.b) counts[p.b]=(counts[p.b]||0)+1; });
+  const statArr=Object.keys(BUILDINGS).map(k=>`<span style="white-space:nowrap"><img src="${BUILDINGS[k].img}" style="width:14px;height:14px;object-fit:contain;vertical-align:-2px">${BUILDINGS[k].name}×${counts[k]||0}</span>`).join(" · ");
+  h+=`<div class="card"><h3>🏗 商城概览（${builtCount()}/${S.plots.length} 地块已建）</h3>
+    <div class="muted small">${statArr}</div>
+    <div class="muted small" style="margin-top:4px">${signCount()?("🏮 招客招牌 "+signCount()+" 座 · 到访提速"):""} ${altarRate()>0?("⛩ 祭坛产出 ≈ "+altarRate().toFixed(1)+" 信仰/秒"):""} ${S.plots.filter(p=>p.b==="shelf").length?("🗄 货架 "+S.plots.filter(p=>p.b==="shelf").length+" 座"):""}</div></div>`;
+  // 新手任务
+  h+=`<div class="card"><h3>📜 新手指引</h3>`;
+  TUTORIAL.forEach(t=>{
+    const done=S.tasks[t.id], prog=Math.min(t.goal,t.prog()), pct=Math.round(prog/t.goal*100);
+    h+=`<div class="task ${done?"done":""}"><div class="row"><div class="tn">${done?"✅":"🔸"} ${t.name} <span class="muted small">(${t.rw})</span></div><div class="muted small">${prog}/${t.goal}</div></div>
+      <div class="td">${t.desc}</div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  });
+  h+=`</div>`;
+  // 投资与扩张
+  const sc=SHOP_COST[S.shop.level]||null;
+  const dc=DEITY_COST[S.deityLevel]||null;
+  h+=`<div class="card"><h3>💼 投资与扩张</h3>
+    <button class="act" onclick="shopUp()">🏠 升级店铺（+1服务位）${sc?`<span class="sub">自然货币 ${sc} · 当前 Lv${S.shop.level}</span>`:'<span class="sub">已满级</span>'}</button>
+    <button class="act" onclick="deityUp()">🔱 提升神格（产出+8%）${dc?`<span class="sub">信仰之力 ${dc} · 当前 Lv${S.deityLevel}</span>`:'<span class="sub">已满级</span>'}</button>
+    <button class="act" onclick="advertise()">📢 投放招客广告<span class="sub">自然货币 60 · 立即引来高阶客，抢占先机</span></button>
+    </div>`;
+  h+=`<div class="card"><h3>★ 声望 ${S.reputation}</h3><div class="muted small">声望越高，越高阶的诸天生物愿上门；失败/放走会下降</div></div>`;
+  h+=`<div class="card"><h3>🔮 能量 ${Math.round(S.energy)}</h3><div class="muted small">源能来自超凡物品炼化（🔮炼化页）与位格6后的能量共鸣；用于位格飞升直至无敌</div></div>`;
+  h+=`<div class="card"><h3>🐾 诸天生物（已解锁 ${BEINGS.filter(b=>beingUnlocked(b,S)).length}/${BEINGS.length}）</h3>`;
+  BEINGS.forEach(b=>{
+    const un=beingUnlocked(b,S);
+    h+=`<div class="being"><div class="ic${un?"":" lock"}">${un?(b.img?`<img src="${b.img}" alt="${b.name}" loading="lazy">`:b.icon):"❔"}</div><div style="flex:1">
+      <div class="nm">${un?b.name:"？？？"} <span class="muted small">${un?("关系"+S.beings[b.id].rep+(S.beings[b.id].rep>=50?"·熟客":"")+" · 偏爱"+(GOODS[b.pref]||b.pref)):("阶层"+b.tier+"未解锁")}</span></div>
+      <div class="muted small">${un?b.desc:"提升店铺等级/声望后解锁"}</div></div></div>`;
+  });
+  h+=`</div>`;
+  const ach=[];
+  if(S.shop.level>=1) ach.push("初开张");
+  if((S.builds||0)>=10) ach.push("建造大师");
+  if(S.helpers.length>=6) ach.push("伙计东主");
+  if(S.shop.level>=5) ach.push("万家灯火");
+  if(S.flying) ach.push("店铺飞升");
+  if(S.reputation>=100) ach.push("百家争鸣");
+  if(S.plane>=10) ach.push("🌟无敌");
+  if((S.counts.善行||0)>=100) ach.push("百善");
+  if(S.comboMax>=10) ach.push("连击宗师");
+  if(S.plots.filter(p=>p.b==="shelf").length>=6) ach.push("商城大亨");
+  h+=`<div class="card"><h3>🏅 成就</h3><div>${ach.length?ach.map(a=>`<span class="ach">${a}</span>`).join(""):'<span class="muted small">暂无，继续经营吧</span>'}</div>`;
+  if(S.invincible) h+=`<div class="muted small">🎉 你已无敌，诸天万界皆来光顾！</div>`;
+  h+=`<button class="act" onclick="resetGame()">🗑 重置存档（Demo）</button></div>`;
+  return h;
+}
+function resetGame(){ if(confirm("确定重置 Demo 存档？")){ S=defaultState(); BEINGS.forEach(b=>S.beings[b.id]={rep:0}); save(); render(); toast("存档已重置"); } }
+
+/* ============ 动态店铺 DOM 运行时 ============ */
+let stage=null, plotBand=null, custLayer=null, floatLayer=null, orbEl=null, girlEl=null;
+let customers=[], spawnTimer=0, shopRunning=false, lastT=0, clock=0, eventTimer=0, stageW=480, eventActive=false;
+function setupShop(){
+  stage=$("#shopStage"); if(!stage){ showErr('找不到 #shopStage'); return; }
+  plotBand=$("#plotBand"); custLayer=$("#custLayer"); floatLayer=$("#floatLayer"); orbEl=$("#energyOrb"); girlEl=$("#shopGirl");
+  stageW=Math.max(280, stage.clientWidth||480);
+  decorateStage(); ensurePlots();
+  if(girlEl) girlEl.classList.toggle("girl-aura", S.plane>=3);
+  renderPlots(); updateOrb(); updateShopTop();
+}
+function decorateStage(){
+  if(!stage||stage.dataset.decorated) return; stage.dataset.decorated="1";
+  const sf=document.getElementById('starfield');
+  if(sf){ for(let i=0;i<26;i++){ const s=document.createElement('i'); s.className='s';
+    s.style.left=(Math.random()*100)+'%'; s.style.top=(Math.random()*55)+'%';
+    s.style.animationDelay=(Math.random()*3)+'s'; s.style.opacity=(0.3+Math.random()*0.7).toFixed(2);
+    sf.appendChild(s); } }
+  const cols=['#ffd86b','#ff9ecf','#b07bff'];
+  for(let i=0;i<9;i++){ const p=document.createElement('i'); p.className='spark';
+    p.style.left=(6+Math.random()*88)+'%'; p.style.bottom=(10+Math.random()*40)+'%';
+    p.style.animationDuration=(4+Math.random()*5)+'s'; p.style.animationDelay=(Math.random()*4)+'s';
+    p.style.color=cols[i%3]; stage.appendChild(p); }
+}
+function layoutPlots(){
+  if(!stage||!plotBand) return;
+  stageW=Math.max(280, stage.clientWidth||480);
+  const cols=Math.max(3,Math.min(6,Math.floor((stageW-136)/52)));
+  plotBand.style.gridTemplateColumns="repeat("+cols+",1fr)";
+  const rows=Math.ceil(Math.max(6,plotCount())/cols);
+  stage.style.height=(rows<=2?400:400+(rows-2)*62)+"px";
+}
+function renderPlots(){
+  if(!plotBand) return;
+  ensurePlots();
+  plotBand.innerHTML="";
+  S.plots.forEach((p,i)=>{
+    const el=document.createElement("div");
+    const def=p.b?BUILDINGS[p.b]:null;
+    el.className="plot"+(p.b?"":" empty");
+    let inner="";
+    if(p.b){
+      const label = p.b==="shelf" ? (p.good? (GOODS[p.good]+" "+p.good) : "待上架") : def.name;
+      inner=`<div class="pi"><img src="${def.img}" alt=""></div><div>${label}</div><div class="plv">${"<i></i>".repeat(p.lv)}</div>`;
+      if(p.help!=null){ const hh=S.helpers.find(x=>x.id===p.help); if(hh) inner=`<div class="ph">${hh.name}</div>`+inner; }
+    } else {
+      inner=`<div class="pi">＋</div><div>空地${i+1}</div>`;
+    }
+    el.innerHTML=inner;
+    el.onclick=()=>openPlot(i);
+    plotBand.appendChild(el);
+  });
+  layoutPlots();
+}
+function plotElPos(idx){
+  if(!plotBand) return null;
+  const tile=plotBand.children[idx]; if(!tile) return null;
+  return {x: plotBand.offsetLeft + tile.offsetLeft + tile.offsetWidth/2, y: plotBand.offsetTop + tile.offsetTop};
+}
+function updateOrb(){
+  if(!orbEl) return;
+  const eNorm=Math.min(1, S.energy/2700), r=14+eNorm*22, warm=eNorm>=0.5;
+  orbEl.style.width=(r*2)+"px"; orbEl.style.height=(r*2)+"px";
+  orbEl.style.right=(48-r)+"px"; orbEl.style.bottom=(110-r)+"px";
+  orbEl.style.background = warm? "radial-gradient(circle at 40% 40%,#fff3c4,#ffcd5a)" : "radial-gradient(circle at 40% 40%,#f0e0ff,#b07bff)";
+  orbEl.style.boxShadow = warm? "0 0 26px 8px rgba(255,205,90,0.55)":"0 0 26px 8px rgba(176,123,255,0.55)";
+}
+function updateShopTop(){
+  const t=$("#shopTop"); if(!t) return;
+  let comboHtml = S.combo>1? `<div class="combo">🔥连击 ×${S.combo}（收益+${Math.round((comboMul()-1)*100)}%）</div>` : "";
+  let hotHtml = (S.hot&&S.hot.good)? `<div class="hot">🔥热销 ${GOODS[S.hot.good]}×1.5 ｜ 预告 ${GOODS[S.hotNext]||"?"}</div>` : "";
+  const ar=altarRate();
+  const nextTask=TUTORIAL.find(t=>!S.tasks[t.id]);
+  const guideHtml = nextTask ? `<div class="guide">📜 指引 · ${nextTask.name}：${nextTask.desc}</div>` : `<div class="guide done">🎉 新手引导已完成，随心经营吧</div>`;
+  t.innerHTML=`<div class="t1">万法商铺 Lv${S.shop.level} · 位格${S.plane}</div>
+    ${comboHtml}${hotHtml}${guideHtml}
+    <div>🏗地块 ${builtCount()}/${S.plots.length} · 👥伙计 ${S.helpers.length}${ar>0?(" · ⛩+"+ar.toFixed(1)+"/s"):""}</div>
+    <div>${S.karma>0?("☣业障 "+Math.round(S.karma)):"✿ 营业中"}</div>
+    <div style="color:#c79bff">🔮能量 ${Math.round(S.energy)}</div>`;
+}
+function maxCust(){ return Math.min(6, S.shop.level+1); }
+function patienceMax(urgent,big){ return ((urgent?14000:(big?26000:40000))+S.shop.level*1000); }
+function spawnInterval(){
+  let base=Math.max(2500, 7000 - S.shop.level*900);
+  if(signCount()>0) base*=Math.pow(0.85, signCount());
+  if(planeBonus().attractHigh) base*=0.8;
+  return Math.max(1500, base);
+}
+function slotX(i,n){ if(n<=1) return stageW/2; const pad=120, span=Math.max(40,stageW-pad*2); return pad+span*i/(n-1); }
+function freeSlot(){
+  const n=maxCust(), used=new Set(customers.filter(c=>(c.state==="enter"||c.state==="wait")).map(c=>c.slot));
+  for(let i=0;i<n;i++) if(!used.has(i)) return i; return -1;
+}
+function spawnOne(b,slot,opts){
+  opts=opts||{};
+  const urgent=opts.urgent, big=opts.big;
+  const tx=slotX(slot,maxCust()), req=genReq(b), voice=VOICES[b.id][rand(0,VOICES[b.id].length-1)];
+  const col = b.tier>=4?"#fff0a0":(b.tier>=3?"#ffcf4d":(b.tier>=2?"#9be0c8":"#ffd0e6"));
+  const el=document.createElement("div"); el.className="customer"+(urgent?" urgentc":"")+(big?" bigc":"");
+  el.style.setProperty("--cc",col);
+  el.style.setProperty("--tx",(stageW+80)+"px");
+  const reqTxt=req.map(r=>GOODS[r.good]+"×"+r.n).join(" ");
+  let ret=""; if(b.payFaith||b.payFaithGamble) ret+="✦"; if(b.payNature) ret+="❀"; if(b.boon) ret+="·"+b.boon; if(big) ret+="·大单";
+  const prefHtml=`<div class="pref">偏爱 ${GOODS[b.pref]||b.pref}</div>`;
+  const loyalHtml=(S.beings[b.id].rep>=50)?`<div class="loyal">熟客 · 带礼</div>`:"";
+  const urgentHtml=urgent?`<div class="urgent">⚡急单 · 高价</div>`:"";
+  const bigHtml=big?`<div class="big">📦大单 · 量大利厚</div>`:"";
+  el.innerHTML=`<div class="bubble">${reqTxt} <b style="color:#9a7400">${ret}</b></div>
+    ${prefHtml}${loyalHtml}${urgentHtml}${bigHtml}
+    <div class="voice">${voice}</div>
+    <div class="ring"><svg viewBox="0 0 60 60"><circle class="bg" cx="30" cy="30" r="26"></circle><circle class="fg" cx="30" cy="30" r="26"></circle></svg></div>
+    <div class="body"></div><div class="face">${b.img?`<img src="${b.img}" alt="${b.name}">`:b.icon}</div><div class="plate">${b.name}</div>`;
+  if(custLayer) custLayer.appendChild(el);
+  const circ=el.querySelector(".ring .fg");
+  const C=2*Math.PI*26;
+  if(circ){ circ.style.strokeDasharray=C; circ.style.strokeDashoffset=0; }
+  const cust={el,being:b,req,state:"enter",slot,patience:patienceMax(urgent,big),maxPatience:patienceMax(urgent,big),tx,wait:0,auto:0,urgent,big};
+  customers.push(cust);
+  requestAnimationFrame(()=>{ if(el&&el.isConnected){ el.style.setProperty("--tx",tx+"px"); } });
+  el.addEventListener("click",()=>{ if(cust.state==="wait") serve(cust); });
+  return cust;
+}
+function trySpawn(){
+  if(eventActive) return;
+  if(customers.filter(c=>(c.state==="enter"||c.state==="wait")).length>=maxCust()) return;
+  let pool=BEINGS.filter(b=>beingUnlocked(b,S)); if(!pool.length) return;
+  let b;
+  const adPulse = S.adPulse>0;
+  if(adPulse){ const hi=pool.filter(x=>x.tier>=2); b=(hi.length)?hi[rand(0,hi.length-1)]:pool[rand(0,pool.length-1)]; S.adPulse--; }
+  else if(planeBonus().attractHigh){ const hi=pool.filter(x=>x.tier>=3); b=(hi.length&&Math.random()<0.6)?hi[rand(0,hi.length-1)]:pool[rand(0,pool.length-1)]; }
+  else b=pool[rand(0,pool.length-1)];
+  const slot=freeSlot(); if(slot<0) return;
+  const urgent = b.tier>=2 && Math.random()<0.12;
+  const big = b.tier>=2 && !urgent && Math.random()<0.14;
+  spawnOne(b,slot,{urgent,big});
+  if(S.beings[b.id].rep>=50 && Math.random()<0.4){
+    const s2=freeSlot(); if(s2>=0) spawnOne(b,s2,{});
+  }
+}
+function removeCust(c){ if(c.el&&c.el.parentNode) c.el.remove(); customers=customers.filter(x=>x!==c); }
+function floatText(cust,text,cls){
+  if(!floatLayer) return;
+  const el=document.createElement("div"); el.className="float"+(cls==="crit"?" crit":""); el.textContent=text;
+  el.style.color = cls==="karma"?"#ff8a8a":(cls==="nature"?"#7fe6c8":(cls==="energy"?"#d9c2ff":"#ffe08a"));
+  const tx=(parseFloat(cust.el.style.getPropertyValue("--tx"))||cust.tx||stageW/2);
+  el.style.left=(tx-16)+"px"; el.style.bottom="120px";
+  floatLayer.appendChild(el); setTimeout(()=>el.remove(),1400);
+}
+function floatAt(pos,text,cls){
+  if(!floatLayer||!pos) return;
+  const el=document.createElement("div"); el.className="float"; el.textContent=text;
+  el.style.color = cls==="karma"?"#ff8a8a":(cls==="faith"?"#ffe08a":(cls==="nature"?"#7fe6c8":"#d9c2ff"));
+  el.style.left=(pos.x-18)+"px"; el.style.top=(pos.y)+"px";
+  floatLayer.appendChild(el); setTimeout(()=>el.remove(),1400);
+}
+function burstParticles(cust,color){
+  if(!floatLayer) return;
+  const tx=(parseFloat(cust.el.style.getPropertyValue("--tx"))||cust.tx||stageW/2);
+  for(let i=0;i<8;i++){
+    const p=document.createElement("div"); p.className="particle"; p.style.background=color;
+    p.style.left=(tx+ (Math.random()*40-20))+"px"; p.style.bottom="120px";
+    const ang=Math.random()*Math.PI*2, dist=30+Math.random()*40;
+    p.style.setProperty("--px",(Math.cos(ang)*dist).toFixed(0)+"px");
+    p.style.setProperty("--py",(Math.sin(ang)*dist-20).toFixed(0)+"px");
+    floatLayer.appendChild(p); setTimeout(()=>p.remove(),700);
+  }
+}
+function triggerEvent(){
+  if(eventActive) return;
+  const ev=EVENTS[rand(0,EVENTS.length-1)];
+  eventActive=true;
+  const modal=$("#eventModal"); if(!modal){ eventActive=false; return; }
+  $("#evIcon").textContent=ev.icon; $("#evTitle").textContent=ev.title; $("#evDesc").textContent=ev.desc;
+  const box=$("#evChoices"); box.innerHTML="";
+  ev.choices.forEach((ch)=>{
+    const btn=document.createElement("button"); btn.className="ev-choice";
+    btn.innerHTML=ch.label+`<span class="ce">${ch.ce}</span>`;
+    btn.onclick=()=>{ const res=ch.effect(); S.eventsDone++; eventActive=false; modal.style.display="none"; toast(res,"disc"); sfx('event'); checkTasks(); afterAction(); };
+    box.appendChild(btn);
+  });
+  modal.style.display="flex"; sfx('event');
+}
+/* ============ 诸天杂货店：实时柜台（跨界倒卖线 · 双线并列） ============ */
+let storeTimer=null;
+function startStore(){
+  storeCatchUp();
+  if(storeTimer) clearInterval(storeTimer);
+  storeTimer=setInterval(storeStep, 1500);
+}
+function stopStore(){
+  if(storeTimer){ clearInterval(storeTimer); storeTimer=null; }
+  if(S && S.store){ S.store.lastTs=Date.now(); try{ save(); }catch(e){} }
+}
+function storeCatchUp(){
+  const now=Date.now(); let sec=(now-(S.store.lastTs||now))/1000; S.store.lastTs=now;
+  if(sec<60){ try{ save(); }catch(e){} return; }
+  if(sec>8*3600) sec=8*3600;
+  const n=Math.floor(sec/4);                       // 平均 4s 一个异界顾客
+  let earned=0, deals=0; const wIds=realWorldIds();
+  for(let i=0;i<n;i++){ const r=storeSettle(wIds[rand(0,wIds.length-1)]); if(r){ earned+=r.gain; deals++; } }
+  if(deals>0){ S.store.log.unshift({t:"离线", gain:earned, n:deals}); S.store.log=S.store.log.slice(0,8); }
+  try{ save(); }catch(e){}
+}
+// 真实结算一笔：扣库存、加灵石、带回少许自然货币、记行情。返回成交信息或 null
+function storeSettle(worldId){
+  const w=REAL_WORLDS[worldId]; if(!w) return null;
+  const candidates=[];
+  REAL_GOODS.forEach(g=>{
+    const have=S.store.inv[g.id]||0; if(have<=0) return;
+    const price=S.store.price[g.id]||(g.cost*2); if(price<=0) return;
+    const val=valuationOf(worldId,g.id);
+    const psych=val*1.1;                            // 顾客心理中位价≈估值价
+    if(price<=psych) candidates.push({g,price,val,match:g.cat===w.pref});
+  });
+  if(candidates.length===0) return null;
+  candidates.sort((a,b)=>(b.match?1:0)-(a.match?1:0) || b.val-a.val);
+  const pick=Math.random()<0.6 ? candidates[0] : candidates[rand(0,candidates.length-1)];
+  S.store.inv[pick.g.id]--;
+  S.coin+=pick.price;
+  S.natureCurrency+=Math.max(1,Math.round(pick.price*0.05));   // 跨界馈赠：少许自然货币
+  addStoreNote(worldId, pick.g.cat, pick.val);
+  return {good:pick.g, gain:pick.price, worldId:worldId};
+}
+function addStoreNote(worldId, cat, val){
+  const w=REAL_WORLDS[worldId];
+  const key=worldId+"|"+cat;
+  const exist=S.store.notes.find(x=>x.key===key);
+  if(exist){ if(val>exist.val) exist.val=val; exist.cnt=(exist.cnt||0)+1; }
+  else S.store.notes.push({key, worldId, cat, val, cnt:1});
+  S.store.notes=S.store.notes.slice(-12);
+}
+function storeStep(){
+  if(TAB!=="store"){ stopStore(); return; }
+  const wIds=realWorldIds(); const wId=wIds[rand(0,wIds.length-1)]; const w=REAL_WORLDS[wId];
+  const custEl=document.getElementById('storeCust');
+  if(custEl) custEl.innerHTML=`<div class="cust"><div class="face">${w.face}</div><div class="say"><b>${w.name}</b> 自「${w.pref}」之界而来，正打量货架…</div></div>`;
+  setTimeout(()=>{
+    if(TAB!=="store") return;
+    const r=storeSettle(wId);
+    const c=custEl||document.getElementById('storeCust');
+    if(c){
+      if(r){ c.innerHTML=`<div class="cust"><div class="face">${w.face}</div><div class="say"><b>${w.name}</b> 收下 <b>${r.good.icon}${r.good.name}</b>，付你 <b>${r.gain}</b> 💠</div></div>`; toast(w.name+" 成交 +"+r.gain+"💠","rep"); sfx('build'); }
+      else { c.innerHTML=`<div class="cust"><div class="face">${w.face}</div><div class="say"><b>${w.name}</b> 摇摇头：「这价位，老朽可不依」——空手离去。</div></div>`; }
+    }
+    if(r){ S.store.log.unshift({t:"live", worldId:wId, g:r.good.icon, gain:r.gain}); S.store.log=S.store.log.slice(0,8); }
+    S.store.lastTs=Date.now();
+    refreshStoreParts(); updateStats();
+  }, 850);
+}
+function refreshStoreParts(){
+  const invEl=document.getElementById('storeInv'); if(invEl) invEl.innerHTML=renderStoreInv();
+  const logEl=document.getElementById('storeLog'); if(logEl) logEl.innerHTML=renderStoreLog();
+  const noteEl=document.getElementById('storeNotes'); if(noteEl) noteEl.innerHTML=renderStoreNotes();
+  const c2=document.getElementById('s-coin2'); if(c2) c2.textContent=Math.round(S.coin);
+}
+function buyReal(id){
+  const g=REAL_GOODS.find(x=>x.id===id); if(!g) return;
+  if(S.coin<g.cost){ toast("灵石不足（需 "+g.cost+"）","karma"); return; }
+  S.coin-=g.cost; S.store.inv[id]=(S.store.inv[id]||0)+1;
+  if(!S.store.price[id]) S.store.price[id]=g.cost*2;
+  sfx('build'); updateStats(); refreshStoreParts(); try{ save(); }catch(e){}
+  toast("进货 "+g.icon+g.name+" · -"+g.cost+"💠","nature");
+}
+function adjPrice(id, d){
+  const g=REAL_GOODS.find(x=>x.id===id); if(!g) return;
+  const cur=S.store.price[id]||(g.cost*2);
+  S.store.price[id]=Math.max(Math.round(g.cost*0.5), Math.round(cur+d));
+  refreshStoreParts(); try{ save(); }catch(e){}
+}
+function renderStore(){
+  let h=`<div class="card"><h3>🛒 诸天杂货店 · 跨界倒卖</h3>
+    <div class="muted small">从<b>人间</b>进货，卖给<b>诸天异界</b>。每个异界对人间物件的估值天差地别——靠成交摸清行情，低买高卖赚灵石。</div>
+    <div id="storeCust" class="cust-board"><div class="muted small" style="text-align:center;padding:14px;width:100%">柜台静候异界来客…</div></div>
+  </div>`;
+  h+=`<div class="card"><h3>📥 人间进货市场（消耗 💠灵石）</h3>
+    <div class="muted small">灵石余额 <b id="s-coin2">${Math.round(S.coin)}</b> · 预判异界喜好备货，赌中爆款利润惊人</div><div style="margin-top:6px">`;
+  REAL_GOODS.forEach(g=>{
+    const stock=S.store.inv[g.id]||0;
+    h+=`<div class="real-good"><div class="ic">${g.icon}</div><div style="flex:1">
+      <div class="nm">${g.name} <span class="tag cat">${REAL_CATS[g.cat]}${g.cat}</span></div>
+      <div class="meta">成本 ${g.cost} 灵石 · 库存 ${stock}</div></div>
+      <button class="act" style="width:auto;margin:0;padding:7px 12px" onclick="buyReal('${g.id}')">进货 ·${g.cost}💠</button></div>`;
+  });
+  h+=`</div></div>`;
+  h+=`<div class="card"><h3>🏷️ 货架定价（异界售价）</h3>
+    <div class="muted small">定价 ≤ 顾客心理价才卖得出；定太高滞销，定太低薄利。建议从成本 2 倍起试探。</div>
+    <div id="storeInv" style="margin-top:6px">${renderStoreInv()}</div></div>`;
+  h+=`<div class="card"><h3>📒 行情笔记（已发现的偏好）</h3>
+    <div class="muted small">每次成交会记下「某界偏爱某类物件」，集齐八界偏好即通晓跨界行情。</div>
+    <div id="storeNotes" style="margin-top:6px">${renderStoreNotes()}</div></div>`;
+  h+=`<div class="card"><h3>📜 近期成交</h3>
+    <div id="storeLog" style="margin-top:6px">${renderStoreLog()}</div></div>`;
+  h+=`<div class="muted small" style="text-align:center;margin-top:4px">💠灵石在此线内循环；卖出还会带回少许 ❀自然货币，两线自有交汇。</div>`;
+  return h;
+}
+function renderStoreInv(){
+  const any=REAL_GOODS.some(g=>(S.store.inv[g.id]||0)>0);
+  if(!any) return `<div class="empty-hint">货架空空——先去「人间进货市场」进货吧</div>`;
+  let h="";
+  REAL_GOODS.forEach(g=>{ const st=S.store.inv[g.id]||0; if(st<=0) return;
+    const price=S.store.price[g.id]||(g.cost*2);
+    h+=`<div class="real-good"><div class="ic">${g.icon}</div><div style="flex:1">
+      <div class="nm">${g.name} <span class="tag cat">${REAL_CATS[g.cat]}${g.cat}</span></div>
+      <div class="meta">库存 ${st} · 售价 ${price} 灵石（成本 ${g.cost}）</div></div>
+      <div class="price-edit"><button onclick="adjPrice('${g.id}',-2)">−</button><span class="pv">${price}</span><button onclick="adjPrice('${g.id}',2)">+</button></div></div>`;
+  });
+  return h;
+}
+function renderStoreNotes(){
+  if(S.store.notes.length===0) return `<div class="empty-hint">尚无发现——做成几笔生意就会记下线索</div>`;
+  return S.store.notes.map(n=>`<div class="note">${REAL_WORLDS[n.worldId].face} <b>${REAL_WORLDS[n.worldId].name}</b> 偏爱 ${REAL_CATS[n.cat]}${n.cat} 类（估值约 <b>×${n.val}</b> · 已验证 ${n.cnt} 次）</div>`).join("");
+}
+function renderStoreLog(){
+  if(S.store.log.length===0) return `<div class="empty-hint">暂无成交</div>`;
+  return S.store.log.map(l=>{
+    if(l.t==="离线") return `<div class="deal-log">⏳ 离线期间诸界光顾，成交 <b>${l.n}</b> 笔，+${l.gain}💠</div>`;
+    const w=REAL_WORLDS[l.worldId];
+    return `<div class="deal-log">${w.face} ${w.name} 购 ${l.g} · +${l.gain}💠</div>`;
+  }).join("");
+}
+
+function tick(dt){
+  clock+=dt;
+  if(S.hot){ S.hot.t-=dt/1000; if(S.hot.t<=0){ S.hot={good:S.hotNext,t:rand(40,70)}; const others=GOODS_ORDER.filter(g=>g!==S.hot.good); S.hotNext=others[rand(0,others.length-1)]; toast("🔥 热销切换为 "+GOODS[S.hot.good]+S.hot.good+"，下一波预告 "+GOODS[S.hotNext],"hot"); updateShopTop(); } }
+  if(!eventActive){
+    eventTimer-=dt; if(eventTimer<=0){ eventTimer=55000+Math.random()*45000; triggerEvent(); }
+  }
+  const pb=planeBonus();
+  if(pb.passiveEnergy){ S.peTimer=(S.peTimer||0)+dt; const rate=pb.invincible?900:3000; if(S.peTimer>=rate){ S.peTimer=0; const a=pb.invincible?3:1; S.energy+=a; updateOrb(); } }
+  // 祭坛被动产信仰（四条资源线之一）
+  S.altarT=(S.altarT||0)+dt;
+  if(S.altarT>=5000){
+    S.altarT=0;
+    let gained=0, firstIdx=-1;
+    S.plots.forEach((p,idx)=>{ if(p.b==="altar"){
+      if(firstIdx<0) firstIdx=idx;
+      const amt=Math.max(1,Math.round((1+(p.lv-1)*0.8+(p.help!=null?1.2:0))*faithBonus()*planeBonus().allMul));
+      S.faithCurrent+=amt; S.faithTotal+=amt; gained+=amt;
+    } });
+    if(gained>0){
+      const pos=plotElPos(firstIdx);
+      floatAt(pos,"⛩ +"+gained+" 信仰","faith");
+      updateStats(); save();
+    }
+  }
+  // 伙计自动补货（货架上有伙计时）
+  S.plots.forEach((p,idx)=>{
+    if(p.b==="shelf"&&p.help!=null&&p.good){
+      S.restockT[idx]=(S.restockT[idx]||0)+dt;
+      if(S.restockT[idx]>=9000){
+        S.restockT[idx]=0;
+        const cap=goodsCap();
+        if(S.goods[p.good]<cap){
+          const price=Math.max(1,Math.ceil((RESTOCK[p.good]||5)*0.5));
+          if(S.natureCurrency>=price){
+            S.natureCurrency-=price; S.goods[p.good]++;
+            floatAt(plotElPos(idx),"📦 伙计补货 +1","nature");
+            updateStats(); save();
+          }
+        }
+      }
+    }
+  });
+  if(!eventActive){
+    spawnTimer-=dt; if(spawnTimer<=0){ spawnTimer=spawnInterval(); trySpawn(); }
+  }
+  for(const c of customers){
+    if(c.state==="enter"){ c.wait+=dt; if(c.wait>=1100){ c.state="wait"; c.el.classList.add("wait"); } }
+    else if(c.state==="wait"){
+      const can=canServe(c);
+      if(pb.autoServe && can){ c.auto+=dt; if(c.auto>=1200){ serve(c); continue; } }
+      c.patience-=dt; const pr=Math.max(0,c.patience/c.maxPatience);
+      const circ=c.el.querySelector(".ring .fg"); if(circ){ const C=2*Math.PI*26; circ.style.strokeDashoffset=(C*(1-pr)).toFixed(1); }
+      if(c.patience<=0){ c.state="sad"; c.el.classList.remove("wait"); c.el.classList.add("sad"); S.reputation=Math.max(0,S.reputation-1); S.combo=0; afterAction(); setTimeout(()=>removeCust(c),950); }
+    }
+  }
+}
+function loop(t){
+  if(!shopRunning) return;
+  if(!lastT) lastT=t; let dt=t-lastT; lastT=t; if(dt>100) dt=100;
+  try{ tick(dt); }catch(e){}
+  requestAnimationFrame(loop);
+}
+function startShop(){
+  if(!stage) setupShop();
+  customers.forEach(c=>c.el&&c.el.remove()); customers=[];
+  shopRunning=true; lastT=0; spawnTimer=400; eventTimer=55000+Math.random()*45000;
+  if(girlEl) girlEl.classList.toggle("girl-aura", S.plane>=3);
+  ensurePlots(); renderPlots(); updateOrb(); updateShopTop();
+  trySpawn(); trySpawn(); trySpawn();
+  requestAnimationFrame(loop);
+}
+
+/* ============ 交互 ============ */
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{
+  TAB=b.dataset.tab; document.querySelectorAll("#nav button").forEach(x=>x.classList.remove("active")); b.classList.add("active");
+  if(TAB!=="shop"){ shopRunning=false; }
+  if(TAB!=="store"){ stopStore(); }
+  initAudio(); render();
+});
+
+/* ============ 启动 ============ */
+window.addEventListener('resize',()=>{ if(TAB==="shop"&&shopRunning&&stage){ stageW=Math.max(280,stage.clientWidth||480); customers.forEach(c=>{ if(c.state==="wait"){ c.tx=slotX(c.slot,maxCust()); c.el.style.setProperty("--tx",c.tx+"px"); } }); layoutPlots(); } });
+const _splash=document.getElementById('splash'), _startBtn=document.getElementById('startBtn');
+const _story=document.getElementById('story'), _storyNext=document.getElementById('storyNext'), _storyText=document.getElementById('storyText');
+const STORY_PAGES=[
+  "「万法商铺」开张第七日。少女城主守着这间诸天位面商城，卖些人间的平凡货品，换些零碎的信仰与自然货币。",
+  "直到那日——一位土地公成交后，竟留下一枚温润的「神土」。她随手将它投入炼化炉，炉火骤亮，化出一缕<b>无所不能的能量</b>。",
+  "原来诸天生物的馈赠，皆可炼为能量。而能量，能让她一阶一阶，走向<b>无敌</b>。\n\n于是她决定：平地起商城，广建屋舍，招募伙计，收集能量——直到诸天万界皆来臣服。",
+];
+let _storyIdx=0;
+function showStory(){
+  if(S.storySeen){ _splash.classList.add('bye'); setTimeout(()=>{ if(_splash.parentNode) _splash.remove(); },520); boot(); return; }
+  _splash.classList.add('bye'); setTimeout(()=>{ if(_splash.parentNode) _splash.remove(); },520);
+  _story.style.display="flex"; _storyIdx=0; _storyText.innerHTML=STORY_PAGES[0];
+}
+/* ============ 设置 + 存档导入导出 ============ */
+function applyAnim(){ if(ANIM_ON) document.body.classList.remove('no-anim'); else document.body.classList.add('no-anim'); }
+function openSettings(){ const m=document.getElementById('settingsModal'); if(!m)return;
+  document.getElementById('setSnd').checked=SND_ENABLED;
+  document.getElementById('setAnim').checked=ANIM_ON;
+  document.getElementById('setVol').value=Math.round(SND_VOL*100);
+  document.getElementById('setVolVal').textContent=Math.round(SND_VOL*100)+'%';
+  document.getElementById('saveCode').value="";
+  document.getElementById('setMsg').textContent="";
+  m.style.display="flex"; }
+function closeSettings(){ const m=document.getElementById('settingsModal'); if(m) m.style.display="none"; }
+function setMsg(t){ const e=document.getElementById('setMsg'); if(e) e.textContent=t; }
+function exportSave(){
+  save(); const data=JSON.stringify(S);
+  const blob=new Blob([data],{type:"application/json"});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download="faith-trade-save-"+new Date().toISOString().slice(0,10)+".json"; a.click();
+  URL.revokeObjectURL(a.href); setMsg("已导出存档文件"); }
+function importSaveFile(file){
+  const rd=new FileReader(); rd.onload=()=>{ try{ const d=JSON.parse(rd.result); applySave(d); }catch(e){ setMsg("导入失败：文件不是有效存档"); } };
+  rd.readAsText(file); }
+function b64e(s){ return btoa(unescape(encodeURIComponent(s))); }
+function b64d(s){ return decodeURIComponent(escape(atob(s))); }
+function genCode(){ save(); document.getElementById('saveCode').value=b64e(JSON.stringify(S)); setMsg("分享码已生成，可复制"); }
+function copyCode(){ const t=document.getElementById('saveCode'); if(!t||!t.value){ setMsg("没有可复制的分享码"); return; } t.select();
+  try{ document.execCommand('copy'); setMsg("已复制到剪贴板"); }
+  catch(e){ if(navigator.clipboard){ navigator.clipboard.writeText(t.value).then(()=>setMsg("已复制"),()=>setMsg("复制失败，请手动复制")); } } }
+function importCode(){ const v=document.getElementById('saveCode').value.trim(); if(!v){ setMsg("请先粘贴分享码"); return; }
+  try{ const d=JSON.parse(b64d(v)); applySave(d); }catch(e){ setMsg("分享码无效"); } }
+function applySave(d){ if(!d||typeof d!=="object"){ setMsg("存档无效"); return; }
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(d)); location.reload(); }catch(e){ setMsg("写入失败"); } }
+function resetSave(){ if(!confirm("确定清空当前存档？此操作不可恢复，建议先导出备份。")) return;
+  try{ localStorage.removeItem(SAVE_KEY); location.reload(); }catch(e){} }
+
+function boot(){ try{ applyOffline(); render(); }catch(e){ showErr(e.message); } }
+if(_splash&&_startBtn){
+  _startBtn.addEventListener('click',()=>{ initAudio(); showStory(); });
+  _storyNext.addEventListener('click',()=>{
+    _storyIdx++;
+    if(_storyIdx>=STORY_PAGES.length){ S.storySeen=true; save(); _story.classList.add('bye'); setTimeout(()=>{ if(_story.parentNode) _story.remove(); },520); boot(); }
+    else { _storyText.innerHTML=STORY_PAGES[_storyIdx]; if(_storyIdx===STORY_PAGES.length-1) _storyNext.textContent="开始营业"; }
+  });
+}else{
+  boot();
+}
+</script>
+</body>
+</html>

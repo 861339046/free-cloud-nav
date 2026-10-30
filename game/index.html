@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>诸天游苑 · 悠闲小游戏合集</title>
+<meta name="description" content="本站自研的悠闲小游戏合集：经营放置《信仰交易录》与诸神实时战略《诸天争霸·信仰战争》，点开即玩，进度存于本机。">
+<style>
+  :root{
+    --bg1:#fbe9f3; --bg2:#e9e4fb; --ink:#4a3b55;
+    --pink:#ff9ecf; --lav:#9b7be0; --glow:#b07bff;
+    --btn1:#ffd9ee; --btn2:#d9ccff; --chip1:#f3e9ff; --chip2:#e4d4ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1100px 560px at 15% -8%, #ffd9ee99, transparent 60%),
+      radial-gradient(1000px 520px at 105% 4%, #d9ccff99, transparent 55%),
+      linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .hub-head{text-align:center;padding:54px 20px 14px}
+  .hub-head h1{
+    margin:0;font-size:42px;letter-spacing:6px;
+    background:linear-gradient(160deg,#ff7ec0,#9b7be0);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 2px 18px #b07bff40;
+  }
+  .lede{margin:10px auto 0;max-width:560px;font-size:15px;color:#6a5a78}
+  .deities{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:22px auto 0;max-width:520px}
+  .deities img{
+    width:50px;height:50px;border-radius:50%;object-fit:cover;
+    border:2px solid #ffffffcc;box-shadow:0 4px 12px #6a3f9e26;
+    transition:transform .25s, box-shadow .25s;cursor:default;
+  }
+  .deities img:hover{transform:translateY(-4px) scale(1.08);box-shadow:0 8px 20px #b07bff55}
+  .wrap{max-width:980px;margin:0 auto;padding:26px 20px 50px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+  .gcard{
+    display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    background:linear-gradient(160deg,#fff7fc,#efe9ff);
+    border-radius:22px;overflow:hidden;box-shadow:0 10px 30px #6a3f9e1f;
+    border:1px solid #ffffffaa;transition:transform .2s, box-shadow .2s;
+  }
+  .gcard:hover{transform:translateY(-6px);box-shadow:0 18px 44px #b07bff40}
+  .thumb{height:180px;background-size:cover;background-position:center;position:relative}
+  .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,#00000022)}
+  .meta{padding:18px 20px 22px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .tag{align-self:flex-start;font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;background:linear-gradient(160deg,#ffe0f1,#e3d6ff);color:#7b4bd0}
+  .tag.tag2{background:linear-gradient(160deg,#e7f7ef,#dceaff);color:#2f9e6b}
+  .gcard h2{margin:0;font-size:20px;letter-spacing:1px}
+  .gcard p{margin:0;font-size:14px;color:#6a5a78;line-height:1.65;flex:1}
+  .play{
+    align-self:flex-start;margin-top:6px;font-weight:700;font-size:15px;
+    padding:10px 26px;border-radius:999px;color:#4a2a6b;
+    background:linear-gradient(160deg,var(--btn1),var(--btn2));
+    box-shadow:0 6px 18px #b07bff44;transition:transform .15s,box-shadow .15s;
+  }
+  .gcard:hover .play{transform:translateX(3px);box-shadow:0 8px 22px #b07bff66}
+  .foot{text-align:center;color:#8a7a98;font-size:13px;margin-top:34px}
+</style>
+</head>
+<body>
+  <header class="hub-head">
+    <h1>诸天游苑</h1>
+    <p class="lede">本站自研的悠闲小游戏合集 · 点开即玩，进度皆存于本机浏览器</p>
+    <div class="deities" id="deities"></div>
+  </header>
+
+  <main class="wrap">
+    <section class="cards">
+      <a class="gcard" href="faith-trade.html">
+        <div class="thumb" style="background-image:url('assets/scene.webp')"></div>
+        <div class="meta">
+          <span class="tag">经营 · 放置</span>
+          <h2>信仰交易录 · 万法商铺</h2>
+          <p>经营诸天位面商城，接待万界生物，炼化超凡物品为能量，一步步变强直至飞升无敌。动脑规划，慢慢养成。</p>
+          <span class="play">开始游玩 →</span>
+        </div>
+      </a>
+
+      <a class="gcard" href="memory-match.html">
+        <div class="thumb" style="background-image:url('assets/beings/tianting.webp')"></div>
+        <div class="meta">
+          <span class="tag tag2">策略 · 诸神</span>
+          <h2>诸天争霸 · 信仰战争</h2>
+          <p>执掌天庭，对决魔渊·炽炎·幽冥三路外神：采信仰、研神谕科技、占灵脉领地、率神君英雄，推平三座敌核即胜。</p>
+          <span class="play">开始游玩 →</span>
+        </div>
+      </a>
+    </section>
+
+    <p class="foot">更多小游戏陆续入驻 · 全部进度保存在您本机浏览器</p>
+  </main>
+
+  <script>
+    const DEITIES = ['landongong','huxian','longwang','yuelao','chenghuang','shanshen','caishen','tianting'];
+    const box = document.getElementById('deities');
+    DEITIES.forEach(id=>{
+      const img = document.createElement('img');
+      img.src = 'assets/beings/' + id + '.webp';
+      img.alt = id;
+      img.loading = 'lazy';
+      box.appendChild(img);
+    });
+  </script>
+</body>
+</html>

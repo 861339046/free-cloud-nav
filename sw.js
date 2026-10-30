@@ -1,7 +1,7 @@
 // keting.eu.org Service Worker
 // 策略：静态资源（HTML/CSS/JS/字体/图标）cache-first 兜底网络；API 请求一律走网络，不缓存。
 // 版本号：改 PRECACHE 内容时同步 bump，activate 会自动清理旧缓存。
-const CACHE = 'keting-v3';
+const CACHE = 'keting-v4';
 const PRECACHE = [
   '/',
   '/tools',
