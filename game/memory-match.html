@@ -18,7 +18,7 @@
     font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;
     overflow:hidden;user-select:none;-webkit-user-select:none}
   #wrap{position:fixed;inset:0;display:flex;flex-direction:column}
-  #top{display:flex;gap:10px;align-items:center;padding:8px 12px;
+  #top{display:flex;gap:10px;align-items:center;padding:8px 12px;flex-wrap:wrap;
     background:linear-gradient(180deg,rgba(46,28,76,.88),rgba(20,12,40,.74));
     background-color:var(--panel);
     backdrop-filter:var(--glass);-webkit-backdrop-filter:var(--glass);
@@ -31,6 +31,8 @@
     border:1px solid var(--line-soft);border-radius:999px;padding:4px 11px;white-space:nowrap;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
   .stat b{color:var(--gold);font-variant-numeric:tabular-nums}
+  .ico{margin-right:2px}
+  .lbl{white-space:nowrap}
   .stat.ally b,.stat.enemy b{color:var(--ink)}
   .hpbar{width:72px;height:8px;border-radius:6px;background:#3a2a55;overflow:hidden;display:inline-block;vertical-align:middle;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
   .hpbar>i{display:block;height:100%;transition:width .2s}
@@ -62,6 +64,13 @@
   .btn.cat-build{border-left:3px solid var(--player)}
   .btn.cat-unit{border-left:3px solid var(--gold)}
   .btn.cat-special{border-left:3px solid var(--enemy)}
+  .act-group{display:flex;gap:6px;align-items:center}
+  .act-label{font-size:10px;color:#9a8bc8;letter-spacing:1px;padding:0 3px;white-space:nowrap;align-self:center}
+  .act-sep{width:1px;align-self:stretch;background:var(--line-soft);margin:0 3px}
+  .mini-hp{display:inline-block;width:48px;height:6px;border-radius:4px;background:#3a2a55;overflow:hidden;
+    vertical-align:middle;box-shadow:inset 0 1px 2px rgba(0,0,0,.4)}
+  .mini-hp>i{display:block;height:100%;background:linear-gradient(90deg,#5fe0c8,#7affd0)}
+  #s-ageBar{box-shadow:0 0 8px rgba(255,210,122,.55)}
   #hint{font-size:12px;color:#c9b8ee;flex:1;min-width:150px;line-height:1.45}
   #actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center;flex:0 0 auto}
   #toast{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(18,10,38,.92);
@@ -71,6 +80,11 @@
     background:radial-gradient(125% 105% at 50% 0%,rgba(48,24,82,.93),rgba(8,4,20,.95));
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
     z-index:20;text-align:center;padding:30px;overflow:auto}
+  #overlay::before{content:'';position:absolute;top:-150px;left:50%;transform:translateX(-50%);
+    width:480px;height:480px;border-radius:50%;
+    background:radial-gradient(circle,rgba(155,123,224,.32),rgba(255,126,192,.12) 45%,transparent 70%);
+    filter:blur(10px);pointer-events:none;z-index:0}
+  #overlay>*{position:relative;z-index:1}
   #overlay h1{font-size:34px;margin:0;background:linear-gradient(160deg,#ff7ec0,#9b7be0);
     -webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px;
     text-shadow:0 2px 26px rgba(155,123,224,.32)}
@@ -85,7 +99,16 @@
   .ov-feat{flex:1 1 170px;max-width:200px;background:rgba(255,255,255,.05);
     border:1px solid var(--line-soft);border-radius:14px;padding:14px 12px;
     box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
-  .ov-feat-ic{font-size:26px}
+  .ov-feat-ic{font-size:24px;width:48px;height:48px;line-height:48px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,210,122,.22),rgba(155,123,224,.16));
+    border:1px solid var(--line-soft);margin:0 auto}
+  .ov-tip{max-width:620px;text-align:left}
+  .ov-tip summary{cursor:pointer;color:#cdbcff;font-size:13px;list-style:none;padding:2px 0;
+    display:inline-block}
+  .ov-tip summary::-webkit-details-marker{display:none}
+  .ov-tip summary::before{content:'📖 '}
+  .ov-tip[open] summary::before{content:'📕 '}
+  .ov-tip>div{margin-top:8px;line-height:1.7}
   .ov-feat-t{font-size:15px;font-weight:700;margin-top:6px;color:#fff}
   .ov-feat-d{font-size:11px;color:#bca9e6;margin-top:3px;line-height:1.5}
   .ov-modewrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
@@ -109,6 +132,25 @@
     padding:11px 14px;background:linear-gradient(160deg,#7a5cff,#b07bff);color:#fff}
   #techPanel .tp-body{padding:12px 14px;overflow:auto;max-height:calc(74vh - 46px)}
   #techPanel b{color:#e9d9ff}
+  .era-ladder{margin:4px 0 2px;display:flex;flex-direction:column;gap:6px}
+  .era-node{border:1px solid var(--line);border-radius:10px;padding:7px 9px;
+    background:rgba(255,255,255,.03)}
+  .era-node.cur{border-color:var(--gold);background:rgba(255,210,122,.12);
+    box-shadow:0 0 0 1px rgba(255,210,122,.35) inset}
+  .era-node.fut{opacity:.6}
+  .era-row{display:flex;align-items:center;gap:7px}
+  .era-no{flex:0 0 18px;height:18px;line-height:18px;text-align:center;border-radius:50%;
+    background:rgba(255,255,255,.1);font-size:11px;color:#cdbcff}
+  .era-node.cur .era-no{background:var(--gold);color:#3a2410;font-weight:700}
+  .era-node.done .era-no{background:var(--player);color:#06241f}
+  .era-name{font-size:13px;font-weight:600;flex:1}
+  .era-tag{font-size:10px;color:#9a8bc8}
+  .era-tag.fut{color:#ffd27a}
+  .era-tag.done{color:var(--player)}
+  .era-unlocks{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+  .era-chip{font-size:10px;line-height:1.4;padding:1px 6px;border-radius:6px;
+    background:rgba(155,123,224,.18);color:#d9ccff;border:1px solid rgba(155,123,224,.28)}
+  .era-node.fut .era-chip{background:rgba(255,255,255,.05);color:#9a8bc8}
   #pauseBox,#errBox{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
     justify-content:center;gap:14px;z-index:25;text-align:center;padding:24px}
   #pauseBox{background:rgba(8,4,20,.8);backdrop-filter:blur(4px)}
@@ -124,22 +166,61 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:background .15s,transform .1s}
   .ctrl:hover{background:rgba(255,255,255,.16)}
   .ctrl:active{transform:translateY(1px)}
+  @media (max-width:680px){
+    .lbl{display:none}
+    .ico{margin-right:3px}
+    #top{font-size:10px;gap:4px;padding:6px 6px}
+    .stat{padding:2px 7px;gap:3px}
+    .stat .hpbar{width:40px!important}
+    .stat b{font-size:11px}
+    .top-group.war{margin-left:4px;padding-left:7px}
+    #techBtn,#saveBtn,.ctrl{padding:5px 9px;font-size:10px}
+    .sel-badge{min-width:0;max-width:none;padding:6px 10px;font-size:11px;align-self:stretch}
+    .ov-mode{width:96px}
+    .btn{padding:11px 14px;font-size:13px;min-height:46px;line-height:1.2;flex:0 0 auto}
+    .btn small{font-size:10px}
+    #bottom{flex-direction:column;align-items:stretch;padding:8px;min-height:auto;gap:8px}
+    #hint{font-size:11px;min-width:0;order:2}
+    #actions{order:3;flex-wrap:nowrap;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+    #techPanel{width:min(272px,calc(100vw - 20px))}
+  }
+  @media (max-width:420px){
+    #overlay h1{font-size:25px}
+    #overlay .subtitle{font-size:11px;letter-spacing:2px}
+    #overlay p{max-width:92vw;font-size:13px}
+    .ov-feat{flex:1 1 120px;max-width:46%;padding:11px 8px}
+    .ov-feat-ic{width:40px;height:40px;line-height:40px;font-size:20px}
+    .ov-feat-t{font-size:13px}
+    .ov-mode{width:80px;padding:10px 5px}
+    .ov-mode-n{font-size:16px}
+    .ov-mode-t{font-size:11px}
+    #top{font-size:9px;gap:3px;padding:5px 5px}
+    .stat{padding:2px 5px;gap:2px}
+    .stat .hpbar{width:30px!important}
+    #techBtn,#saveBtn,.ctrl{padding:4px 7px;font-size:9px}
+    #bottom{padding:6px 6px;gap:6px}
+    .btn{min-height:44px;padding:9px 11px;font-size:12px}
+    .btn small{font-size:9px}
+    .sel-badge{font-size:10px;padding:5px 8px}
+    #hint{font-size:10px}
+    #techPanel{width:min(300px,calc(100vw - 12px))}
+  }
 </style>
 </head>
 <body>
 <div id="wrap">
   <div id="top">
     <div class="top-group res">
-      <div class="stat">✨ 信仰 <b id="s-gem">0</b></div>
-      <div class="stat">⚡ 灵能 <b id="s-pow">0/0</b></div>
-      <div class="stat">👥 人数 <b id="s-pop">0</b></div>
-      <div class="stat">🌟 时代 <b id="s-age">初阶</b></div>
+      <div class="stat"><span class="ico">✨</span><span class="lbl">信仰</span> <b id="s-gem">0</b></div>
+      <div class="stat"><span class="ico">⚡</span><span class="lbl">灵能</span> <b id="s-pow">0/0</b></div>
+      <div class="stat"><span class="ico">👥</span><span class="lbl">人数</span> <b id="s-pop">0</b></div>
+      <div class="stat"><span class="ico">🌟</span><span class="lbl">时代</span> <b id="s-age">初阶</b><span class="hpbar" style="width:54px"><i id="s-ageBar" style="background:linear-gradient(90deg,#ffd27a,#ff9a3c)"></i></span></div>
     </div>
     <div class="top-group war">
-      <div class="stat">⏱ <b id="s-time">0:00</b></div>
-      <div class="stat ally">🏯 主神殿 <span class="hpbar"><i id="s-pHp" style="background:var(--player)"></i></span></div>
-      <div class="stat enemy">👿 敌核 <b id="s-eCores">3</b></div>
-      <div class="stat">⚔️ 兵力 <b id="s-army">0</b></div>
+      <div class="stat"><span class="ico">⏱</span><b id="s-time">0:00</b></div>
+      <div class="stat ally"><span class="ico">🏯</span><span class="lbl">主神殿</span> <span class="hpbar"><i id="s-pHp" style="background:var(--player)"></i></span></div>
+      <div class="stat enemy"><span class="ico">👿</span><span class="lbl">敌核</span> <b id="s-eCores">3</b></div>
+      <div class="stat"><span class="ico">⚔️</span><span class="lbl">兵力</span> <b id="s-army">0</b></div>
     </div>
     <div class="top-group ops">
       <button id="techBtn" onclick="toggleTech()">⚙️ 科技树</button>
@@ -182,22 +263,25 @@
 "use strict";
 const WORLD={w:2600,h:1800};
 const DEFS={
-  base:      {name:'主神殿',   hp:1800, cost:0,   build:0,  power:45, r:60, emoji:'🏯', kind:'building'},
+  base:      {name:'主神殿',   hp:1500, cost:0,   build:0,  power:45, r:60, emoji:'🏯', kind:'building'},
   refinery:  {name:'信仰神殿', hp:480,  cost:380, build:9,  power:-10,r:46, emoji:'⛩️', kind:'building', makes:'harvester'},
   power:     {name:'聚灵阵',   hp:300,  cost:180, build:6,  power:65, r:36, emoji:'🔮', kind:'building'},
   barracks:  {name:'兵营',     hp:560,  cost:320, build:10, power:-10,r:46, emoji:'⚔️', kind:'building', makes:'soldier'},
-  factory:   {name:'战车工坊', hp:700,  cost:560, build:14, power:-22,r:52, emoji:'🏭', kind:'building', makes:'tank', age:2},
-  tower:     {name:'守护法阵', hp:380,  cost:300, build:8,  power:-8, r:30, emoji:'🗼', kind:'building', tower:true, range:160, dmg:18, cd:0.5, age:1},
+  factory:   {name:'战车工坊', hp:700,  cost:560, build:14, power:-22,r:52, emoji:'🏭', kind:'building', makes:'tank', age:3},
+  tower:     {name:'守护法阵', hp:380,  cost:300, build:8,  power:-8, r:30, emoji:'🗼', kind:'building', tower:true, range:160, dmg:15, cd:0.5, age:1},
   soldier:   {name:'天兵',     hp:85,   cost:100, train:3,  power:0,  r:13, emoji:'🗡️', kind:'unit', speed:86, range:82,  dmg:11, cd:0.6, aggro:210},
-  archer:    {name:'神射',     hp:62,   cost:140, train:4,  power:0,  r:13, emoji:'🏹', kind:'unit', speed:80, range:158, dmg:14, cd:0.8, aggro:185},
+  archer:    {name:'神射',     hp:62,   cost:140, train:4,  power:0,  r:13, emoji:'🏹', kind:'unit', speed:80, range:158, dmg:14, cd:0.8, aggro:185, age:2},
   tank:      {name:'玄铁战车', hp:320,  cost:320, train:8,  power:0,  r:18, emoji:'🚙', kind:'unit', speed:58, range:108, dmg:30, cd:1.0, aggro:250},
   harvester: {name:'信徒车',   hp:110,  cost:140, train:4,  power:0,  r:15, emoji:'🛒', kind:'unit', speed:66, carry:64, harvest:66},
   hero:      {name:'神君',     hp:600,  cost:0,   train:0,  power:0,  r:20, emoji:'👑', kind:'unit', hero:true, speed:76, range:96, dmg:36, cd:0.7, aggro:290}
 };
 const AGES=[
-  {name:'初阶 · 创世', short:'初阶', faith:0,   sec:0},
-  {name:'中阶 · 兴盛', short:'中阶', faith:800, sec:12},
-  {name:'高阶 · 诸天', short:'高阶', faith:1600,sec:16}
+  {name:'初阶 · 创世', short:'初阶', faith:0,    sec:0},
+  {name:'中阶 · 兴盛', short:'中阶', faith:700,  sec:12},
+  {name:'高阶 · 淬炼', short:'高阶', faith:1400, sec:14},
+  {name:'圣阶 · 神谕', short:'圣阶', faith:2400, sec:16},
+  {name:'天阶 · 圣临', short:'天阶', faith:3800, sec:18},
+  {name:'神阶 · 诸天', short:'神阶', faith:5600, sec:20}
 ];
 const TECHS={
   fengrui:{name:'锋锐', cat:'军备', desc:'全军攻击 +20%', faith:600, age:2},
@@ -205,7 +289,10 @@ const TECHS={
   jixing: {name:'疾行', cat:'军备', desc:'全军移速 +15%', faith:700, age:3},
   shenyu: {name:'神谕', cat:'发展', desc:'信仰采集 +30%', faith:700, age:3},
   lingneng:{name:'灵能共振', cat:'灵能', desc:'灵能产能 +30%', faith:500, age:2},
-  chaopin:{name:'超频枢机', cat:'灵能', desc:'灵能不足时降速仅 65%', faith:600, age:3}
+  chaopin:{name:'超频枢机', cat:'灵能', desc:'灵能不足时降速仅 65%', faith:600, age:3},
+  shenen:  {name:'神恩', cat:'发展', desc:'信仰产出 +25%', faith:900,  age:4},
+  shengdun:{name:'圣盾', cat:'军备', desc:'全军减伤 15%', faith:1100, age:5},
+  tianwei: {name:'天威', cat:'军备', desc:'全军攻击 +18%', faith:1300, age:6}
 };
 const FACTS=['player','moyuan','chiyan','youming'];
 const FACTION_INFO={
@@ -236,6 +323,9 @@ function resize(){
   cv.width=Math.round(cssW*dpr); cv.height=Math.round(cssH*dpr);
   cv.style.width=cssW+'px'; cv.style.height=cssH+'px';
   zoom=1; clampCam();
+  const tp=document.getElementById('techPanel');
+  const tpTop=document.getElementById('top');
+  if(tp&&tpTop) tp.style.top=(tpTop.offsetHeight+8)+'px';
 }
 window.addEventListener('resize',resize);
 function worldViewW(){ return cssW/zoom; }
@@ -266,13 +356,13 @@ function newGame(enemyCount){
   const ids=shuffle(FACTS.filter(f=>f!=='player')).slice(0,enemyCount);
   const factions=['player'].concat(ids);
   G={
-    faith:{}, pow:{}, pf:{}, ageOf:{}, aiState:{}, techs:{}, pop:{}, mods:{atk:1,bhp:1,spd:1,harvest:1,powMul:1,pfFloor:0.4},
+    faith:{}, pow:{}, pf:{}, ageOf:{}, aiState:{}, techs:{}, pop:{}, mods:{atk:1,bhp:1,spd:1,harvest:1,powMul:1,pfFloor:0.4,faithMul:1,red:1},
     ores:[], buildings:[], units:[], projs:[], fx:[], nodes:[],
     heroes:{}, heroRespawn:{}, baseXY:{}, factions, enemyCount,
     sel:[], place:null, mouse:{x:WORLD.w/2,y:WORLD.h/2},
     dragging:false, dragStart:null, dragNow:null, moved:false,
-    time:0, over:null, shown:false, nextId:1, ageT:0,
-    stats:{kills:0,builtUnits:0,builtBuildings:0,nodesCaptured:0,heroesLost:0,maxAge:1,techs:0,recruited:0}
+    time:0, over:null, shown:false, nextId:1, ageT:0, graceT:0, graceCd:0,
+    stats:{kills:0,builtUnits:0,builtBuildings:0,nodesCaptured:0,heroesLost:0,maxAge:1,techs:0,recruited:0},
   };
   factions.forEach(f=>{ G.faith[f]=600; G.pow[f]={prod:0,use:0}; G.pf[f]=1; G.heroRespawn[f]=0; G.ageOf[f]=1; G.pop[f]=8; });
   factions.forEach(f=>{ if(f!=='player') G.aiState[f]={buildTimer:1+Math.random()*2, waveTimer:20+Math.random()*8,
@@ -392,11 +482,25 @@ function moveToward(u,tx,ty,sp){
   u.x=Math.max(u.def.r,Math.min(WORLD.w-u.def.r,u.x));
   u.y=Math.max(u.def.r,Math.min(WORLD.h-u.def.r,u.y));
 }
+function territoryEffect(u){
+  let spMul=1, heal=0;
+  for(const n of G.nodes){
+    if(n.owner!=='player'||n.kind==='power') continue;
+    if(dist(u,n) < n.r+u.def.r){
+      if(u.faction==='player'){ spMul=1.12; heal=5; if(n.kind==='outpost') heal+=4; }
+      else { spMul=0.88; }
+      break;
+    }
+  }
+  return {spMul,heal};
+}
 
 function dmgOf(src){ return (src.def.dmg + (src.dmgBonus||0)) * G.mods.atk; }
 function dealDamage(src,dst){
   let d=dmgOf(src);
   if(src&&src.def.kind==='unit'&&dst&&dst.def&&dst.def.kind==='unit'&&COUNTER[src.type]===dst.type) d*=1.5;
+  if(dst&&dst.def&&dst.def.kind==='building') d*=1.6;
+  if(dst&&dst.faction==='player') d*=G.mods.red;
   dst.hp-=d;
   if(src&&src.def.hero){ addXP(src, d*0.5); if(dst.hp<=0) addXP(src,40); }
   if(src&&src.faction==='player'&&dst.faction!=='player'&&dst.hp<=0) G.stats.kills++;
@@ -424,8 +528,8 @@ function castHeroSkill(u){
   if(!u||u.skillCd>0||!alive(u)) return;
   u.skillCd=12;
   const rad=145, mult=G.ageOf.player>=3?1.6:1, dmg=95*mult;
-  for(const e of G.units){ if(e.faction===u.faction)continue; if(dist(e,u)<rad) e.hp-=dmg; }
-  for(const b of G.buildings){ if(b.faction===u.faction)continue; if(dist(b,u)<rad+b.def.r) b.hp-=dmg; }
+  for(const e of G.units){ if(e.faction===u.faction)continue; if(dist(e,u)<rad) e.hp-=e.faction==='player'?dmg*G.mods.red:dmg; }
+  for(const b of G.buildings){ if(b.faction===u.faction)continue; if(dist(b,u)<rad+b.def.r) b.hp-=(b.faction==='player'?dmg*2*G.mods.red:dmg*2); }
   G.fx.push({x:u.x,y:u.y,t:0,dur:0.5,col:'#ffe08a',ring:rad});
   if(u.faction==='player') toast('✨ 神罚降临！');
 }
@@ -438,12 +542,20 @@ function applyTech(k){
   else if(k==='shenyu') G.mods.harvest=1.3;
   else if(k==='lingneng') G.mods.powMul=1.3;
   else if(k==='chaopin') G.mods.pfFloor=0.65;
+  else if(k==='shenen') G.mods.faithMul*=1.25;
+  else if(k==='shengdun') G.mods.red*=0.85;
+  else if(k==='tianwei') G.mods.atk*=1.18;
 }
 
 function update(dt){
   G.time+=dt;
   reconcilePower();
-  for(const f of G.factions){ let inc=1; for(const b of G.buildings){ if(b.faction===f&&b.built&&b.type==='refinery') inc+=3; } inc += (G.pop[f]||0)*0.2; gemSet(f,gemGet(f)+inc*dt); }
+  for(const f of G.factions){
+    let inc=1; for(const b of G.buildings){ if(b.faction===f&&b.built&&b.type==='refinery') inc+=3; }
+    inc += (G.pop[f]||0)*0.2; if(f==='player'&&G.graceT>0) inc*=1.4;
+    if(f==='player') inc*=G.mods.faithMul;
+    gemSet(f,gemGet(f)+inc*dt);
+  }
   if(G.ageT>0){ G.ageT-=dt; if(G.ageT<=0){ G.ageOf.player++; G.stats.maxAge=Math.max(G.stats.maxAge,G.ageOf.player); toast('🌟 晋升 · '+AGES[G.ageOf.player-1].name); renderTechIfOpen(); buildActions(); } }
 
   for(const b of G.buildings){
@@ -467,14 +579,16 @@ function update(dt){
     if(b.built&&b.def.tower){
       b.cd-=dt;
       if(b.cd<=0){ const tgt=nearestEnemy(b,b.def.range);
-        if(tgt){ b.cd=b.def.cd; tgt.hp-=b.def.dmg*G.mods.atk; spawnProj(b,tgt); } }
+        if(tgt){ b.cd=b.def.cd; tgt.hp-=(tgt.faction==='player'?b.def.dmg*G.mods.atk*G.mods.red:b.def.dmg*G.mods.atk); spawnProj(b,tgt); } }
     }
   }
 
   for(const u of G.units){
     if(u.def.hero) u.skillCd=Math.max(0,u.skillCd-dt);
+    const terr=territoryEffect(u);
+    if(terr.heal>0 && u.hp<u.maxHp) u.hp=Math.min(u.maxHp,u.hp+terr.heal*dt);
     if(u.type==='harvester'){ updateHarvester(u,dt); continue; }
-    const sp=u.def.speed*G.mods.spd*dt;
+    const sp=u.def.speed*G.mods.spd*terr.spMul*dt;
     let tgt=u.target;
     if(tgt&&(!alive(tgt))){ u.target=null; tgt=null; }
     if(!tgt&&u.attackMove){
@@ -529,6 +643,8 @@ function update(dt){
   }
 
   const pb=G.buildings.find(b=>b.faction==='player'&&b.type==='base');
+  if(G.graceT>0) G.graceT-=dt;
+  if(G.graceCd>0) G.graceCd-=dt;
   if(!pb) G.over='lose';
   else if(G.enemyCount>0 && G.factions.every(f=>f==='player'||!G.buildings.find(b=>b.faction===f&&b.type==='base'))) G.over='win';
   if(G.over&&!G.shown){ G.shown=true; clearSave(); showOverlay(G.over); }
@@ -546,9 +662,12 @@ function updateHarvester(u,dt){
     }
   }
   if(u.state==='harvest'){
-    const amt=Math.min(u.def.harvest*G.mods.harvest*dt,u.oreNode.amount,u.def.carry-u.carry);
-    u.oreNode.amount-=amt; u.carry+=amt;
-    if(u.carry>=u.def.carry||u.oreNode.amount<=0) u.state='toRef';
+    if(!u.oreNode){ u.state='toRef'; }
+    else {
+      const amt=Math.min(u.def.harvest*G.mods.harvest*dt,u.oreNode.amount,u.def.carry-u.carry);
+      u.oreNode.amount-=amt; u.carry+=amt;
+      if(u.carry>=u.def.carry||u.oreNode.amount<=0) u.state='toRef';
+    }
   }
   if(u.state==='toRef'){
     if(ref){
@@ -571,7 +690,7 @@ function updateNodes(dt){
       if(n.cap<=0) n.owner=null;
     }
     if(n.owner){
-      if(n.kind==='faith') gemSet(n.owner, gemGet(n.owner)+9*dt);
+      if(n.kind==='faith'){ const g=9*dt; gemSet(n.owner, gemGet(n.owner)+g); }
       else if(n.kind==='outpost'){
         for(const u of G.units){ if(u.faction===n.owner && dist(u,n)<n.r+u.def.r && u.hp<u.maxHp) u.hp=Math.min(u.maxHp,u.hp+5*dt); }
       }
@@ -596,7 +715,7 @@ function aiFaction(f,dt){
   const refE=G.buildings.find(b=>b.faction===f&&b.type==='refinery'&&b.built);
   if(refE&&harvE<3&&!refE.producing&&gemGet(f)>=DEFS.harvester.cost) startProduce(refE,'harvester');
 
-  while(G.ageOf[f]<3 && gemGet(f)>=AGES[G.ageOf[f]].faith){ gemSet(f, gemGet(f)-AGES[G.ageOf[f]].faith); G.ageOf[f]++; }
+  while(G.ageOf[f]<AGES.length && gemGet(f)>=AGES[G.ageOf[f]].faith){ gemSet(f, gemGet(f)-AGES[G.ageOf[f]].faith); G.ageOf[f]++; }
 
   const S=G.aiState[f];
   S.buildTimer-=dt; if(S.buildTimer<=0){ S.buildTimer=3; aiEnsure(f); }
@@ -604,7 +723,7 @@ function aiFaction(f,dt){
   const facE=G.buildings.find(b=>b.faction===f&&b.type==='factory'&&b.built);
   const armyE=G.units.filter(u=>u.faction===f&&isArmy(u.type)).length;
   if(barE&&!barE.producing&&armyE<S.cap){
-    if(gemGet(f)>=DEFS.archer.cost+20 && Math.random()<0.4) startProduce(barE,'archer');
+    if(G.ageOf[f]>=2 && gemGet(f)>=DEFS.archer.cost+20 && Math.random()<0.4) startProduce(barE,'archer');
     else if(gemGet(f)>=DEFS.soldier.cost) startProduce(barE,'soldier');
   }
   if(facE&&!facE.producing&&gemGet(f)>=DEFS.tank.cost+80&&armyE<S.cap) startProduce(facE,'tank');
@@ -625,7 +744,7 @@ function aiEnsure(f){
       if(freeAt(x,y,DEFS[t].r)){ gemSet(f,gemGet(f)-DEFS[t].cost); addBuilding(t,f,x,y,false); return true; } } };
   if(!have('power')) tryB('power');
   else if(!have('barracks')) tryB('barracks');
-  else if(G.ageOf[f]>=2 && !have('factory')) tryB('factory');
+  else if(G.ageOf[f]>=3 && !have('factory')) tryB('factory');
   else if(Math.random()<G.aiState[f].towerW && !have('tower')) tryB('tower');
 }
 function launchWave(f){
@@ -688,27 +807,40 @@ function produce(t){
   buildActions(); toast('生产 '+DEFS[t].name);
 }
 
+const pointers=new Map();
+let pinch=null;
 cv.addEventListener('pointerdown',e=>{
   e.preventDefault();
   const r=cv.getBoundingClientRect();
   const cx=e.clientX-r.left, cy=e.clientY-r.top;
-  mouseCss={x:cx,y:cy};
+  pointers.set(e.pointerId,{x:cx,y:cy});
   const rp=mmRect();
-  if(cx>=rp.x&&cx<=rp.x+rp.w&&cy>=rp.y&&cy<=rp.y+rp.h){
+  if(pointers.size===1 && cx>=rp.x&&cx<=rp.x+rp.w&&cy>=rp.y&&cy<=rp.y+rp.h){
     mmDrag=true;
     const wx=(cx-rp.x)/rp.w*WORLD.w, wy=(cy-rp.y)/rp.h*WORLD.h;
     panTo(wx,wy);
     return;
   }
+  if(pointers.size>=2){
+    mmDrag=false; G.dragging=false; G.moved=false;
+    const pts=[...pointers.values()];
+    const dx=pts[0].x-pts[1].x, dy=pts[0].y-pts[1].y;
+    pinch={cx:(pts[0].x+pts[1].x)/2, cy:(pts[0].y+pts[1].y)/2,
+           dist:Math.hypot(dx,dy)||1, camx:cam.x, camy:cam.y, zoom:zoom};
+    return;
+  }
   const p=s2w(cx,cy);
-  G.mouse=p;
+  G.mouse=p; mouseCss={x:cx,y:cy};
   if(e.button===2){ if(G.place) cancelPlace(); else if(G.sel.length) commandUnits(null,p); return; }
-  if(G.place){ tryPlace(p.x,p.y); return; }
-  G.dragging=true; G.moved=false; G.dragStart=p; G.dragNow=p;
+  if(G.place){ G.dragging=false; tryPlace(p.x,p.y); return; }
+  G.dragging=true; G.moved=false; G.dragStart=p; G.dragNow=p; G._fromPinch=false;
+  G._downEntity=topEntityAt(p);
+  G._panMode = !(G.sel.length>0 && G._downEntity && G._downEntity.faction==='player');
 });
 cv.addEventListener('pointermove',e=>{
   const r=cv.getBoundingClientRect();
   const cx=e.clientX-r.left, cy=e.clientY-r.top;
+  if(pointers.has(e.pointerId)) pointers.set(e.pointerId,{x:cx,y:cy});
   mouseCss={x:cx,y:cy};
   const p=s2w(cx,cy);
   G.mouse=p;
@@ -719,19 +851,47 @@ cv.addEventListener('pointermove',e=>{
     camTween=null; cam.x=wx-worldViewW()/2; cam.y=wy-worldViewH()/2; clampCam();
     return;
   }
-  if(G.dragging){ if(Math.hypot(p.x-G.dragStart.x,p.y-G.dragStart.y)>10) G.moved=true; G.dragNow=p; }
+  if(pointers.size>=2 && pinch){
+    const pts=[...pointers.values()];
+    const dx=pts[0].x-pts[1].x, dy=pts[0].y-pts[1].y;
+    const dist=Math.hypot(dx,dy)||1;
+    const ncx=(pts[0].x+pts[1].x)/2, ncy=(pts[0].y+pts[1].y)/2;
+    const nz=Math.max(0.55,Math.min(1.6, pinch.zoom*(dist/pinch.dist)));
+    const worldCx=pinch.camx + pinch.cx/zoom, worldCy=pinch.camy + pinch.cy/zoom;
+    camTween=null; zoom=nz;
+    cam.x=worldCx - ncx/zoom; cam.y=worldCy - ncy/zoom; clampCam();
+    return;
+  }
+  if(G.dragging){
+    if(G._panMode){
+      const dxw=p.x-G.dragStart.x, dyw=p.y-G.dragStart.y;
+      if(Math.abs(dxw)+Math.abs(dyw)>1){ G.moved=true; camTween=null; cam.x-=dxw; cam.y-=dyw; clampCam(); G.dragStart=p; }
+    } else if(Math.hypot(p.x-G.dragStart.x,p.y-G.dragStart.y)>10){ G.moved=true; G.dragNow=p; }
+  }
 });
-cv.addEventListener('pointerup',e=>{
+function endPointer(e){
   const r=cv.getBoundingClientRect();
+  pointers.delete(e.pointerId);
+  if(pointers.size>=2){ pinch=null; return; }
+  if(pinch) pinch=null;
+  if(pointers.size===1){
+    const only=[...pointers.values()][0];
+    const p=s2w(only.x,only.y);
+    G.dragging=true; G.moved=false; G.dragStart=p; G.dragNow=p;
+    G._panMode=null; G._fromPinch=true; G._downEntity=topEntityAt(p);
+    return;
+  }
   const p=s2w(e.clientX-r.left,e.clientY-r.top);
   if(G.place){ G.dragging=false; return; }
   if(G.dragging){
-    if(G.moved) selectBox(G.dragStart,p);
-    else clickAt(p);
+    if(G.moved){ if(!G._panMode) selectBox(G.dragStart,p); }
+    else if(!G._fromPinch) clickAt(p);
   }
-  G.dragging=false; G.dragStart=null; G.dragNow=null; G.moved=false; mmDrag=false;
-});
-cv.addEventListener('pointerleave',()=>{ mouseCss={x:-1,y:-1}; mmDrag=false; });
+  G.dragging=false; G.dragStart=null; G.dragNow=null; G.moved=false; mmDrag=false; G._panMode=null; G._downEntity=null; G._fromPinch=false;
+}
+cv.addEventListener('pointerup',e=>endPointer(e));
+cv.addEventListener('pointercancel',e=>endPointer(e));
+cv.addEventListener('pointerleave',()=>{ mouseCss={x:-1,y:-1}; });
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 window.addEventListener('keydown',e=>{ keys[e.key.toLowerCase()]=true; if(e.key==='Escape') cancelPlace(); if(e.key.toLowerCase()==='p') pauseGame(); });
 window.addEventListener('keyup',e=>{ keys[e.key.toLowerCase()]=false; });
@@ -742,10 +902,11 @@ function updateSelBadge(){
   if(G&&G.place){ el.textContent='📍 放置中：'+DEFS[G.place.type].name; return; }
   if(!G||G.sel.length===0){ el.textContent='💡 未选中'; return; }
   const e=G.sel[0];
+  const hpStr=x=>{ const f=Math.max(0,Math.min(1,x.hp/x.maxHp)); return ' <span class="mini-hp"><i style="width:'+(f*100)+'%"></i></span>'; };
   if(G.sel.length===1){
-    if(e.def.kind==='building') el.textContent=(e.built?'🏛️ ':'🔨 ')+DEFS[e.type].name+(e.built?'':' · 建造中');
-    else if(e.def.hero) el.textContent='👑 '+DEFS[e.type].name+' Lv'+e.level;
-    else el.textContent=e.def.emoji+' '+DEFS[e.type].name+'（'+Math.ceil(e.hp)+'/'+Math.ceil(e.maxHp)+'）';
+    if(e.def.kind==='building') el.innerHTML=(e.built?'🏛️ ':'🔨 ')+DEFS[e.type].name+(e.built?'':' · 建造中')+hpStr(e);
+    else if(e.def.hero) el.innerHTML='👑 '+DEFS[e.type].name+' Lv'+e.level+hpStr(e);
+    else el.innerHTML=e.def.emoji+' '+DEFS[e.type].name+hpStr(e)+' <b style="color:#e0d4ff">'+Math.ceil(e.hp)+'/'+Math.ceil(e.maxHp)+'</b>';
   } else {
     el.textContent='✅ 已选 '+G.sel.length+' 个部队';
   }
@@ -755,45 +916,57 @@ function buildActions(){
   const a=document.getElementById('actions');
   const hint=document.getElementById('hint');
   if(G.place){
-    a.innerHTML='';
-    hint.textContent='放置模式：点击地图空地放下「'+DEFS[G.place.type].name+'」（Esc 或右键取消）。';
+    a.innerHTML='<div class="act-group"><button class="btn cat-build" onclick="cancelPlace()">✕ 取消放置</button></div>';
+    hint.textContent='放置模式：点击地图空地放下「'+DEFS[G.place.type].name+'」（点此按钮 / Esc / 右键取消）。';
     return;
   }
   if(G.sel.length===0){ a.innerHTML=''; hint.textContent='点选你的单位或建筑，下方会显示可用指令。'; return; }
   const e=G.sel[0];
+  const groups={build:[],unit:[],special:[]};
   if(G.sel.length===1&&e.def.kind==='building'){
-    let h='';
     if(e.type==='base'){
       ['refinery','power','barracks','tower','factory'].forEach(t=>{
-        if(DEFS[t].age && G.ageOf.player<DEFS[t].age) h+=lockBtn(t); else h+=buildBtn(t);
+        if(DEFS[t].age && G.ageOf.player<DEFS[t].age) groups.build.push(lockBtn(t)); else groups.build.push(buildBtn(t));
       });
-      h+=unitBtn('harvester'); h+=recruitBtn();
-    }     else if(e.type==='refinery'){ h+=unitBtn('harvester'); }
-    else if(e.type==='barracks'){ h+=unitBtn('soldier'); h+=unitBtn('archer'); }
-    else if(e.type==='factory'){ h+=unitBtn('tank'); }
-    a.innerHTML=h;
-    if(!e.built) hint.textContent=DEFS[e.type].name+' 建造中…';
-    else if(e.type==='base') hint.textContent='选择要建造的建筑，或生产信徒车（🛒 自动采集信仰）；「🙏 招募信徒」增加人口，人口越多信仰产出越高。';
-    else if(e.def.makes) hint.textContent=DEFS[e.type].name+' 已就绪，可生产 '+DEFS[e.def.makes].name+'。';
-    else hint.textContent=DEFS[e.type].name+'（防御/供能，无生产）。';
-    return;
+      groups.unit.push(unitBtn('harvester')); groups.special.push(recruitBtn()); groups.special.push(graceBtn());
+    } else if(e.type==='refinery'){ groups.unit.push(unitBtn('harvester')); }
+    else if(e.type==='barracks'){ groups.unit.push(unitBtn('soldier')); if(DEFS.archer.age && G.ageOf.player<DEFS.archer.age) groups.unit.push(lockUnitBtn('archer')); else groups.unit.push(unitBtn('archer')); }
+    else if(e.type==='factory'){ groups.unit.push(unitBtn('tank')); }
   }
   const heroes=G.sel.filter(u=>u.def.hero);
   if(heroes.length){
     const hb=heroes[0];
-    if(hb.skillCd>0) a.innerHTML='<button class="btn dis cat-special">✨ 神罚<small>冷却 '+Math.ceil(hb.skillCd)+'s</small></button>';
-    else a.innerHTML='<button class="btn on cat-special" onclick="castSelectedHero()">✨ 神罚<small>范围歼灭</small></button>';
+    if(hb.skillCd>0) a.innerHTML='<div class="act-group"><button class="btn dis cat-special">✨ 神罚<small>冷却 '+Math.ceil(hb.skillCd)+'s</small></button></div>';
+    else a.innerHTML='<div class="act-group"><button class="btn on cat-special" onclick="castSelectedHero()">✨ 神罚<small>范围歼灭</small></button></div>';
     hint.textContent='神君 Lv'+hb.level+'：点击「神罚」对周围敌群造成范围重创（高阶时威力更强）。';
     return;
   }
-  a.innerHTML='';
-  hint.textContent='已选 '+G.sel.length+' 个单位。点击地图移动，点击敌人发起攻击。';
+  if(G.sel.length>1){
+    a.innerHTML=''; hint.textContent='已选 '+G.sel.length+' 个单位。点击地图移动，点击敌人发起攻击。'; return;
+  }
+  const order=[['建造','build'],['兵种','unit'],['特殊','special']];
+  let h='', first=true;
+  for(const [label,key] of order){
+    if(!groups[key].length) continue;
+    if(!first) h+='<span class="act-sep"></span>';
+    h+='<span class="act-label">'+label+'</span><div class="act-group">'+groups[key].join('')+'</div>';
+    first=false;
+  }
+  a.innerHTML=h;
+  if(!e.built) hint.textContent=DEFS[e.type].name+' 建造中…';
+  else if(e.type==='base') hint.textContent='选择要建造的建筑，或生产信徒车（🛒 自动采集信仰）；「🙏 招募信徒」增加人口（人口越多信仰产出越高）；「🌟 丰收祷告」可一次性爆发信仰并短时增产。';
+  else if(e.def.makes) hint.textContent=DEFS[e.type].name+' 已就绪，可生产 '+DEFS[e.def.makes].name+'。';
+  else hint.textContent=DEFS[e.type].name+'（防御/供能，无生产）。';
 }
 function buildBtn(t){
   const d=DEFS[t]; const can=gemGet('player')>=d.cost;
   return '<button class="btn cat-build '+(can?'':'dis')+(G.place&&G.place.type===t?' on':'')+'" onclick="buildMode(\''+t+'\')">🔨 '+d.name+'<small>✨'+d.cost+' · '+d.build+'s</small></button>';
 }
 function lockBtn(t){
+  const d=DEFS[t];
+  return '<button class="btn dis">🔒 '+d.name+'<small>需 '+AGES[d.age-1].short+'</small></button>';
+}
+function lockUnitBtn(t){
   const d=DEFS[t];
   return '<button class="btn dis">🔒 '+d.name+'<small>需 '+AGES[d.age-1].short+'</small></button>';
 }
@@ -816,6 +989,19 @@ function recruit(){
   gemSet('player',gemGet('player')-cost); G.pop.player=pop+4; G.stats.recruited=(G.stats.recruited||0)+4;
   toast('🙏 信徒 +4（共 '+G.pop.player+' 人，信仰产出提升）'); buildActions();
 }
+function graceBtn(){
+  const cd=G.graceCd||0;
+  if(cd>0) return '<button class="btn dis cat-special">🌟 丰收祷告<small>冷却 '+Math.ceil(cd)+'s</small></button>';
+  if(G.graceT>0) return '<button class="btn on cat-special">🌟 丰收祷告<small>生效中 '+Math.ceil(G.graceT)+'s</small></button>';
+  return '<button class="btn cat-special" onclick="castGrace()">🌟 丰收祷告<small>✨200 · 信仰爆发</small></button>';
+}
+function castGrace(){
+  if((G.graceCd||0)>0||(G.graceT||0)>0) return;
+  const cost=200; if(gemGet('player')<cost){ toast('信仰不足'); return; }
+  let inc=1; for(const b of G.buildings){ if(b.faction==='player'&&b.built&&b.type==='refinery') inc+=3; } inc+=(G.pop.player||0)*0.2;
+  gemSet('player', gemGet('player')-cost + Math.min(Math.round(inc*20),400));
+  G.graceT=12; G.graceCd=30; toast('🌟 丰收祷告：信仰爆发 + 12秒增产'); buildActions();
+}
 function toggleTech(){
   const p=document.getElementById('techPanel');
   const show=p.style.display!=='block';
@@ -826,13 +1012,30 @@ function renderTechIfOpen(){ if(document.getElementById('techPanel').style.displ
 function renderTech(){
   const body=document.getElementById('techBody'); if(!body)return;
   const a=G.ageOf.player; const ag=AGES[a-1];
-  let h='<div style="margin-bottom:10px"><div style="font-size:13px">当前时代：<b style="color:var(--gold)">'+ag.name+'</b></div>';
-  if(a<3){ const nx=AGES[a];
-    if(G.ageT>0) h+='<div class="btn dis" style="margin-top:6px;width:100%;text-align:center">🔆 晋升中… '+Math.ceil(G.ageT)+'s</div>';
+  let h='<div style="margin-bottom:10px"><div style="font-size:13px">当前时代：<b style="color:var(--gold)">'+ag.name+'</b>　<span class="mini">（'+a+' / '+AGES.length+'）</span></div>';
+  h+='<div class="era-ladder">';
+  for(let i=0;i<AGES.length;i++){
+    const er=AGES[i], tier=i+1, done=a>tier, cur=a===tier, fut=a<tier;
+    const ub=[],uu=[],ut=[];
+    for(const t in DEFS){ if(DEFS[t].age===tier) (DEFS[t].kind==='unit'?uu:ub).push(DEFS[t].name); }
+    for(const k in TECHS){ if(TECHS[k].age===tier) ut.push(TECHS[k].name); }
+    let unlocks=[...ub,...uu,...ut];
+    if(tier===1) unlocks=['信仰神殿 · 聚灵阵 · 兵营 · 天兵',...unlocks];
+    const cls='era-node'+(cur?' cur':fut?' fut':' done');
+    h+='<div class="'+cls+'"><div class="era-row"><span class="era-no">'+(done?'✓':tier)+'</span>'
+      +'<span class="era-name">'+er.name+'</span>'
+      +(cur?'<span class="era-tag">当前</span>':fut?'<span class="era-tag fut">'+er.faith+'✨ · '+er.sec+'s</span>':'<span class="era-tag done">已越</span>')
+      +'</div>';
+    if(unlocks.length) h+='<div class="era-unlocks">'+unlocks.map(x=>'<span class="era-chip">'+x+'</span>').join('')+'</div>';
+    h+='</div>';
+  }
+  h+='</div>';
+  if(a<AGES.length){ const nx=AGES[a];
+    if(G.ageT>0) h+='<div class="btn dis" style="margin-top:8px;width:100%;text-align:center">🔆 晋升中… '+Math.ceil(G.ageT)+'s</div>';
     else { const can=gemGet('player')>=nx.faith;
-      h+='<button class="btn '+(can?'':'dis')+'" style="margin-top:6px;width:100%;text-align:center" onclick="startAgeUp()">🔆 晋升 '+nx.short+'<small>✨'+nx.faith+' 信仰</small></button>'; }
-  } else h+='<div class="mini" style="margin-top:6px">已臻至高之境</div>';
-  h+='</div><hr style="border:0;border-top:1px solid var(--line);margin:8px 0">';
+      h+='<button class="btn '+(can?'':'dis')+'" style="margin-top:8px;width:100%;text-align:center" onclick="startAgeUp()">🔆 晋升 '+nx.short+'<small>✨'+nx.faith+' 信仰</small></button>'; }
+  } else h+='<div class="mini" style="margin-top:8px">已臻至高之境 · 神阶圆满</div>';
+  h+='<hr style="border:0;border-top:1px solid var(--line);margin:10px 0">';
   const cats=['军备','发展','灵能'];
   const byCat={}; for(const key in TECHS){ const t=TECHS[key]; (byCat[t.cat]=byCat[t.cat]||[]).push([key,t]); }
   for(const cat of cats){ if(!byCat[cat])continue;
@@ -847,7 +1050,7 @@ function renderTech(){
   body.innerHTML=h;
 }
 function startAgeUp(){
-  if(G.ageOf.player>=3||G.ageT>0) return;
+  if(G.ageOf.player>=AGES.length||G.ageT>0) return;
   const nx=AGES[G.ageOf.player];
   if(gemGet('player')<nx.faith){ toast('信仰不足'); return; }
   gemSet('player', gemGet('player')-nx.faith); G.ageT=nx.sec; renderTech(); buildActions();
@@ -900,7 +1103,7 @@ function loadGame(s){
     factions:s.factions||['player','moyuan','chiyan','youming'], enemyCount:(s.enemyCount!=null?s.enemyCount:3), pop:s.pop||{},
     ores, buildings, units, projs:[], fx:[], nodes, heroes, heroRespawn:s.heroRespawn, baseXY:s.baseXY,
     sel:[], place:null, mouse:{x:WORLD.w/2,y:WORLD.h/2}, dragging:false, dragStart:null, dragNow:null, moved:false,
-    time:s.time, over:s.over, shown:s.shown, nextId:s.nextId, ageT:s.ageT, stats:s.stats };
+    time:s.time, over:s.over, shown:s.shown, nextId:s.nextId, ageT:s.ageT, graceT:0, graceCd:0, stats:s.stats };
 }
 function saveGame(silent){
   if(!G||G.over) { if(!silent) toast('当前无可保存的战局'); return false; }
@@ -917,7 +1120,9 @@ function continueGame(){
   document.getElementById('pauseBox').style.display='none';
   document.getElementById('errBox').style.display='none';
   paused=false; errShown=false;
-  loadGame(s); autoSaveT=20; resize(); buildActions();
+  loadGame(s); autoSaveT=20; resize();
+  cam.x=G.baseXY.player.x-worldViewW()/2; cam.y=G.baseXY.player.y-worldViewH()/2; clampCam();
+  last=0; buildActions();
   if(!raf){ last=0; raf=requestAnimationFrame(loop); }
 }
 function ovBtn(label, fn){
@@ -962,8 +1167,8 @@ function showStart(){
   modeWrap.appendChild(hint);
   act.appendChild(modeWrap);
 
-  const tip=document.createElement('div'); tip.className='mini';
-  tip.innerHTML='🗡️天兵克🏹神射 · 🏹神射克🚙战车 · 🚙战车克🗡️天兵（克制 ×1.5）。视野：屏幕<b>边缘</b> / <b>WASD·方向键</b> 平移；右下🗺️小地图可点击或拖动。框选圈兵，点选后点地图移动、点敌人进攻。';
+  const tip=document.createElement('details'); tip.className='mini ov-tip';
+  tip.innerHTML='<summary>操作说明</summary><div>🗡️天兵克🏹神射 · 🏹神射克🚙战车 · 🚙战车克🗡️天兵（克制 ×1.5）。<br>电脑：<b>WASD·方向键</b> / 屏幕<b>边缘</b> 平移；右下🗺️小地图可点击或拖动；框选圈兵，点选后点地图移动、点敌人进攻。<br>手机：<b>单指拖动</b>平移视野（选中己方时单指拖动为框选）、<b>双指捏合</b>缩放；先点选单位，再点地图移动、点敌人攻击。</div>';
   act.appendChild(tip);
 
   if(hasSave()){
@@ -1078,13 +1283,15 @@ function drawBackground(t){
 }
 function drawTerritory(){
   for(const f of G.factions){
-    const pts=[]; const base=G.buildings.find(b=>b.faction===f&&b.type==='base'); if(base) pts.push(base);
-    for(const n of G.nodes) if(n.owner===f) pts.push(n);
-    if(pts.length<2) continue;
-    ctx.save(); ctx.strokeStyle=hexA(fcol(f),0.28); ctx.lineWidth=2; ctx.setLineDash([10,8]); ctx.lineDashOffset=-G.time*10;
-    ctx.beginPath();
-    for(let i=0;i<pts.length;i++){ const p=pts[i]; if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); }
-    ctx.stroke(); ctx.setLineDash([]); ctx.restore();
+    const base=G.buildings.find(b=>b.faction===f&&b.type==='base'); if(!base) continue;
+    const nodes=G.nodes.filter(n=>n.owner===f);
+    if(nodes.length===0) continue;
+    ctx.save();
+    ctx.fillStyle=hexA(fcol(f),0.05);
+    for(const n of nodes){ ctx.beginPath(); ctx.arc(n.x,n.y,n.r*1.7,0,6.2832); ctx.fill(); }
+    ctx.strokeStyle=hexA(fcol(f),0.32); ctx.lineWidth=2; ctx.setLineDash([10,8]); ctx.lineDashOffset=-G.time*10;
+    for(const n of nodes){ ctx.beginPath(); ctx.moveTo(base.x,base.y); ctx.lineTo(n.x,n.y); ctx.stroke(); }
+    ctx.setLineDash([]); ctx.restore();
   }
 }
 function drawCrystal(x,y,s,tilt,top,bot){
@@ -1247,6 +1454,9 @@ function updateHUD(){
   document.getElementById('s-pow').textContent=G.pow.player.use+'/'+G.pow.player.prod;
   document.getElementById('s-pop').textContent=(G.pop.player||0);
   document.getElementById('s-age').textContent=AGES[G.ageOf.player-1].short;
+  const aeA=G.ageOf.player;
+  if(aeA<AGES.length){ const nx=AGES[aeA]; document.getElementById('s-ageBar').style.width=Math.min(100,Math.max(0,gemGet('player')/nx.faith*100))+'%'; }
+  else document.getElementById('s-ageBar').style.width='100%';
   const mm=Math.floor(G.time/60), ss=Math.floor(G.time%60);
   document.getElementById('s-time').textContent=mm+':'+(ss<10?'0':'')+ss;
   const pb=G.buildings.find(b=>b.faction==='player'&&b.type==='base');
@@ -1337,7 +1547,7 @@ function startGame(){
   document.getElementById('pauseBox').style.display='none';
   document.getElementById('errBox').style.display='none';
   paused=false; errShown=false;
-  newGame(chosenEnemies); resize(); buildActions();
+  resize(); newGame(chosenEnemies); buildActions();
   if(!raf){ last=0; raf=requestAnimationFrame(loop); }
 }
 function restart(){ document.getElementById('overlay').style.display='none'; startGame(); }
@@ -1355,8 +1565,9 @@ function showOverlay(result){
     +'　📿 占点 '+st.nodesCaptured+'　🙏 招募 '+(st.recruited||0)+'<br>🪖 出兵 '+st.builtUnits+'　👑 失英 '+st.heroesLost
     +'　🌟 巅峰时代 '+AGES[st.maxAge-1].short+'　🔬 科技 '+st.techs+'　🛡️ 残存兵力 '+armyP+'</span>';
   if(result==='win'){
+    const total=G.enemyCount||G.factions.filter(f=>f!=='player').length;
     ov.querySelector('h1').textContent='🏆 天庭大捷！';
-    desc.innerHTML='你推平了三路外神核心，诸天重归一统。<br>'+report;
+    desc.innerHTML='你推平了'+(total<=1?'全部外神核心':(total+' 路外神核心'))+'，诸天重归一统。<br>'+report;
   } else {
     ov.querySelector('h1').textContent='💀 主神殿陷落';
     desc.innerHTML='外神联军攻破了你的主神殿。<br><span class="mini">剩余敌核 '+cores+'。再整旗鼓，卷土重来。</span><br>'+report;
