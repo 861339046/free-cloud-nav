@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>诡秘之主 · 序列之路</title>
+<style>
+  :root{
+    --bg:#0a0e14; --bg2:#0f1620; --card:#121b24; --line:#22303c;
+    --ink:#d8e2ea; --muted:#8da0b0; --dim:#5c6e7e;
+    --gold:#e8c06a; --teal:#5fd0c5; --teal2:#3a9d94; --brass:#caa24a; --brass2:#9c7e35;
+    --blood:#e0586a; --good:#7fd08a; --fool:#9b7bd8; --door:#5fb6e8; --error:#e08b5f;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(140% 120% at 50% -10%, #16202c 0%, var(--bg) 60%);color:var(--ink);
+    font-family:"Songti SC","SimSun",ui-serif,Georgia,serif;-webkit-font-smoothing:antialiased}
+  #app{max-width:780px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+  /* 顶栏 */
+  #top{position:sticky;top:0;z-index:12;display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+    padding:8px 12px;background:linear-gradient(180deg,rgba(14,22,32,.96),rgba(14,22,32,.82));
+    border-bottom:1px solid var(--line);backdrop-filter:blur(6px)}
+  #top .ttl{font-size:15px;color:var(--gold);letter-spacing:1px;font-weight:700;margin-right:4px;white-space:nowrap}
+  .stat{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:9px;padding:4px 7px;font-size:12px;color:var(--muted);white-space:nowrap}
+  .stat b{color:var(--gold);font-variant-numeric:tabular-nums}
+  .stat .ico{margin-right:3px}
+  .stat .lbl{display:inline;margin-left:7px;color:var(--dim)}
+  .madbar{position:relative;width:60px;height:10px;border-radius:6px;background:rgba(0,0,0,.4);overflow:hidden;border:1px solid var(--line)}
+  .madbar i{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#caa24a,#e0586a);transition:width .3s}
+  .spacer{flex:1}
+  .menu-btn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer}
+  /* Tab */
+  #tabs{display:flex;gap:6px;padding:8px 10px 0;flex-wrap:wrap}
+  #tabs button{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;
+    padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s}
+  #tabs button.on{background:var(--gold);color:#1a1206;border-color:var(--gold);font-weight:700}
+  #view{padding:12px 12px 90px;flex:1}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .card h2{margin:0 0 10px;font-size:18px;color:var(--gold);letter-spacing:.5px}
+  .card h3{margin:16px 0 8px;font-size:14px;color:var(--teal)}
+  .lead{color:var(--ink);font-size:13.5px;line-height:1.7;margin:6px 0}
+  .mini{color:var(--muted);font-size:12px;line-height:1.6;margin:6px 0}
+  .lbl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin:4px 0}
+  .prog{height:9px;background:rgba(0,0,0,.4);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--teal2),var(--teal));transition:width .3s}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .btn{font-family:inherit;border:none;border-radius:10px;padding:10px 16px;font-size:13.5px;cursor:pointer;transition:.15s}
+  .btn.primary{background:linear-gradient(180deg,var(--gold),var(--brass));color:#1a1206;font-weight:700}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+  .btn.danger{color:var(--blood);border-color:rgba(224,88,106,.4)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .buy-btn{font-family:inherit;background:rgba(255,255,255,.05);border:1px solid var(--gold);color:var(--gold);
+    border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:.15s}
+  .buy-btn:hover{background:rgba(255,255,255,.13)}
+  .choice{display:block;width:100%;text-align:left;background:rgba(0,0,0,.22);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;margin:9px 0;cursor:pointer;color:var(--ink);font-family:inherit;transition:.15s}
+  .choice:hover{border-color:var(--teal2);background:rgba(95,208,197,.08)}
+  .choice .sub{color:var(--muted);font-size:12px;margin-top:4px}
+  .choice .gain{color:var(--brass2);font-size:12px;margin-top:5px}
+  .choice .cost{color:var(--blood);font-size:12px;margin-top:2px}
+  .choice.dis{opacity:.45;cursor:not-allowed}
+  .soliloquy{background:rgba(155,123,216,.1);border-left:3px solid var(--fool);border-radius:0 10px 10px 0;
+    padding:11px 14px;margin:12px 0;font-style:italic;color:#e6dcff;font-size:13px;line-height:1.75}
+  .fit{font-size:12px;padding:2px 9px;border-radius:999px;margin-left:6px;vertical-align:middle}
+  .fit.perfect{background:rgba(127,208,138,.18);color:var(--good)}
+  .fit.ok{background:rgba(95,208,197,.16);color:var(--teal)}
+  .fit.fail{background:rgba(224,88,106,.16);color:var(--blood)}
+  .seq-hero{display:flex;gap:12px;align-items:center;background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .seq-emblem{font-size:38px;width:60px;height:60px;display:flex;align-items:center;justify-content:center;
+    background:rgba(155,123,216,.12);border-radius:12px;flex:0 0 auto}
+  .seq-name{font-size:17px;color:var(--gold);font-weight:700}
+  .seq-en{font-size:11px;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+  .seq-desc{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+  .seq-tag{font-size:10px;background:var(--gold);color:#1a1206;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle}
+  .acts{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+  .ab{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:12.5px}
+  .ab b{color:var(--teal)}
+  .recipe{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin:8px 0}
+  .mat{display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;border-bottom:1px dashed var(--line)}
+  .mat:last-child{border-bottom:none}
+  .mat .hav{color:var(--good)} .mat .no{color:var(--blood)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:8px}
+  .pw{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:11px;padding:10px}
+  .pn{font-size:13px;color:var(--gold)} .ps{font-size:11px;color:var(--dim)}
+  /* 日记 */
+  .diary{margin-top:16px}
+  .diary h3{margin-top:6px}
+  .diary-item{background:#101a20;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin:7px 0;font-size:12.5px;line-height:1.55}
+  .diary-item .dh{color:var(--gold);font-size:12px}
+  .diary-item .dm{color:var(--muted);margin-top:3px}
+  .diary-empty{color:var(--dim);font-size:12.5px;margin-top:8px}
+  /* 世界地图 */
+  .map{position:relative;background:linear-gradient(160deg,#0c1420,#0a1019);border:1px solid var(--line);
+    border-radius:16px;padding:14px;margin-bottom:14px;overflow:hidden}
+  .map-title{font-size:13px;color:var(--gold);letter-spacing:1px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .map-title .mini{font-size:11px}
+  .locs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .loc{position:relative;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:11px 12px;cursor:pointer;transition:.15s;overflow:hidden}
+  .loc:hover{border-color:var(--teal2);transform:translateY(-2px)}
+  .loc .em{font-size:26px}
+  .loc .ln{font-size:13px;color:var(--ink);margin-top:5px;font-weight:600}
+  .loc .ld{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.45}
+  .loc .riski{position:absolute;top:8px;right:9px;font-size:10px;padding:1px 7px;border-radius:999px}
+  .riski.low{background:rgba(127,208,138,.16);color:var(--good)}
+  .riski.mid{background:rgba(234,192,106,.16);color:var(--brass2)}
+  .riski.high{background:rgba(224,88,106,.16);color:var(--blood)}
+  .loc.done{opacity:.55}
+  .loc.done::after{content:'✓';position:absolute;top:8px;right:10px;color:var(--good);font-size:13px}
+  .scene{background:linear-gradient(160deg,#101a24,#0c131c);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+  .scene .shead{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+  .scene .sem{font-size:30px}
+  .scene .stitle{font-size:16px;color:var(--gold);font-weight:700}
+  .scene .sdesc{color:var(--ink);font-size:13.5px;line-height:1.75;margin:8px 0}
+  .check-hint{font-size:11.5px;color:var(--dim);margin-top:6px}
+  .res-good{color:var(--good)} .res-bad{color:var(--blood)}
+  /* 途径选择 */
+  .path-hero{background:radial-gradient(120% 100% at 50% 0%,rgba(155,123,216,.18),rgba(10,14,20,.6));
+    border:1px solid var(--line);border-radius:18px;padding:22px 18px;text-align:center;margin-bottom:14px}
+  .path-hero h1{font-size:24px;color:var(--gold);margin:0 0 6px;letter-spacing:2px}
+  .path-hero p{color:var(--muted);font-size:13px;line-height:1.7;margin:4px 0}
+  .camp-title{font-size:13px;color:var(--teal);margin:16px 0 8px;letter-spacing:1px;border-left:3px solid var(--teal2);padding-left:8px}
+  .path-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px}
+  .path-card{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:12px;padding:11px 10px;cursor:pointer;transition:.15s;text-align:center}
+  .path-card:hover{border-color:var(--gold);transform:translateY(-2px);background:rgba(232,192,106,.08)}
+  .path-card .pe{font-size:28px}
+  .path-card .pn{font-size:13px;color:var(--ink);margin-top:5px;font-weight:600}
+  .path-card .pc{font-size:10px;color:var(--dim);margin-top:2px}
+  .path-card.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(232,192,106,.35)}
+  .path-card .pill{display:inline-block;font-size:9px;padding:1px 6px;border-radius:999px;margin-top:5px;background:rgba(95,208,197,.14);color:var(--teal)}
+  .path-card .pill.gen{background:rgba(140,160,176,.14);color:var(--dim)}
+  /* 弹窗 */
+  #modal{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;background:rgba(4,7,12,.72);padding:18px}
+  #modal.show{display:flex}
+  #modal .box{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:var(--shadow);position:relative}
+  #modal .x{position:absolute;top:12px;right:14px;cursor:pointer;color:var(--muted);font-size:18px}
+  #modal h2{margin:0 0 10px;font-size:19px;color:var(--gold)}
+  #modal .lead{font-size:13.5px;line-height:1.7}
+  #toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:50;
+    background:rgba(20,30,40,.95);border:1px solid var(--line);color:var(--ink);padding:10px 18px;border-radius:999px;font-size:13px;transition:.25s;pointer-events:none}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  /* 窄屏 */
+  @media (max-width:680px){
+    #top{font-size:11px;gap:5px;padding:7px 9px}
+    .stat{padding:3px 7px;font-size:11px}
+    .stat .lbl{display:none}
+    .ttl{font-size:13px}
+    #tabs button{padding:5px 11px;font-size:12px}
+    .madbar{width:42px}
+    .loc .ld{display:none}
+    .path-hero h1{font-size:20px}
+  }
+  @media (max-width:420px){
+    #top{font-size:10px}
+    .stat .ico{margin:0}
+    .madbar{width:34px}
+    .locs{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+    .path-grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}
+    .attrs{grid-template-columns:repeat(2,1fr)}
+  }
+  /* 角色属性 */
+  .attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:6px}
+  .attr{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:11px;padding:8px 10px}
+  .attr .an{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:baseline}
+  .attr .an b{color:var(--gold);font-variant-numeric:tabular-nums;font-size:14px}
+  .attr .abar{height:6px;background:rgba(0,0,0,.4);border-radius:4px;overflow:hidden;margin-top:6px}
+  .attr .abar i{display:block;height:100%;background:linear-gradient(90deg,var(--fool),var(--teal));transition:width .3s}
+  .portrait{width:84px;height:84px;border-radius:16px;object-fit:cover;border:2px solid var(--gold);flex:0 0 auto;background:rgba(0,0,0,.3)}
+  .portrait-fallback{width:84px;height:84px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:40px;background:rgba(155,123,216,.12);border:2px solid var(--gold);flex:0 0 auto}
+  .npc{display:flex;gap:10px;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:12px;padding:10px;margin:8px 0}
+  .npc .ne{font-size:28px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:rgba(155,123,216,.12);border-radius:10px;flex:0 0 auto}
+  .npc .nn{font-size:13px;color:var(--gold);font-weight:700}
+  .npc .nr{font-size:11px;color:var(--teal);margin-top:1px}
+  .npc .nb{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+  /* 穿越者 · 序章 */
+  .pro-hero{background:radial-gradient(130% 110% at 50% 0%,rgba(155,123,216,.2),rgba(10,14,20,.72));
+    border:1px solid var(--line);border-radius:18px;padding:22px 18px;text-align:center;margin-bottom:14px}
+  .pro-hero .pno{font-size:11.5px;letter-spacing:3px;color:var(--teal)}
+  #top.pre .stat{display:none}
+  .pro-hero h1{font-size:23px;color:var(--gold);margin:6px 0 8px;letter-spacing:2px}
+  .pro-hero p{color:var(--muted);font-size:13px;line-height:1.85;margin:6px 0;text-align:left}
+  .pro-hero .lead{color:var(--ink);font-size:13.5px}
+  .pro-quote{background:rgba(155,123,216,.1);border-left:3px solid var(--fool);border-radius:0 10px 10px 0;
+    padding:10px 14px;margin:12px 0;font-style:italic;color:#e6dcff;font-size:13px;line-height:1.8;text-align:left}
+  .pro-field{display:flex;align-items:center;gap:9px;margin:14px 0 4px;flex-wrap:wrap}
+  .pro-field label{font-size:12.5px;color:var(--muted)}
+  .pro-field input{font-family:inherit;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:9px;
+    padding:8px 11px;color:var(--gold);font-size:13px;width:180px;outline:none}
+  .pro-field input:focus{border-color:var(--gold)}
+  .pro-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px;margin-top:10px}
+  .pro-card{background:rgba(0,0,0,.28);border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:.15s;text-align:left;color:var(--ink);font-family:inherit}
+  .pro-card:hover{border-color:var(--gold);transform:translateY(-2px);background:rgba(232,192,106,.07)}
+  .pro-card.sel{border-color:var(--gold);box-shadow:0 0 0 2px rgba(232,192,106,.3)}
+  .pro-card .pem{font-size:24px}
+  .pro-card .pn2{font-size:13px;color:var(--gold);font-weight:700;margin-top:4px}
+  .pro-card .pd{font-size:11.5px;color:var(--muted);line-height:1.55;margin-top:5px}
+  .pro-card .pg{font-size:11px;color:var(--teal);margin-top:6px}
+  .pro-meta{background:rgba(0,0,0,.24);border:1px solid var(--line);border-radius:12px;padding:12px;margin:12px 0;text-align:left}
+  .pro-meta .row{display:flex;gap:8px;font-size:12.5px;color:var(--muted);padding:4px 0;border-bottom:1px dashed var(--line)}
+  .pro-meta .row:last-child{border:none}
+  .pro-meta .row b{color:var(--ink);min-width:62px}
+  .choice.modern{border-color:rgba(95,208,197,.55);background:linear-gradient(100deg,rgba(95,208,197,.1),rgba(0,0,0,.22))}
+  .choice.modern:hover{border-color:var(--teal)}
+  .choice.modern .mtag{display:inline-block;font-size:10px;color:var(--teal);border:1px solid var(--teal2);border-radius:999px;padding:1px 7px;margin-bottom:5px}
+  .origin-box{display:flex;gap:12px;align-items:flex-start;background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
+  .origin-box .p2{font-size:13px;color:var(--gold);font-weight:700;line-height:1.6}
+  .origin-box .p3{font-size:11.5px;color:var(--dim);margin-top:3px;line-height:1.6}
+  .mem-chip{display:inline-block;font-size:11.5px;background:rgba(95,208,197,.12);border:1px solid var(--teal2);
+    color:var(--teal);border-radius:999px;padding:4px 10px;margin:3px 5px 3px 0}
+  .suspbar{height:9px;background:rgba(0,0,0,.4);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .suspbar i{display:block;height:100%;background:linear-gradient(90deg,var(--brass2),var(--blood));transition:width .3s}
+  .susp-safe{color:var(--good)} .susp-warn{color:var(--gold)} .susp-bad{color:var(--blood)}
+  @media (max-width:420px){ .pro-cards{grid-template-columns:1fr} .pro-hero h1{font-size:20px} }
+  /* ===== 活的世界 · 今日世界 ===== */
+  .world-date{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;background:linear-gradient(100deg,rgba(232,192,106,.09),rgba(0,0,0,.2));border:1px solid var(--brass2);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+  .world-date .wd1{font-size:20px;color:var(--gold);font-weight:700;letter-spacing:.5px}
+  .world-date .wd2{font-size:12.5px;color:var(--muted)}
+  .world-date .wem{font-size:22px}
+  .news{background:#111a22;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .news .nh{background:linear-gradient(180deg,#1b2732,#141e27);border-bottom:2px solid var(--brass2);padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .news .nh b{color:var(--gold);font-size:16px;letter-spacing:3px}
+  .news .nh span{color:var(--dim);font-size:11px}
+  .news .ni{padding:10px 14px;border-bottom:1px dashed var(--line)}
+  .news .ni:last-child{border-bottom:none}
+  .news .nc{font-size:10.5px;color:var(--teal);letter-spacing:1px;border:1px solid var(--teal2);border-radius:999px;padding:1px 7px;margin-right:6px}
+  .news .nt{font-size:12.5px;color:var(--ink);line-height:1.75}
+  .bill{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .bill:last-child{border:none}
+  .bill b{color:var(--ink)}
+  .bill .amt{color:var(--gold);font-variant-numeric:tabular-nums}
+  .fac{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:12px;color:var(--muted)}
+  .fac .fn{min-width:120px;color:var(--ink)}
+  .fac .fb{flex:1;height:7px;background:rgba(0,0,0,.4);border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+  .fac .fb i{display:block;height:100%;background:linear-gradient(90deg,var(--teal2),var(--gold))}
+  .fac .fv{min-width:34px;text-align:right;color:var(--gold)}
+  .sched{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed var(--line);font-size:12.5px}
+  .sched:last-child{border:none}
+  .sched .se{font-size:18px}
+  .sched .sn{color:var(--gold)}
+  .sched .sl{color:var(--muted)}
+  .wev{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px}
+  .wev .wt{color:var(--teal);font-size:13px;font-weight:700}
+  .ledger{font-size:11.5px;color:var(--muted);line-height:1.75}
+  @media (max-width:420px){ .world-date .wd1{font-size:18px} .fac .fn{min-width:96px} }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top">
+    <span class="ttl">诡秘之主</span>
+    <span class="stat"><span class="ico">📅</span><b id="s-day">1月1日 · 周一</b><span class="lbl" id="s-dayn">第 1 日</span></span>
+    <span class="stat"><span class="ico">💰</span><span class="lbl">金镑</span><b id="s-gold">0</b></span>
+    <span class="stat"><span class="ico">🜂</span><span class="lbl">途径</span><b id="s-path">—</b></span>
+    <span class="stat"><span class="ico">🎴</span><span class="lbl">序列</span><b id="s-seq">—</b></span>
+    <span class="stat"><span class="ico">🌀</span><span class="lbl">疯狂</span><span class="madbar"><i id="s-mad" style="width:0%"></i></span><b id="s-madlbl" style="margin-left:4px">0%</b></span>
+    <span class="spacer"></span>
+    <button class="menu-btn" onclick="openHelp()">❔</button>
+    <button class="menu-btn" onclick="backToPick()">↺ 重新穿越</button>
+  </div>
+  <div id="tabs"></div>
+  <div id="view"></div>
+</div>
+<div id="modal"><div class="box" id="modalBox"></div></div>
+<div id="toast"></div>
+
+<script>
+/* =====================================================================
+   《诡秘之主 · 序列之路》 —— 单文件角色扮演成长
+   玩法：四步穿越序章（现代身份/原身/两段记忆/灰雾）→ 自选 22 途径之一
+        → 进入诡秘世界（廷根城地图探索）→ 事件抉择与属性检定、现代认知专属解法
+        → 积累扮演、收集非凡特性、配制魔药晋升序列
+        → 同时管控「疯狂」与「身份暴露」两条终局
+   —— 诚实边界：穿越者视角的同人向原创演绎，不替代原著；22 途径名称/阵营完整还原；
+      愚者/门/错误三途径完整 10 序列，其余途径中间序列为游戏化整理占位（以原著为准）。
+   ===================================================================== */
+const SAVE_KEY='ztyz_lm_save_v1';
+
+/* ========================= 数据：22 途径 ========================= */
+// 三大支柱/阵营归类（便于选途径时分组）
+const CAMPS={
+  mystery:{name:'诡秘支柱',paths:['fool','door','error','visionary']},
+  order:{name:'律令与审判',paths:['arbiter','black','whitetower']},
+  giant:{name:'黄昏与战争',paths:['twilight','death','war','tyrant']},
+  monster:{name:'怪物与猎杀',paths:['abyss','demoness','redpriest','dark','hunter']},
+  nature:{name:'自然与月亮',paths:['mother','moon','sun']},
+  outsider:{name:'异类与外神',paths:['chained','prisoner','hermit']},
+};
+
+// 完整真实三途径（seq9→seq0 真实序列）
+const FOOL_SEQS=[
+  {name:'占卜家',e:'Seer',em:'🔮',d:'以纸牌与星象推演吉凶，于迷雾中旁观因果。',act:'隐藏于人群与迷雾，旁观因果而非妄动。',ab:[['占卜','以纸牌/灵摆推演周遭吉凶'],['灵视','窥见灵体残留与微弱异常']],rec:{main:'占卜家非凡特性',aux:['笑魇花粉','绯红木','水银']},mad:18},
+  {name:'小丑',e:'Clown',em:'🤡',d:'操纵情绪、伪装与体术兼具的舞台大师。',act:'以戏谑与伪装掩盖真实，引导而不强求。',ab:[['情绪感知','感知并轻微引导他人情绪'],['危险直觉','预感致命威胁']],rec:{main:'小丑非凡特性',aux:['迷幻草','人皮','水银']},mad:20},
+  {name:'魔术师',e:'Magician',em:'🎩',d:'以诡计与戏法扭曲现实感知。',act:'让真相藏于表演，世事如戏。',ab:[['戏法','制造视觉与认知假象'],['纸人替身','以纸人承受一次攻击']],rec:{main:'魔术师非凡特性',aux:['灵性胶体','星水晶']},mad:22},
+  {name:'无面人',e:'Faceless',em:'🎭',d:'完美伪装他人形貌与气息。',act:'成为任何人，却不失自我。',ab:[['无面','拟态他人外貌与气息'],['气息隐蔽','隐匿自身灵性波动']],rec:{main:'无面人非凡特性',aux:['千面鱼','变异蘑菇']},mad:24},
+  {name:'秘偶大师',e:'Marionettist',em:'🪆',d:'以灵性之线操控傀儡。',act:'操纵如偶，分寸在心。',ab:[['灵性之线','隔空影响目标行动'],['秘偶','将灵体制成可控傀儡']],rec:{main:'秘偶大师非凡特性',aux:['稻草人','灵性丝线']},mad:26},
+  {name:'诡法师',e:'Trickmaster',em:'🌀',d:'借灰雾与灵界穿梭、驾驭概率。',act:'于虚实之间穿行，戏弄命运。',ab:[['灵界穿梭','瞬息跨越空间'],['命运戏法','小幅扭曲概率走向']],rec:{main:'诡法师非凡特性',aux:['虚空石','命运碎片']},mad:28},
+  {name:'古代学者',e:'Scholar',em:'📚',d:'自灵界复苏知识，召唤历史投影。',act:'博闻而谦，知识为仆不为主。',ab:[['知识复现','从灵界唤起失落知识'],['历史投影','召唤过往影像相助']],rec:{main:'古代学者非凡特性',aux:['古老书页','智慧之泪']},mad:30},
+  {name:'奇迹师',e:'Miracle Invoker',em:'✨',d:'以仪式与巧合创造奇迹。',act:'奇迹生于偶然，不倚强求。',ab:[['奇迹','令低概率事件必然发生'],['巧合引导','使事态向有利偏转']],rec:{main:'奇迹师非凡特性',aux:['奇迹之种','星辉尘']},mad:32},
+  {name:'诡秘侍者',e:'Secret Attendant',em:'🔯',d:'执掌灰雾王座前的侍奉与权柄。',act:'侍奉而不僭越，权柄藏于幕后。',ab:[['愚者权柄','小幅调用灰雾之力'],['侍奉之仪','强化塔罗会联结']],rec:{main:'诡秘侍者非凡特性',aux:['权柄印记','虚空结晶']},mad:34},
+  {name:'愚者',e:'Fool',em:'♠️',d:'执掌「错误」「门」「时间」权柄的旧日。',act:'于众生迷雾中超然，愚弄命运而不自迷。',ab:[['愚弄命运','改写现实规则片段'],['灰雾王座','统御灵界与塔罗会']],rec:{main:'愚者非凡特性',aux:['旧日本源']},mad:0},
+];
+const DOOR_SEQS=[
+  {name:'学徒',e:'Apprentice',em:'📖',d:'感知灵界、开启简单门户的入门者。',act:'好学而谨慎，不贸然触碰未知。',ab:[['灵视初阶','窥见灵界边缘'],['简易之门','开启近处门户']],rec:{main:'学徒非凡特性',aux:['星尘','古铜钥']},mad:16},
+  {name:'戏法大师',e:'Trick Master',em:'🃏',d:'以空间戏法制造位移与错觉。',act:'举重若轻，玩笑间化解危机。',ab:[['空间戏法','短距位移与错视'],['灵巧之手','隔空取物']],rec:{main:'戏法大师非凡特性',aux:['迷幻粉尘','银线']},mad:19},
+  {name:'占星术士',e:'Astrologer',em:'🔭',d:'观测星象、预知轨迹。',act:'仰望星河，顺势而不逆天。',ab:[['占星','推演命运轨迹'],['星力加持','以星辉强化术式']],rec:{main:'占星术士非凡特性',aux:['星水晶','星图残页']},mad:22},
+  {name:'记录官',e:'Recorder',em:'🖋️',d:'以灵性之笔记录万物信息。',act:'旁观记录，不介入因果。',ab:[['灵性之笔','记录并检索信息'],['封存','将事物暂时封存']],rec:{main:'记录官非凡特性',aux:['灵墨','牛皮卷']},mad:24},
+  {name:'旅法师',e:'Traveler',em:'🧳',d:'自由穿梭空间的行者。',act:'行万里路，心无所羁。',ab:[['闪烁','瞬移至视线所及'],['灵界行走','借灵界长途穿行']],rec:{main:'旅法师非凡特性',aux:['虚空石','旅途印记']},mad:26},
+  {name:'星术师',e:'Star Sorcerer',em:'⭐',d:'投射星体、操纵光与引力。',act:'以星为刃，守序而克制。',ab:[['星体投射','远程星光打击'],['引力扭曲','小幅改变重力']],rec:{main:'星术师非凡特性',aux:['星核','光尘']},mad:28},
+  {name:'牵线木偶',e:'Puppet',em:'🪢',d:'以空间之线操控他者。',act:'牵线于无形，不露操纵之手。',ab:[['空间之线','束缚与操控目标'],['替身','以木偶代受伤害']],rec:{main:'牵线木偶非凡特性',aux:['灵性丝线','木偶芯']},mad:30},
+  {name:'秘法师',e:'Mysticism',em:'🔐',d:'精通仪式魔法与封印。',act:'循规而行，敬畏未知之力。',ab:[['仪式魔法','布设强力术式'],['封印','禁锢灵体与邪物']],rec:{main:'秘法师非凡特性',aux:['封印符','秘银丝']},mad:32},
+  {name:'旅行家',e:'Walker',em:'🌌',d:'跨越世界与时间的远行者。',act:'见多识广，不困于一隅。',ab:[['世界之门','开启跨世界通道'],['时光漫步','短距回溯']],rec:{main:'旅行家非凡特性',aux:['世界之钥','时之沙']},mad:34},
+  {name:'门',e:'Door',em:'🚪',d:'执掌空间、通道与门的权柄。',act:'开合有度，门后即为自由。',ab:[['万门归处','任意空间穿行'],['门之权柄','封锁或开启维度']],rec:{main:'门非凡特性',aux:['终焉之门']},mad:0},
+];
+const ERROR_SEQS=[
+  {name:'偷盗者',e:'Thief',em:'🗝️',d:'窃取物品与灵性的入门者。',act:'取所需而不留痕，藏锋于拙。',ab:[['灵性窃取','盗取微弱灵性'],['巧手','无声取物']],rec:{main:'偷盗者非凡特性',aux:['暗影粉','褪色币']},mad:16},
+  {name:'诈骗师',e:'Swindler',em:'🎭',d:'以话术与假象骗取信任。',act:'虚实交错，让真相自误。',ab:[['欺诈低阶','编织可信谎言'],['误导','偏转他人判断']],rec:{main:'诈骗师非凡特性',aux:['幻言石','假面']},mad:19},
+  {name:'解密学者',e:'Cryptologist',em:'🔓',d:'破解封印、密码与谜题。',act:'耐心拆解，洞见藏于细节。',ab:[['解密','解析封印与密文'],['洞察','看破伪装结构']],rec:{main:'解密学者非凡特性',aux:['古楔形','灵性镜']},mad:22},
+  {name:'巧言者',e:'Deciet Speaker',em:'🗣️',d:'以言辞扭曲认知。',act:'言出如丝，缚人于无形。',ab:[['巧舌','强化言语效力'],['认知篡改','小幅改写记忆']],rec:{main:'巧言者非凡特性',aux:['谎言之羽','共鸣石']},mad:24},
+  {name:'抢劫者',e:'Robber',em:'⚔️',d:'以力量与诡计强取。',act:'猎食有道，不取无备者。',ab:[['掠夺','夺取目标所持'],['爆发','短时强化自身']],rec:{main:'抢劫者非凡特性',aux:['血纹铁','掠夺印记']},mad:26},
+  {name:'蠕虫',e:'Worm',em:'🐛',d:'寄生与侵蚀的怪物。',act:'潜行侵蚀，不争一时之快。',ab:[['寄生','潜入他者体内'],['侵蚀','削弱目标灵性']],rec:{main:'蠕虫非凡特性',aux:['寄生孢','腐泥']},mad:28},
+  {name:'欺诈师',e:'Trickster',em:'♟️',d:'操纵概念与规则的欺诈大师。',act:'以诈为道，乱中取胜。',ab:[['概念欺诈','扭曲局部规则'],['镜像','制造欺诈分身']],rec:{main:'欺诈师非凡特性',aux:['悖论石','幻镜']},mad:30},
+  {name:'窃梦师',e:'Dream Stealer',em:'🌒',d:'潜入并窃取梦境与记忆。',act:'入梦无声，取所需而醒者不知。',ab:[['窃梦','潜入梦境'],['记忆裁剪','剪取片段记忆']],rec:{main:'窃梦师非凡特性',aux:['梦核','沉睡粉']},mad:32},
+  {name:'时之虫',e:'Time Worm',em:'🕰️',d:'分身与操纵时间的怪物。',act:'分身万千，时间亦可为刃。',ab:[['分身','化身万千时之虫'],['时滞','短暂延缓局部时间']],rec:{main:'时之虫非凡特性',aux:['时之沙','悖论核']},mad:34},
+  {name:'错误',e:'Error',em:'❓',d:'执掌「错误」概念、篡改因果的旧日。',act:'以错为正，万物规则皆可误读。',ab:[['概念错误','使规则暂时失效'],['寄生权柄','夺取他者非凡能力']],rec:{main:'错误非凡特性',aux:['终焉之错']},mad:0},
+];
+
+// 其余 19 途径：真实名称+阵营+入口序列（若确知），中间序列游戏化整理
+function genSeqs(p){
+  // 整理占位途径：能力名随序列层级变化，避免十级都叫「X之力 / X之术」
+  const AB_LOW=['初窥','潜形','惑影','镜身','咒缚','灾相','权柄','半神','真形','旧日'];
+  const AB_HIGH=['感应','隐匿','拟态','反照','束缚','降临','支配','神临','化形','归源'];
+  const entry=p.entry||(p.name+'之徒');
+  const names=[entry];
+  // 原著术语为「序列」，占位序列名不再使用「阶」；并明确标注为游戏整理
+  for(let k=1;k<9;k++) names.push(p.name+'途径 · 序列 '+(9-k));
+  names.push(p.name);
+  return names.map((nm,i)=>{
+    const seq=9-i;
+    const isEntry=i===0, isTop=seq===0;
+    return {
+      name:nm, e:p.en+' '+(10-seq), em:p.emoji,
+      d: isEntry?('踏上'+p.name+'途径，初窥非凡之秘。'):(isTop?('登临'+p.name+'之巅，执掌其权柄。'):'（游戏整理序列，以原著设定为准）'),
+      act: isEntry?('以'+p.name+'之姿融入世俗，不露锋芒。'):('恪守'+p.name+'之道，渐入化境。'),
+      ab:[ [p.name+'·'+AB_LOW[i], '序列 '+seq+' 的低阶能力（游戏整理，以原著为准）'],
+           [p.name+'·'+AB_HIGH[i], '序列 '+seq+' 的高阶能力（游戏整理，以原著为准）'] ],
+      // 主材料名统一为「序列 N 非凡特性 · X途径」：术语正确、与途径绑定、每级唯一
+      rec:{main:'序列 '+seq+' 非凡特性 · '+p.name+'途径', aux:['星水晶','安神草']},
+      mad:14+(9-seq)*2
+    };
+  });
+}
+function mkGen(o){ return Object.assign({real:false,seqs:genSeqs(o)},o); }
+
+const PATHS={
+  fool:{name:'愚者',en:'Fool',emoji:'🃏',camp:'诡秘支柱',real:true,seqs:FOOL_SEQS,
+    blurb:'诡秘支柱之首。以「错误·门·时间」为源，占卜家起步，终成愚弄命运的旧日。'},
+  door:{name:'门',en:'Door',emoji:'🚪',camp:'诡秘支柱',real:true,seqs:DOOR_SEQS,
+    blurb:'执掌空间与通道。学徒起步，纵横灵界，终成万门归处之门。'},
+  error:{name:'错误',en:'Error',emoji:'❓',camp:'诡秘支柱',real:true,seqs:ERROR_SEQS,
+    blurb:'执掌「错误」概念。偷盗者起步，侵蚀规则，终成篡改因果的旧日。'},
+  visionary:{name:'空想家',en:'Visionary',emoji:'👁️',camp:'诡秘支柱',real:false,entry:'观众',blurb:'洞察人心、编织梦境。观众起步，终成以想象塑造现实的旧日。'},
+  arbiter:{name:'审判官',en:'Arbiter',emoji:'⚖️',camp:'律令与审判',real:false,entry:'仲裁人',blurb:'制定并执行律令，维持秩序。'},
+  black:{name:'黑皇帝',en:'Black Emperor',emoji:'👑',camp:'律令与审判',real:false,entry:'律师',blurb:'以律法与权威统治，败而不亡。'},
+  whitetower:{name:'白塔',en:'White Tower',emoji:'🗼',camp:'律令与审判',real:false,entry:'阅读者',blurb:'知识的化身，通晓万物之理。'},
+  twilight:{name:'黄昏巨人',en:'Twilight Giant',emoji:'🌅',camp:'黄昏与战争',real:false,entry:'战士',blurb:'太阳陨落后的巨人，掌毁灭与黄昏之力。'},
+  death:{name:'死神',en:'Death',emoji:'💀',camp:'黄昏与战争',real:false,entry:'收尸人',blurb:'执掌死亡与亡灵的国度。'},
+  war:{name:'战神',en:'God of War',emoji:'⚔️',camp:'黄昏与战争',real:false,entry:'军人',blurb:'战争的化身，嗜血而荣耀。'},
+  tyrant:{name:'暴君',en:'Tyrant',emoji:'🌩️',camp:'黄昏与战争',real:false,entry:'水手',blurb:'执掌风暴与海洋，雷电与暴风雨的化身。'},
+  abyss:{name:'深渊',en:'Abyss',emoji:'🔥',camp:'怪物与猎杀',real:false,entry:'罪犯',blurb:'欲望与堕落之源，诱人沉沦。'},
+  demoness:{name:'魔女',en:'Demoness',emoji:'🌹',camp:'怪物与猎杀',real:false,entry:'刺客',blurb:'灾祸与魅惑，不老不死的诅咒。'},
+  redpriest:{name:'红祭司',en:'Red Priest',emoji:'🩸',camp:'怪物与猎杀',real:false,entry:'猎人',blurb:'战争与瘟疫的化身，焚尽万物。'},
+  dark:{name:'黑暗',en:'Dark',emoji:'🌑',camp:'怪物与猎杀',real:false,entry:'不眠者',blurb:'原始的黑暗，吞噬与庇护并存。'},
+  hunter:{name:'猎人',en:'Hunter',emoji:'🏹',camp:'怪物与猎杀',real:false,entry:'猎人',blurb:'狩猎怪物者，亦可能沦为怪物。'},
+  mother:{name:'母亲',en:'Mother',emoji:'🌿',camp:'自然与月亮',real:false,entry:'耕种者',blurb:'丰饶与生命之源，草木皆兵。'},
+  moon:{name:'月亮',en:'Moon',emoji:'🌕',camp:'自然与月亮',real:false,entry:'药师',blurb:'灵性之月，与动物、尸体、灵界亲近。'},
+  sun:{name:'太阳',en:'Sun',emoji:'☀️',camp:'自然与月亮',real:false,entry:'歌颂者',blurb:'净化与光明的化身，驱散邪祟。'},
+  chained:{name:'异种',en:'Chained',emoji:'⛓️',camp:'异类与外神',real:false,entry:'囚徒',blurb:'被缚者，非人之扭曲与诅咒。'},
+  prisoner:{name:'囚犯',en:'Prisoner',emoji:'🚧',camp:'异类与外神',real:false,entry:'囚犯',blurb:'封锁与释放，肉体与灵魂的牢笼。'},
+  hermit:{name:'隐者',en:'Hermit',emoji:'🔮',camp:'异类与外神',real:false,entry:'窥秘人',blurb:'探索宇宙隐秘，知识即力量。'},
+};
+// 把生成途径补齐
+['visionary','arbiter','black','whitetower','twilight','death','war','tyrant','abyss','demoness','redpriest','dark','hunter','mother','moon','sun','chained','prisoner','hermit'].forEach(k=>{ PATHS[k]=mkGen(PATHS[k]); });
+
+// 统一补全每条序列的 seq 下标（数组 seq9→seq0 对应索引 0→9）
+// 修复：序列对象原本缺失 seq 字段，导致晋升时 G.seq 被写为 undefined 而崩溃
+Object.values(PATHS).forEach(p=>{ p.seqs.forEach((s,i)=>{ if(typeof s.seq!=='number') s.seq=9-i; }); });
+
+/* ========================= 数据：材料 ========================= */
+const MATERIALS={
+  '星水晶':{r:'mystic',desc:'蕴含星辉的结晶，配置魔药常用。'},
+  '星尘':{r:'mystic',desc:'学徒途径初阶辅料，灵界边缘收集的细碎星屑。'},
+  '安神草':{r:'herb',desc:'稳定灵性、平息躁动的草药。'},
+  '水银':{r:'metal',desc:'流动的秘银之基。'},
+  '笑魇花粉':{r:'herb',desc:'致幻的花粉，愚者途径初阶主材。'},
+  '绯红木':{r:'herb',desc:'血色硬木，封印用材。'},
+  '迷幻草':{r:'herb',desc:'扭曲感知的野草。'},
+  '人皮':{r:'curse',desc:'诡异的人皮，禁忌材料。'},
+  '灵性胶体':{r:'mystic',desc:'半凝固的灵性物质。'},
+  '千面鱼':{r:'creature',desc:'可拟态的怪鱼。'},
+  '变异蘑菇':{r:'herb',desc:'致幻且畸变的菌类。'},
+  '稻草人':{r:'creature',desc:'承载灵性的草偶。'},
+  '灵性丝线':{r:'mystic',desc:'缝合灵体与傀儡的丝。'},
+  '虚空石':{r:'mystic',desc:'来自灵界的石屑。'},
+  '命运碎片':{r:'mystic',desc:'命运裂开的残片。'},
+  '古老书页':{r:'relic',desc:'记载失语的残页。'},
+  '智慧之泪':{r:'relic',desc:'古学者凝结的泪。'},
+  '奇迹之种':{r:'relic',desc:'孕育巧合的种子。'},
+  '星辉尘':{r:'mystic',desc:'星光的尘埃。'},
+  '权柄印记':{r:'relic',desc:'灰雾王座的印记。'},
+  '虚空结晶':{r:'mystic',desc:'纯净的虚空结晶。'},
+  '旧日本源':{r:'char',desc:'愚者成神之本源。'},
+  '古铜钥':{r:'relic',desc:'开启旧门的铜钥。'},
+  '迷幻粉尘':{r:'herb',desc:'戏法用的彩尘。'},
+  '银线':{r:'metal',desc:'导灵的银线。'},
+  '星图残页':{r:'relic',desc:'星象的残页。'},
+  '灵墨':{r:'relic',desc:'记录万物的墨。'},
+  '牛皮卷':{r:'relic',desc:'承载封存的卷。'},
+  '旅途印记':{r:'relic',desc:'远行者的印记。'},
+  '星核':{r:'mystic',desc:'星辰的核心。'},
+  '光尘':{r:'mystic',desc:'光之尘埃。'},
+  '木偶芯':{r:'creature',desc:'木偶的灵芯。'},
+  '封印符':{r:'relic',desc:'封印之符。'},
+  '秘银丝':{r:'metal',desc:'秘银抽成的丝。'},
+  '世界之钥':{r:'relic',desc:'通往世界的钥。'},
+  '时之沙':{r:'mystic',desc:'时间的沙。'},
+  '终焉之门':{r:'char',desc:'门的尽头。'},
+  '暗影粉':{r:'herb',desc:'隐匿的粉。'},
+  '褪色币':{r:'relic',desc:'失色的旧币。'},
+  '幻言石':{r:'relic',desc:'扭曲言语的石。'},
+  '假面':{r:'relic',desc:'欺诈者的面具。'},
+  '古楔形':{r:'relic',desc:'古老的楔文。'},
+  '灵性镜':{r:'mystic',desc:'映出灵性的镜。'},
+  '谎言之羽':{r:'relic',desc:'轻飘飘的谎。'},
+  '共鸣石':{r:'mystic',desc:'共鸣的石。'},
+  '血纹铁':{r:'metal',desc:'染血纹的铁。'},
+  '掠夺印记':{r:'relic',desc:'掠夺的痕。'},
+  '寄生孢':{r:'creature',desc:'寄生的孢。'},
+  '腐泥':{r:'herb',desc:'腐败的泥。'},
+  '悖论石':{r:'mystic',desc:'矛盾之石。'},
+  '幻镜':{r:'mystic',desc:'欺诈的镜。'},
+  '梦核':{r:'mystic',desc:'梦的中心。'},
+  '沉睡粉':{r:'herb',desc:'引人沉睡的粉。'},
+  '悖论核':{r:'mystic',desc:'悖论的核。'},
+  '终焉之错':{r:'char',desc:'错误的终焉。'},
+};
+
+/* ========================= 数据：廷根人物志（原著真实角色，游戏化点缀） ========================= */
+// 诚实说明：以下为真名借用，仅作背景与登场点缀，不替代原著剧情；因斯·赞格威尔作阴影伏笔。
+const NPCS=[
+  {em:'🧥',name:'邓恩·史密斯',org:'黑荆棘安保公司',role:'值夜者队长 · 序列7「梦魇」',bio:'沉稳可靠的中年队长，以生命守护廷根的非凡秩序，对下属如父。'},
+  {em:'📜',name:'老尼尔',org:'黑荆棘安保公司',role:'占卜家前辈',bio:'慈祥的老者，通晓神秘学、草药与仪式，是你踏入非凡的引路人之一。'},
+  {em:'🌹',name:'伦纳德·米切尔',org:'黑荆棘安保公司',role:'值夜者 · 诗人',bio:'潇洒的诗人探员，发间藏着古老存在"星之虫"的碎片，亦正亦邪。'},
+  {em:'💎',name:'奥黛丽·霍尔',org:'贝克兰德上流 · 心理炼金会',role:'塔罗会「正义」',bio:'伯爵之女，金镑与人脉的源泉，纯粹而善良，于灰雾上向你祈求指引。'},
+  {em:'🌊',name:'阿尔杰·威尔森',org:'海上 · 风眷者',role:'塔罗会「倒吊人」',bio:'经验丰富的舰长，海域的线索与材料多经其手，可靠而多谋。'},
+  {em:'📚',name:'佛尔思·沃尔',org:'贝克兰德 · 作家',role:'塔罗会「魔术师」',bio:'落魄却机敏的作家，周旋于非凡者与世俗之间，消息灵通。'},
+  {em:'🔥',name:'因斯·赞格威尔',org:'阴影之中',role:'序列4「不死者」',bio:'曾握有"0—08"的背叛者，所到之处灾祸相连——请谨慎提及，勿深究。'},
+  {em:'⛪',name:'圣堂教会',org:'正教',role:'廷根圣堂',bio:'正教的据点，信徒往来，也藏着对非凡者的审视、告解与试探。'},
+];
+
+/* ========================= 数据：诡秘世界地图（廷根城） ========================= */
+// 每个地点：事件场景，选项含检定/收益。visitOnce 标记可重复。
+const LOCATIONS=[
+  {id:'home',em:'🏠',name:'灰雾之间 · 居所',risk:'low',d:'你的精神在灰雾之上沉淀。这里是安全的避风港，也是你与"另一个自己"对峙的镜厅。',repeat:true,
+    ev:{title:'灰雾冥想',desc:'于灰雾之上盘坐，旁观自己的灵性如观他人——这是远离失控的锚，也是克莱恩式的生存之道。',
+      opts:[
+        {t:'静心冥想',sub:'沉淀灵性，锤炼意志',g:{mad:-10},atr:{意志:1},m:0,check:0},
+        {t:'梳理今日扮演',sub:'回顾守则，沉淀学识',g:{acting:5},atr:{学识:1},m:0,check:0},
+        {t:'尝试呼唤塔罗会',sub:'若已开启，召集成员',act:'tarot',g:{},m:0,check:0},
+      ]}},
+  {id:'blackthorn',em:'🥀',name:'黑荆棘安保公司',risk:'mid',d:'廷根城官方的非凡机构，值夜者小队的据点。队长邓恩·史密斯与老尼尔前辈在此坐镇，机遇与危险并存。',repeat:true,
+    ev:{title:'入职与异常',desc:'你以新人身份踏入黑荆棘。走廊尽头，一桩未归档的异常案件正等待处理，邓恩在玻璃窗后注视着你。',
+      opts:[
+        {t:'随队处置异常',sub:'凭体魄与灵感应对，或有收获',g:{gold:6,acting:6},atr:{体魄:1,灵感:1},m:2,check:1,attr:'体魄',win:{char:'黑荆棘档案',gold:4}},
+        {t:'暗中搜集情报',sub:'以魅力周旋，积攒扮演',g:{acting:8,gold:2},atr:{魅力:1},m:1,check:0},
+        {t:'回避，保持低调',sub:'不惹事，但错过机缘',g:{},m:0,check:0},
+      ]}},
+  {id:'chanis',em:'🚪',name:'查尼斯门 · 封印地',risk:'high',d:'教会禁地，封存着失控的封印物与"0级"传说的余烬。一步踏错，便可能万劫不复。',repeat:true,
+    ev:{title:'封印物异动',desc:'某件封印物骤然躁动，灵性如潮水般外泄。你的序列与意志，能否压制它？',
+      opts:[
+        {t:'强行镇压封印物',sub:'高风险：检定成功可剥离出当前序列非凡特性',g:{},atr:{灵性:1,意志:1},m:6,check:3,attr:'灵性',win:{char:'失控封印残渣',mad:-2,main:true}},
+        {t:'以智取代之，记录符文',sub:'中风险，凭学识稳妥积累',g:{acting:9},atr:{学识:1},m:3,check:2,attr:'学识'},
+        {t:'立即撤离',sub:'保命要紧',g:{},m:0,check:0},
+      ]}},
+  {id:'church',em:'⛪',name:'圣堂 · 贝克兰德分部',risk:'low',d:'正教的圣所，信徒往来。神父的告解室后，藏着教会对非凡者的审视，也藏着试探。',repeat:true,
+    ev:{title:'告解与窥探',desc:'你佯作信徒步入圣堂。告解室后，似乎另有隐情——圣堂教会从不对非凡者完全坦诚。',
+      opts:[
+        {t:'聆听信徒告解',sub:'收集市井与贵族秘闻',g:{gold:3,acting:7},atr:{魅力:1},m:1,check:0},
+        {t:'以灵感探查圣所暗格',sub:'中风险，或得材料',g:{},atr:{灵感:1},m:3,check:2,attr:'灵感',win:{mat:'古老书页'}},
+        {t:'安分祈祷',sub:'净化少许疯狂，坚定意志',g:{mad:-5},atr:{意志:1},m:0,check:0},
+      ]}},
+  {id:'univ',em:'🏛️',name:'廷根大学',risk:'low',d:'知识与禁忌的交汇。图书馆深处，藏着非凡者才看得懂的篇章——老尼尔曾在此借阅不少"不该借"的书。',repeat:true,
+    ev:{title:'禁书区的低语',desc:'深夜的图书馆，一本无名的书在向你低语。阅读它，或被它阅读。',
+      opts:[
+        {t:'研读禁忌典籍',sub:'增进学识，小幅疯狂',g:{acting:8},atr:{学识:1},m:4,check:1,attr:'学识'},
+        {t:'摘录而非深读',sub:'稳妥积累',g:{gold:2,acting:5},atr:{学识:1},m:1,check:0},
+        {t:'闭卷离开',sub:'敬畏未知，守住意志',g:{mad:-3},atr:{意志:1},m:0,check:0},
+      ]}},
+  {id:'east',em:'🪙',name:'东区贫民窟',risk:'mid',d:'廷根的暗面。帮派、黑市与绝望交织，极光会的传单偶尔在此飘落。这里是材料的廉价来源，也是杀机。',repeat:true,
+    ev:{title:'黑市交易',desc:'一名独眼贩子向你兜售一支沾血的试管，价码低得可疑——东区，从不对来历多问。',
+      opts:[
+        {t:'压价巧取',sub:'以魅力低价购入',g:{gold:-5,acting:6},atr:{魅力:1},m:1,check:1,attr:'魅力',win:{mat:'变异蘑菇'}},
+        {t:'以力夺取',sub:'高风险：黑市贩子手里或有序列非凡特性',g:{},atr:{体魄:1},m:5,check:2,attr:'体魄',win:{gold:10,mad:4,main:true}},
+        {t:'婉拒离开',sub:'不沾血污',g:{},m:0,check:0},
+      ]}},
+  {id:'port',em:'⚓',name:'码头 · 港口',risk:'mid',d:'来自海上的货物与走私。倒吊人阿尔杰的讯息，常从此地流入你的耳中。',repeat:true,
+    ev:{title:'走私船的货舱',desc:'一艘挂着他国旗帜的船靠岸。货舱里，有你需要的，也有不该看的东西。',
+      opts:[
+        {t:'与船长密谈',sub:'借倒吊人之名取线',g:{acting:6,gold:4},atr:{魅力:1},m:2,check:1,attr:'魅力',win:{mat:'秘银丝'}},
+        {t:'潜入货舱搜刮',sub:'中风险，凭灵感寻宝',g:{},atr:{体魄:1,灵感:1},m:3,check:2,attr:'灵感',win:{mat:'星水晶'}},
+        {t:'只做寻常搬运工',sub:'赚些干净的钱',g:{gold:5},atr:{体魄:1},m:0,check:0},
+      ]}},
+  {id:'tarot',em:'🔮',name:'塔罗会 · 灰雾聚会',risk:'low',d:'你以「愚者」之名召集信众于长桌之畔——奥黛丽、阿尔杰、佛尔思……无论你走哪条途径，灰雾之上的聚会都可召开。',repeat:true,needTarot:true,
+    ev:{title:'灰雾上的祈求',desc:'一位成员带着困境前来，于长桌彼端望向你这"高位格"的存在。',
+      opts:[
+        {t:'降下隐喻神谕',sub:'给予指引，增益扮演与魅力',g:{acting:8,gold:8},atr:{魅力:2},m:0,check:0},
+        {t:'沉默聆听',sub:'让其自悟，磨砺灵感',g:{acting:4,gold:3},atr:{灵感:1},m:0,check:0},
+        {t:'试探其底蕴',sub:'探查虚实，微增疯狂',g:{acting:5},atr:{学识:1},m:2,check:0},
+      ]}},
+];
+
+/* ========================= 数据：通用扮演事件（第一人称"你"） ========================= */
+const ROLEPLAY_EVENTS=[
+  {id:'rl1',title:'市井潜伏',scene:'你混入市集的人潮，要打探一则关于"非凡者"的流言，又不让自己显得异常。',
+    opts:[
+      {label:'以寻常身份攀谈，滴水不漏',fit:'perfect',g:{acting:7,gold:3},atr:{魅力:2,灵感:1},m:1,diary:'我把呼吸压平，只做那个普通的、爱八卦的路人。真相往往自己滑进闲谈里——只要你不去抓它。'},
+      {label:'旁敲侧击，套取底细',fit:'ok',g:{acting:4,gold:2},atr:{魅力:1},m:2,diary:'我绕着弯子问，得了几句有用的，也把自己多暴露了一分。'},
+      {label:'直白追问，引人疑窦',fit:'fail',g:{acting:2,gold:2},atr:{灵感:1},m:6,diary:'我太急了。对方眼底那点警惕，比流言本身更刺眼。暴露，是最长的阴影。'},
+    ]},
+  {id:'rl2',title:'灵视窥秘',scene:'一处旧宅残留着灵体低语。你睁开灵视，看见不该看见的碎片。',
+    opts:[
+      {label:'旁观如观他人，不妄动',fit:'perfect',g:{acting:7},atr:{灵性:2,意志:1},m:1,diary:'我退后半步，把自己当看客。灵体是逝者的回声，不是我的食粮。克制，是活着的本事。'},
+      {label:'轻触一瞬，随即收手',fit:'ok',g:{acting:4},atr:{灵性:1},m:3,diary:'只一瞬——我想确认它是否牵连什么。好奇心是刀刃，我用指尖试了锋利，便收回。'},
+      {label:'贪婪汲取其中力量',fit:'fail',g:{acting:2},atr:{意志:1},m:10,diary:'那低语太甜，像掺蜜的毒。当我回神，灵性里已多了一道裂痕。失控，常始于"只这一次"。'},
+    ]},
+  {id:'rl3',title:'面对失控边缘',scene:'魔药的余韵在血脉里翻涌，理智的墙出现了一道细缝。',
+    opts:[
+      {label:'灰雾冥想，旁观躁动',fit:'perfect',g:{acting:5},atr:{意志:2},m:-5,diary:'我把那躁动摆进灰雾，像看陌生人的疯癫。不是我的，便伤不到我。旁观，是最好的镇定剂。'},
+      {label:'服安神草静心',fit:'ok',g:{acting:3},atr:{意志:1},m:-2,diary:'草药苦涩，灵性却稳了些。古老的办法，总有其道理。'},
+      {label:'强行压制，与魔药对抗',fit:'fail',g:{acting:1},atr:{意志:1},m:7,diary:'我越压，它越响。与自己体内的魔药搏斗，结局从来只有一个——输的那个，是你。'},
+    ]},
+  {id:'rl4',title:'救助凡人',scene:'巷子里，一个凡人正被诡异纠缠。出手，可能暴露；不出，良知难安。',
+    opts:[
+      {label:'以最隐晦的方式化解',fit:'perfect',g:{acting:7},atr:{魅力:2,意志:1},m:0,diary:'我没让任何人看见"异常"。善行不必披着神迹的外衣——它本就该悄悄发生。'},
+      {label:'略展手段，速战速决',fit:'ok',g:{acting:4},atr:{魅力:1},m:2,diary:'我动了一点力，救下了人，也留了一道余波。但愿没人细看。'},
+      {label:'袖手离去',fit:'fail',g:{acting:2},atr:{意志:1},m:4,diary:'我转身了。那一夜的梦，比任何怪物都缠人。非凡者的路，不该踩着凡人的尸骨。'},
+    ]},
+  {id:'rl5',title:'黑市交易',scene:'黑市商人递来一支封着诡异符文的试管，价码不菲。',
+    opts:[
+      {label:'扮作普通买家，以情报换低价',fit:'perfect',g:{acting:6,gold:-6},atr:{魅力:2},m:1,diary:'我压住呼吸里的渴望，只出一口"刚好够"的价。想要的，越表现得不在意，越容易到手。'},
+      {label:'托中间人间接取货',fit:'ok',g:{acting:4},atr:{魅力:1},m:2,diary:'我让熟人去跑腿。海上的人、地下的人，总比站在台前的我方便。'},
+      {label:'当场暴露渴望，被抬价盯梢',fit:'fail',g:{acting:2},atr:{魅力:1},m:4,diary:'我的眼睛出卖了我。当几道目光同时亮起，我知道——这件东西，暂时与我无缘了。'},
+    ]},
+  {id:'rl6',title:'教会盘问',scene:'一名教会稽查员将你拦下，问及你近来的行踪。',
+    opts:[
+      {label:'以寻常逻辑圆滑对答',fit:'perfect',g:{acting:6},atr:{魅力:2,学识:1},m:0,diary:'我把每个答案都打磨成"普通市民的合理反应"。逻辑是盾，越平静，越没有破绽。'},
+      {label:'部分吐实，留有余地',fit:'ok',g:{acting:4},atr:{魅力:1},m:2,diary:'我说了七分真，藏了三分。真话是让谎言可信的盐，但盐多了，也会咸死人。'},
+      {label:'慌乱失言，露出破绽',fit:'fail',g:{acting:2},atr:{魅力:1},m:5,diary:'我卡壳了。那一瞬的迟疑，比任何解释都更像心虚。下次，深呼吸，再开口。'},
+    ]},
+  {id:'rl7',title:'梦境低语',scene:'梦中，一个自称"古老者"的声音邀你共享它的力量。',
+    opts:[
+      {label:'视其为一场戏法，不沉溺',fit:'perfect',g:{acting:7},atr:{灵感:2,意志:1},m:1,diary:'梦中之我，不过是我不肯承认的那一半。我朝它笑了笑——戏法最怕认真。'},
+      {label:'记下后寻求典籍印证',fit:'ok',g:{acting:4},atr:{灵感:1},m:2,diary:'我把梦画了下来，留待查证。悬而未决的疑问，比草率的结论安全。'},
+      {label:'伸手触碰虚影',fit:'fail',g:{acting:2},atr:{意志:1},m:9,diary:'指尖触到冰凉的虚影，它顺着手臂爬了上来。好奇心若是手，最好攥紧拳头。'},
+    ]},
+  {id:'rl8',title:'崇拜者祈求',scene:'一名凡人循着传闻，跪求你这位"高位格存在"施以援手。',
+    opts:[
+      {label:'以隐喻指引，留其自行领悟',fit:'perfect',g:{acting:8},atr:{魅力:2},m:0,diary:'我没有施法，只给了他一句谜。能解开的，是他自己的路；解不开的，本就不该由我替他扛。'},
+      {label:'婉拒，指引其自力',fit:'ok',g:{acting:4},atr:{魅力:1},m:0,diary:'我让他回去，靠自己。信徒若习惯了神迹，便不再是信徒，只是伸手要糖的孩子。'},
+      {label:'贸然施为，损耗自身',fit:'fail',g:{acting:3},atr:{魅力:1},m:5,diary:'我动用了本源，只为安抚一人。灵性一空，灰雾都暗了一瞬。仁慈若不计代价，便是挥霍。'},
+    ]},
+  {id:'rl9',title:'怪物遭遇',scene:'暗巷尽头，一头被封印物污染的怪物朝你扑来。',
+    opts:[
+      {label:'以序列能力智取，避其锋芒',fit:'perfect',g:{acting:6},atr:{体魄:2,灵感:1},m:1,check:1,attr:'灵感',win:{gold:6},diary:'我没迎上去。绕到它视线盲侧，等它扑空的那半息——序列能力只在最该用的时候用，这叫扮演，也叫活着。'},
+      {label:'正面周旋，险胜',fit:'ok',g:{acting:4},atr:{体魄:1},m:3,check:2,attr:'体魄',win:{gold:3},diary:'硬碰硬赢下来的，袖口撕了，肋下大概青了一片。赢是赢了，可我清楚，下一次未必还有这么好的运气。'},
+      {label:'仓促硬拼，伤痕累累',fit:'fail',g:{acting:2},atr:{体魄:1},m:6,check:2,attr:'体魄',win:{mad:5},diary:'我先动了手，后动了脑。等回过神，血顺着指缝往下滴。非凡者最不该有的，就是把自己当成凡人去逞勇。'},
+    ]},
+  {id:'rl10',title:'同道试探',scene:'另一名非凡者似有若无地靠近，似乎在探你的底。',
+    opts:[
+      {label:'不卑不亢，藏锋于拙',fit:'perfect',g:{acting:7},atr:{魅力:2,灵感:1},m:0,diary:'我让他看我像个无害的普通人。真正的非凡者，从不在无关之人面前亮出刃。'},
+      {label:'虚与委蛇，互换线索',fit:'ok',g:{acting:4,gold:2},atr:{魅力:1},m:1,diary:'我们各退一步，各取所需。这行的默契，是"看破不说破"。'},
+      {label:'针锋相对，暴露深浅',fit:'fail',g:{acting:2},atr:{灵感:1},m:5,diary:'我被激出了真火。等冷静下来，才知自己亮了多少底牌——后悔，是奢侈品。'},
+    ]},
+];
+
+/* ========================= 数据：塔罗会成员 ========================= */
+const TAROT=[
+  {em:'⚖️',name:'正义 · 奥黛丽',real:'霍尔伯爵之女，心理炼金会外围',note:'贵族圈的耳目，金镑与人脉的源泉。'},
+  {em:'🌊',name:'倒吊人 · 阿尔杰',real:'海上舰长，风眷者',note:'海域的线索与材料，可靠而多谋。'},
+  {em:'🌞',name:'太阳 · 戴里克',real:'神弃之地的少年',note:'纯净而虔诚，带来信仰与远方秘闻。'},
+  {em:'📜',name:'隐者 · 贝尔纳黛',real:'探索号船长，隐者途径',note:'博学而孤高，分享失落典籍。'},
+  {em:'🌙',name:'月亮 · 埃姆林',real:'血族男爵',note:'骄傲的医师，赠予奇药基材。'},
+];
+
+/* ========================= 数据：穿越者与原身 ========================= */
+// 诚实说明：本作是「现代灵魂穿越进诡秘世界」的同人向游戏化演绎，非原著复刻。
+// 原身、家人、住处与时代沿用原著背景作舞台，序章与后续分支剧情均为原创，不替代原著。
+const ORIGIN={
+  body:'克莱恩·莫雷蒂', bodyEn:'Klein Moretti', age:'22 岁',
+  job:'廷根大学历史系毕业生 · 待业',
+  address:'鲁恩王国 · 廷根城 · 水仙花街 2 号 二楼公寓',
+  world:'第五纪 · 鲁恩王国 · 廷根城',
+  family:[
+    {em:'👨',name:'班森·莫雷蒂',note:'兄长，在进出口公司做文员，一个人撑着这个家。'},
+    {em:'👧',name:'梅丽莎·莫雷蒂',note:'妹妹，还在念书，对蒸汽机械有不合年纪的痴迷。'},
+  ],
+  mystery:'太阳穴有一道不该存在的擦伤，桌上摊着一把左轮、一张写满诡异符号的纸，以及一封以「我」的笔迹写下的遗书。原身的记忆，恰恰在这里断了一截。',
+};
+// 原身记忆碎片：随探索逐片拾起。这些是「他」的二十二年，不是穿越者的——
+// 借来的身体因此慢慢变成一个具体的人。片段为游戏化原创，不冒充原著情节。
+const ORIGIN_MEMORIES=[
+  {t:'水仙花街的晚饭',d:'班森把盘子里唯一一块肉夹给梅丽莎，说自己在公司吃过了。他没吃。这具身体记得那句谎话的语气，甚至记得桌角那道被烫白的痕。'},
+  {t:'毕业那天的合照',d:'廷根大学历史系的院子里，班森借了相机，反复叮嘱他别把帽子压太低。照片洗出来时，母亲的位置空着——谁也没提。'},
+  {t:'被拆开的闹钟',d:'梅丽莎把家里的闹钟拆了一地，装不回去，急得眼圈发红。他陪她蹲到煤气灯亮起，一枚一枚把齿轮归位。她那时说，长大要造比这更大的机器。'},
+  {t:'第三封未获回复的求职信',d:'待业的第三个月，他把回信地址抄了又抄，字迹一次比一次工整。班森没催过，只在他半夜起身时，默默把客厅的灯留着。'},
+  {t:'怀表与旧大衣',d:'父亲留下的怀表走得慢，他每周日上一次弦。大衣袖口磨白了，他总说等找到差事再换。原来一个人过日子，是由这些很小的固执撑起来的。'},
+  {t:'断掉的那一夜',d:'记忆在这里整齐地断了一截：左轮、写满符号的纸、以「我」笔迹留下的遗书。你翻遍了所有碎片，唯独这一夜仍不肯回来——那是他留给你的、也可能是留给自己的谜。'},
+];
+function addFrag(){
+  if(!G||!G.origin) return;
+  const cap=ORIGIN_MEMORIES.length;
+  const before=Math.min(G.origin.frag||0, cap);
+  if(before>=cap){ G.origin.frag=cap; return; }   // 已集齐：不再无意义增长（避免脏档越界）
+  G.origin.frag=before+1;
+  const m=ORIGIN_MEMORIES[before];
+  if(m) toast('拾起一片原身记忆 · '+m.t);
+  if(!G.origin.fragDone && G.origin.frag>=ORIGIN_MEMORIES.length){
+    G.origin.fragDone=true;
+    G.origin.suspicion=Math.max(0,(G.origin.suspicion||0)-10);
+    toast('拼回了他的一生 · 演起来更像了（暴露风险 -10）');
+  }
+}
+const MODERN_JOBS=[
+  {id:'clerk',em:'💼',name:'加班到深夜的职员',desc:'报表、末班地铁、凉掉的外卖。最后一记得是屏幕上过曝的白光，和一声很轻的耳鸣。',attrs:{意志:1,学识:1},note:'耐得住枯燥，擅长把混乱整理成表格。'},
+  {id:'student',em:'📖',name:'备考的研究生',desc:'台灯、笔记、背不完的年代与人名。你最擅长把碎片拼成脉络，也最擅长怀疑来源。',attrs:{学识:2},note:'受过史料训练，对年代与文字极敏感。'},
+  {id:'medic',em:'🩺',name:'值夜班的医生',desc:'走廊的消毒水味，监护仪规律作响。你见过太多「最后一刻」，因此不太会慌。',attrs:{体魄:1,意志:1},note:'先查呼吸，再看伤口——刻进手里的顺序。'},
+];
+const PRO_REACTS=[
+  {id:'calm',em:'🧊',name:'先检查，再害怕',desc:'摸脉搏、看瞳孔、翻桌上的纸。手在抖，但顺序没错。',attrs:{意志:1,灵感:1},sus:0},
+  {id:'panic',em:'😰',name:'失声，撞翻了椅子',desc:'镜子里那张脸不是你的。楼下传来脚步声，你却发不出一个完整的音节。',attrs:{灵感:1},sus:12},
+  {id:'mask',em:'🎭',name:'立刻闭嘴，先装成他',desc:'你把惊叫咽回去，模仿记忆里的语气，对楼下应了一声「我没事」。',attrs:{魅力:1,意志:1},sus:0},
+];
+const MODERN_MEMORIES=[
+  {id:'forensic',em:'🔍',name:'刑侦逻辑',desc:'物证、时间线、动机。这个时代还没有「现场勘查」这个词。',where:'黑荆棘安保公司'},
+  {id:'chemistry',em:'⚗️',name:'化学常识',desc:'氧化、腐蚀、沉淀——所谓神秘的异动，未必全无规律可循。',where:'查尼斯门'},
+  {id:'history',em:'📜',name:'史学训练',desc:'对照年代、辨伪、留意被人刻意删去的那一段。',where:'廷根大学'},
+  {id:'statistics',em:'🎲',name:'概率与期望',desc:'赔率、均值、风险定价。黑市的叫价并非无迹可循。',where:'东区贫民窟'},
+  {id:'medicine',em:'💉',name:'基础医学',desc:'消毒、止血、辨认疫病与中毒的表征。',where:'码头 · 港口'},
+  {id:'skeptic',em:'🕯️',name:'无神论者的清醒',desc:'你确知神明从未回应过你。这份迟疑，有时反而是护身符。',where:'圣堂'},
+];
+// 「来自另一个世界」的专属解法：仅在序章携带对应记忆（或通用）时出现于地点事件。
+// sus = 身份暴露风险变化。用得越多越容易被看出「不像这个时代的人」。
+const MODERN_SOLUTIONS={
+  home:{mem:null,em:'🪞',title:'对镜练习「成为克莱恩」',
+    sub:'照着原身记忆里的语气、小动作与握笔姿势，把这具身体练到不必思考。这是藏，不是演——它能压低暴露风险，却换不来多少消化。',
+    g:{acting:2},sus:-9,
+    diary:'我对着镜子练了半宿怎么笑、怎么叫「班森」、怎么把杯子放回原来的位置。镜子里的年轻人越来越像他，越来越不像我。我不确定该松一口气，还是该害怕。'},
+  blackthorn:{mem:'forensic',em:'🔍',title:'用「刑侦逻辑」还原现场',
+    sub:'血迹方向、时间线、谁先碰过桌上的东西——这套思路不属于这个时代。',
+    g:{acting:6,gold:6},atr:{学识:1,灵感:1},sus:4,mat:'黑荆棘档案',
+    diary:'我蹲下来看血迹的走向，差点脱口说「这不合时间线」，又硬生生咽回去。邓恩在玻璃窗后看了我一眼。这个时代没有现场勘查，我得学会把懂得的东西，装成直觉。'},
+  chanis:{mem:'chemistry',em:'⚗️',title:'用「化学常识」判断异动',
+    sub:'封印物的躁动伴随气味与金属变色。先分辨是反应，还是诅咒。',
+    g:{acting:7,mad:-2},atr:{学识:1,意志:1},sus:3,
+    diary:'我闻到一股类似臭氧的辛辣，铜扣泛出青绿。老尼尔低声念起祷文，我却先在心里写了一张反应式。两个世界解释同一件事，谁也不服谁。'},
+  church:{mem:'skeptic',em:'🕯️',title:'以「无神论者的清醒」旁观告解',
+    sub:'你不期待回应，于是不容易被低语牵着走。但别让神父看出你毫无敬畏。',
+    g:{acting:5,mad:-6},atr:{意志:2},sus:2,
+    diary:'所有人低头时，我在看穹顶的结构。不是不敬——我只是知道，抬头的人更容易看清梁上有没有东西。信与不信，在这里都是一件需要藏好的私事。'},
+  univ:{mem:'history',em:'📜',title:'用「史学训练」对照禁书年代',
+    sub:'同一段历史在不同钞本里差了三年。被删去的地方，往往才是正文。',
+    g:{acting:8},atr:{学识:2},sus:2,mat:'古老书页',
+    diary:'三个版本，同一场战役，纪年差了三年。我几乎要笑出来——这种笨拙的删改，我太熟悉了。合上书时手指有点凉：原来这个世界，也有人怕被翻旧账。'},
+  east:{mem:'statistics',em:'🎲',title:'用「概率与期望」给黑市定价',
+    sub:'他喊的价、他愿意等的时长、他偷看巷口的频率，都是可算的信息。',
+    g:{gold:9,acting:4},atr:{学识:1,魅力:1},sus:1,mat:'变异蘑菇',
+    diary:'我没有还价，只是报了一个他几乎不可能拒绝的数。独眼贩子愣了愣，骂了句脏话，把试管推过来。数学是少数几个跨世界还讲道理的东西。'},
+  port:{mem:'medicine',em:'💉',title:'用「基础医学」处理货舱伤员',
+    sub:'先止血、再清创，煮沸过的布比祈祷更管用——但别当着水手的面这么说。',
+    g:{gold:5,acting:5},atr:{体魄:1,学识:1},sus:2,
+    diary:'我让他们烧开水，自己把伤口边缘洗净。船长问我跟谁学的，我说「书上看来的」。这句是真话，只是那本书，隔了一整个世界。'},
+};
+
+/* =====================================================================
+   活的世界 —— 小说是一个真实的世界
+   时间、天气、货币、账单、报纸、人物行程、势力与传闻各按自身规律流转，
+   不因玩家停在某个界面而暂停；玩家做过的事会在报纸与市井传闻中留下回声。
+   诚实边界：纪年 / 星期 / 天气 / 物价 / 新闻为游戏化整理（非原著逐日考据）；
+   货币换算、人物、组织、地理与时代名称沿用原著设定。
+   ===================================================================== */
+const ECONOMY={
+  poundToSoll:20, sollToPenny:12,   // 原著：1 金镑 = 20 苏勒 = 240 便士
+  dailyMeal:0.12,                    // 每日三餐 / 煤气 / 报纸，折合金镑
+  weeklyRent:1.25,                   // 房租：1 金镑 5 苏勒
+  weeklyWage:3.0,                    // 黑荆棘实习文员周薪
+  remittance:1.0,                    // 寄给班森与梅丽莎的家用
+  debtSuspicion:3,
+};
+const WEEKDAYS=['周一','周二','周三','周四','周五','周六','周日'];
+const WEATHERS=[
+  {em:'🌫️',name:'浓雾',desc:'雾把煤气灯晕成一团团黄斑，三步外看不清人',check:-0.03,news:'码头船期延后，报童在雾里吆哑了嗓子'},
+  {em:'🌧️',name:'细雨',desc:'细雨把石板路洗得发亮，马车驶过溅起细泥',check:-0.02,news:'雨具与煤价略涨'},
+  {em:'☁️',name:'阴',desc:'云层压得很低，白昼像没完全醒',check:0,news:'市面如常'},
+  {em:'🌤️',name:'放晴',desc:'久违的日光照进廷根的灰街',check:0.02,news:'东区集市提前开市，人流比往日密'},
+  {em:'⛈️',name:'雷暴',desc:'雷声在屋顶上滚过，窗玻璃跟着颤',check:-0.05,news:'风暴之主教会呼吁渔船暂勿出港'},
+  {em:'🌨️',name:'雨夹雪',desc:'细雪落进雨里，落地即化',check:-0.03,news:'救济所门前排起了长队'},
+];
+const FESTIVALS={1:'月始市集 · 房租到期',15:'圣堂大弥撒',30:'结薪日'};
+
+// 独立于玩家流转的世界事件：每日期一条，介入与否会改写「下期续报」
+const WORLD_EVENTS=[
+  {id:'w01',tag:'政局',title:'下议院就谷物税展开二读辩论',body:'贝克兰德各报连日刊载议员发言，东区面包铺已贴出调价告示。',follow:'谷物税案进入三读。',join:'你在旁听席记下几组数字，忽然读懂了这座城怎样被账本推动。',g:{acting:3,gold:1},m:1,atr:{学识:1},fac:'nighthawk'},
+  {id:'w02',tag:'教会',title:'黑夜女神圣堂钟楼启动修缮',body:'脚手架搭了半面墙，礼拜改在侧厅举行，告解室前排起长队。',follow:'钟楼修缮募得足额捐款。',join:'你替工人扶了一次梯子，换来一句关于夜间钟声的闲谈。',g:{acting:4},m:0,atr:{体魄:1},fac:'church'},
+  {id:'w03',tag:'航运',title:'迷雾海货船「白冠号」延期靠岸',body:'港务局称风浪所致，船上载有来自南大陆的香料与一批不明木箱。',follow:'白冠号于三日后抵港。',join:'你在码头帮着核对货单，记下了几个不在册的箱号。',g:{acting:4,gold:2},m:2,atr:{灵感:1},fac:'tarot'},
+  {id:'w04',tag:'市井',title:'廷根市政厅拟增装煤气路灯',body:'东区居民担心加税，商会则称夜间盗窃已减少三成。',follow:'首批路灯在码头街点亮。',join:'你数了数新旧灯柱的间距，发现有一段刻意留了暗处。',g:{acting:3},m:1,atr:{灵感:1},fac:'nighthawk'},
+  {id:'w05',tag:'非凡',title:'东区又一起夜间失踪案',body:'警方称当事人或自行离城；值夜者未对外置评。',follow:'失踪案仍无线索。',join:'你在巷口看见不该在那里的痕迹，没有声张，只把它记进本子。',g:{acting:5},m:3,atr:{灵感:1},fac:'nighthawk'},
+  {id:'w06',tag:'学界',title:'廷根大学举办罗塞尔笔记专题讲座',body:'历史系公开陈列若干复刻手稿，入场券一苏勒。',follow:'讲座笔记被抄录数份流入黑市。',join:'你抄下几行不像这个时代的公式，指尖停了一瞬。',g:{acting:4},m:2,atr:{学识:1},fac:'tarot'},
+  {id:'w07',tag:'铁路',title:'贝克兰德—廷根线调整冬季时刻表',body:'三等车厢票价维持不变，货运加开两班。',follow:'新时刻表自下周一起施行。',join:'你在时刻表边角算出一段无人认领的空档。',g:{acting:3,gold:1},m:0,atr:{学识:1},fac:'nighthawk'},
+  {id:'w08',tag:'劳工',title:'印刷厂排字工要求缩短夜班',body:'厂方称订单积压，双方约定在市政厅调解。',follow:'调解达成，夜班缩短半个时辰。',join:'你替一位不识字的工人念完了调解书。',g:{acting:4},m:0,atr:{魅力:1},fac:'aurora'},
+  {id:'w09',tag:'上流',title:'霍尔伯爵府举办春季舞会',body:'贝克兰德社交版用半版篇幅描写宾客衣饰。',follow:'舞会上一位小姐的失物启事见报。',join:'你只是从铁门外经过，却记住了门口那辆马车的纹章。',g:{acting:3,gold:1},m:0,atr:{魅力:1},fac:'tarot'},
+  {id:'w10',tag:'医事',title:'东区诊所收治数名热病患者',body:'院方称与饮水有关，已请市政厅查验水井。',follow:'涉事水井被封闭。',join:'你提醒他们把水煮沸再用，被当成了一句外行话。',g:{acting:4},m:1,atr:{学识:1},fac:'church'},
+  {id:'w11',tag:'海外',title:'因蒂斯与鲁恩边境贸易谈判重启',body:'双方就谷物与机械关税各执一词，商会密切关注汇率。',follow:'谈判暂缓，金镑对因蒂斯法郎微升。',join:'你从汇率表里看出一场还没发生的风波。',g:{acting:3,gold:2},m:0,atr:{学识:1},fac:'nighthawk'},
+  {id:'w12',tag:'教会',title:'风暴之主教会为海难遗属募捐',body:'圣堂门口摆了长桌，水手家属逐一登记。',follow:'募捐名录刊于本报第四版。',join:'你放下几枚便士，没有留名。',g:{acting:3,gold:-1},m:0,atr:{意志:1},fac:'church'},
+  {id:'w13',tag:'黑市',title:'有人在东区兜售「封印物残片」',body:'识货者称多半是赝品，仍有买主愿意出高价。',follow:'残片被证实为仿造。',join:'你捏了捏那片东西，灵性没有回应——便放下了。',g:{acting:4},m:3,atr:{灵感:1},fac:'aurora'},
+  {id:'w14',tag:'报业',title:'《贝克兰德时报》增设廷根通讯员',body:'启事称「凡本地异闻，一经采用，酬三苏勒」。',follow:'首篇本地通讯见于第三版。',join:'你投了一则没有署名的短讯。',g:{acting:3,gold:1},m:0,atr:{魅力:1},fac:'nighthawk'},
+  {id:'w15',tag:'隐秘',title:'东区出现极光会传单',body:'传单印着倒十字与晦涩祷文，教会劝告信徒勿拾。',follow:'传单被清扫，仍有抄本流传。',join:'你读了两行就把它折起来——有些句子不该读完。',g:{acting:4},m:4,atr:{意志:1},fac:'aurora'},
+  {id:'w16',tag:'公告',title:'黑荆棘安保公司补录一名实习文员',body:'要求通读写、能值夜班，周薪面议，退伍者优先。',follow:'补录名额已有人应征。',join:'你在公告前站了很久，想起了自己那份还没领过的薪水。',g:{acting:3},m:0,atr:{意志:1},fac:'nighthawk'},
+  {id:'w17',tag:'天候',title:'大雾封港，廷根港务局挂出停航旗',body:'数十条船泊在雾里，卸货工人临时散去。',follow:'雾散后船队陆续离港。',join:'你在码头听了一整夜的雾笛。',g:{acting:3},m:1,atr:{灵感:1},fac:'tarot'},
+  {id:'w18',tag:'古物',title:'密修会委托拍卖一批第四纪出土器物',body:'目录含铜镜、楔形泥板与一枚无铭戒指，鉴定意见含糊。',follow:'拍卖因「来源待考」延期。',join:'你隔着玻璃看了那枚戒指一眼，转身就走。',g:{acting:5},m:3,atr:{灵感:1},fac:'rose'},
+];
+
+const FACTIONS=[
+  {id:'nighthawk',name:'值夜者 · 黑荆棘',em:'🌙',desc:'官方非凡机构，镇守廷根，审视每一个异常'},
+  {id:'church',name:'圣堂教会',em:'⛪',desc:'正教的注视、告解与庇护'},
+  {id:'tarot',name:'塔罗会',em:'🔮',desc:'灰雾之上，以「愚者」之名召集的信众'},
+  {id:'aurora',name:'极光会',em:'🌅',desc:'在东区散发传单的激进组织'},
+  {id:'rose',name:'玫瑰学派',em:'🌹',desc:'魔女与欢愉的暗影，最好只远远看着'},
+];
+// 人物各有日程：不因玩家来或不来而改变
+const NPC_SCHEDULE=[
+  {name:'邓恩·史密斯',em:'🧥',loc:'blackthorn',locName:'黑荆棘安保公司',days:[0,2,4,6],note:'在整理值夜卷宗，桌上搁着凉透的咖啡'},
+  {name:'老尼尔',em:'📜',loc:'blackthorn',locName:'黑荆棘安保公司',days:[1,3,5],note:'守着草药柜，愿意教人分辨安神草'},
+  {name:'伦纳德·米切尔',em:'🌹',loc:'chanis',locName:'查尼斯门',days:[0,3,6],note:'倚着门框念诗，像在等谁'},
+  {name:'奥黛丽·霍尔',em:'💎',loc:'church',locName:'圣堂',days:[6],note:'随家人来做礼拜，戴着一顶新帽子'},
+  {name:'阿尔杰·威尔森',em:'🌊',loc:'port',locName:'码头',days:[1,4],note:'船刚靠岸，正与水手核对货单'},
+  {name:'佛尔思·沃尔',em:'📚',loc:'univ',locName:'廷根大学',days:[2,5],note:'在图书馆翻旧报，替小说找素材'},
+  {name:'圣堂教会',em:'⛪',loc:'church',locName:'圣堂',days:[6],note:'礼拜日开放，告解室前排着队'},
+  {name:'因斯·赞格威尔',em:'🔥',loc:'east',locName:'东区贫民窟',days:[3],note:'有人见过一个相貌相似的人，最好别深究'},
+];
+// 玩家行为在「世界眼中」的第三人称措辞
+const LOC_ECHO={
+  home:'深夜仍亮着灯，窗帘后的人影久坐不动',
+  blackthorn:'随值夜者出入黑荆棘，衣角沾了灰',
+  chanis:'在查尼斯门外停留了太久',
+  church:'独自在圣堂告解室坐了很久',
+  univ:'从廷根大学禁书区借走一册旧书',
+  east:'于东区黑市与人低声议价',
+  port:'在码头与一名外港水手交谈',
+  tarot:'无人见其行踪，灰雾却翻涌了一夜',
+};
+// 22 途径序列 9 名称的核对状态（诚实标注，不冒称考据定论）
+const PATH_NOTES={
+  fool:{s:'核对',n:'序列9 占卜家 · 本游戏完整真实 10 序列'},
+  door:{s:'核对',n:'序列9 学徒 · 本游戏完整真实 10 序列'},
+  error:{s:'核对',n:'序列9 偷盗者 · 本游戏完整真实 10 序列'},
+  visionary:{s:'核对',n:'序列9 观众 · 序列0 空想家'},
+  arbiter:{s:'核对',n:'序列9 仲裁人 · 序列0 审判者'},
+  black:{s:'核对',n:'序列9 律师 · 序列0 黑皇帝'},
+  whitetower:{s:'核对',n:'序列9 阅读者 · 序列0 白塔'},
+  twilight:{s:'核对',n:'序列9 战士 · 序列0 黄昏巨人'},
+  death:{s:'核对',n:'序列9 收尸人（旧版误作通灵者，已修正）· 序列0 死神'},
+  war:{s:'差异',n:'「战士」途径序列0 归属有战神 / 黄昏巨人两种整理口径'},
+  tyrant:{s:'核对',n:'序列9 水手 · 序列0 暴君'},
+  abyss:{s:'差异',n:'深渊途径序列9 为「罪犯」；「被缚者」归属另有整理口径'},
+  demoness:{s:'核对',n:'序列9 刺客（旧版误作魔女，已修正）· 序列0 原初魔女'},
+  redpriest:{s:'差异',n:'序列9 猎人 · 序列0 红祭司；原著与「猎人」条同源'},
+  dark:{s:'核对',n:'序列9 不眠者（旧版误作隐者）· 序列0 黑暗'},
+  hunter:{s:'差异',n:'序列9 猎人 · 序列0 红祭司；与「红祭司」条同源'},
+  mother:{s:'核对',n:'序列9 耕种者 · 序列0 母亲'},
+  moon:{s:'核对',n:'序列9 药师（旧版误作收尸人）· 序列0 月亮'},
+  sun:{s:'核对',n:'序列9 歌颂者 · 序列0 太阳'},
+  chained:{s:'整理',n:'「异种」为游戏整理条目，原著 22 途径中无此名'},
+  prisoner:{s:'核对',n:'序列9 囚犯 · 序列0 被缚者 / 深渊（归属有分歧）'},
+  hermit:{s:'核对',n:'序列9 窥秘人 · 序列0 隐者'},
+};
+
+/* ---- 活的世界 · 计算与流转 ---- */
+function worldHash(n,salt){ return (((n*9301+(salt||49297))%233280)+233280)%233280/233280; }
+function worldDate(day){
+  const d=Math.max(1,Math.floor(day||1)), idx=d-1;
+  const y=1349+Math.floor(idx/360), within=idx%360;
+  const m=Math.floor(within/30)+1, md=within%30+1, wd=idx%7;
+  const w=WEATHERS[Math.floor(worldHash(d,77)*WEATHERS.length)%WEATHERS.length];
+  const fest=FESTIVALS[md]||(wd===6?'礼拜日':null);
+  return {y,m,md,wd,weekday:WEEKDAYS[wd],weather:w,festival:fest,
+    label:'第五纪 '+y+' 年 '+m+' 月 '+md+' 日 · '+WEEKDAYS[wd]};
+}
+function fmtMoney(g){
+  const neg=g<0, total=Math.round(Math.abs(g||0)*ECONOMY.poundToSoll*ECONOMY.sollToPenny);
+  const pound=Math.floor(total/240), soll=Math.floor((total%240)/12), penny=total%12;
+  let s=pound?pound+' 金镑':'';
+  if(soll) s+=(s?' ':'')+soll+' 苏勒';
+  if(penny) s+=(s?' ':'')+penny+' 便士';
+  if(!s) s='0 便士';
+  return (neg?'欠 ':'')+s;
+}
+function ensureWorld(){
+  if(!G) return;
+  if(typeof G.gold!=='number'||!isFinite(G.gold)) G.gold=0;
+  if(!Array.isArray(G.echoes)) G.echoes=[];
+  if(!Array.isArray(G.ledger)) G.ledger=[];
+  if(!Array.isArray(G.worldLog)) G.worldLog=[];
+  if(!G.relations||typeof G.relations!=='object') G.relations={};
+  if(!G.factions||typeof G.factions!=='object') G.factions={};
+  if(!G.worldFlags||typeof G.worldFlags!=='object') G.worldFlags={};
+  if(!G.billState||typeof G.billState!=='object') G.billState=null;
+  if(typeof G.debt!=='number') G.debt=0;
+}
+function weekIndex(){ return Math.floor((Math.max(1,G.day)-1)/7); }
+function billState(){
+  ensureWorld(); const wk=weekIndex();
+  if(!G.billState||G.billState.week!==wk) G.billState={week:wk,paid:false,remitted:false,skipped:false};
+  return G.billState;
+}
+function relation(k,n){ if(!k) return; ensureWorld(); G.relations[k]=Math.max(-100,Math.min(100,(G.relations[k]||0)+n)); }
+function faction(k,n){ if(!k) return; ensureWorld(); G.factions[k]=Math.max(-100,Math.min(100,(G.factions[k]||0)+n)); }
+function addLedger(t){ ensureWorld(); G.ledger.unshift({day:G.day,text:t}); if(G.ledger.length>24) G.ledger.length=24; }
+function addEcho(act){ ensureWorld(); if(!act) return; G.echoes.unshift({day:G.day,act}); if(G.echoes.length>12) G.echoes.length=12; }
+function echoVoice(){
+  const s=(G.origin&&G.origin.suspicion)||0, nh=(G.factions&&G.factions.nighthawk)||0;
+  if(s>=70||nh<=-20) return '水仙花街 2 号那位姓莫雷蒂的年轻住客';
+  if(s>=40) return '一名与黑荆棘新晋文员身形相符的年轻人';
+  if(s>=20&&nh<0) return '有人（据说是黑荆棘的人）';
+  return '有人';
+}
+// 传闻句子拼接：回声若是自带主语的完整句（如「房东在门上贴了字条」），就不再叠加主语，
+// 避免出现「有人房东…」「有人有人见其…」这类错句。
+function echoSentence(e){
+  if(!e) return '';
+  const a=e.act||'';
+  if(/^(有人|房东|报童|值夜者|教会|神父|一位|一名|水仙花街|邓恩|伦纳德|老尼尔)/.test(a)) return a;
+  // 本身含否定的句子（「无人见其行踪…」）不能再加主语，改用传闻口吻
+  if(/^(无人|不见|未有人|据传|有传闻)/.test(a)) return '有传闻称：'+a;
+  return echoVoice()+a;
+}
+function todayEvent(day){ const n=WORLD_EVENTS.length; return WORLD_EVENTS[(((day-1)%n)+n)%n]; }
+function makeNews(day){
+  ensureWorld();
+  const wd=worldDate(day), ev=todayEvent(day), prev=todayEvent(day-1);
+  const sus=(G.origin&&G.origin.suspicion)||0, last=G.echoes[0], flag=G.worldFlags[prev.id];
+  const follow=flag==='joined'
+    ? '续报：'+prev.title+'一事，据称已有热心市民向值夜者递了线索，案情有了新方向。'
+    : (flag==='passed' ? '续报：'+prev.title+'一事终归沉寂，报馆已撤下版面。'
+       : '续报：'+prev.title+'一事仍在议论，尚无定论。');
+  const rumor=last
+    ? echoSentence(last)+'。'+(sus>=70?'已有不止一人说，那位年轻人「不像他自己」。':(sus>=40?'有人开始打听他的来历。':'多数人只当是雾里的闲话。'))
+    : '近日无关于你的闲话。';
+  return [
+    {c:'本市要闻',em:'📰',t:'<b>'+ev.title+'</b>。'+ev.body+' <span class="mini">'+follow+'</span>'},
+    {c:'天气与市情',em:wd.weather.em,t:wd.weather.name+'。'+wd.weather.desc+'。'+wd.weather.news+'。'},
+    {c:'市井传闻',em:'🕯️',t:'<span class="echo">'+rumor+'</span>'},
+    {c:'分类广告',em:'🪙',t:'黑市行情：非凡材料今日'+(wd.wd===1?'略降':(wd.wd===5?'略涨':'平稳'))+'；招聘：黑荆棘安保公司诚聘文员，周薪 '+fmtMoney(ECONOMY.weeklyWage)+'。'},
+  ];
+}
+function advanceDay(reason, echoAct, tag){
+  ensureWorld();
+  const prevBs=Object.assign({},billState()), prevWk=weekIndex();
+  G.day++;
+  addEcho(echoAct||reason||'在城中度过一日');
+  if(tag==='blackthorn'||tag==='chanis') faction('nighthawk',1);
+  else if(tag==='church') faction('church',1);
+  else if(tag==='tarot') faction('tarot',2);
+  else if(tag==='east') faction('aurora',1);
+  else if(tag==='port') faction('tarot',1);
+  if(((G.origin&&G.origin.suspicion)||0)>=60 && tag!=='home') faction('nighthawk',-1);
+  // 跨周：上周未结则留下催租痕迹（不自动惩罚挂机，暴露只在主动拖欠时产生）
+  if(weekIndex()!==prevWk){
+    if(!prevBs.paid && !prevBs.skipped){
+      G.debt=(G.debt||0)+ECONOMY.weeklyRent;
+      relation('班森',-2); relation('梅丽莎',-2); faction('nighthawk',-1);
+      addLedger('上周账单未结，房东把字条贴在了门上。');
+      addEcho('房东在门上贴了催租字条');
+    } else addLedger('新的一周开始，本周账单已送达。');
+    G.billState={week:weekIndex(),paid:false,remitted:false,skipped:false};
+  }
+}
+
+/* ========================= 状态 ========================= */
+let G=null;
+function newGame(pathway,intro){
+  const i=intro||{};
+  const job=MODERN_JOBS.find(j=>j.id===i.job)||MODERN_JOBS[0];
+  const react=PRO_REACTS.find(r=>r.id===i.react)||PRO_REACTS[0];
+  const attrs={灵性:4,灵感:6,体魄:5,意志:6,学识:7,魅力:5};
+  for(const k in (job.attrs||{})) attrs[k]=(attrs[k]||5)+job.attrs[k];
+  for(const k in (react.attrs||{})) attrs[k]=(attrs[k]||5)+react.attrs[k];
+  return {
+    pathway:pathway, seq:9, acting:0, actingNeed:30,
+    madness:0, gold:12, day:1,
+    attrs:attrs,
+    origin:{
+      modernName:i.name||'你', job:job.id, jobName:job.name,
+      bodyName:ORIGIN.body, bodyEn:ORIGIN.bodyEn, address:ORIGIN.address, world:ORIGIN.world,
+      memories:(i.mems||[]).slice(0,2), react:react.id,
+      suspicion:Math.max(0,react.sus||0), frag:0,
+    },
+    inv:{'星水晶':2,'安神草':2,'水银':1},
+    storyFlags:{}, visited:{}, tarotUnlocked:false, tarotCount:0,
+    diary:[], rpPool:[],
+    echoes:[{day:1,act:'在水仙花街 2 号醒来，此后行止与从前略有不同'}],
+    ledger:[{day:1,text:'黑荆棘安保公司录用为实习文员，周薪 '+fmtMoney(ECONOMY.weeklyWage)+'；本周房租待结。'}],
+    worldLog:[], relations:{}, factions:{}, worldFlags:{}, debt:0,
+    billState:{week:0,paid:false,remitted:false,skipped:false},
+  };
+}
+function normalizeG(){
+  if(!G) return;
+  if(typeof G.madness!=='number') G.madness=0;
+  if(typeof G.gold!=='number') G.gold=12;
+  if(typeof G.day!=='number') G.day=1;
+  // 旧档 / 异常存档兜底：避免 curSeq() 为 undefined、消化度 NaN% 导致整页崩溃
+  if(typeof G.seq!=='number'||!isFinite(G.seq)) G.seq=9;
+  G.seq=Math.max(0,Math.min(9,Math.round(G.seq)));
+  if(typeof G.acting!=='number'||!isFinite(G.acting)) G.acting=0;
+  if(typeof G.actingNeed!=='number'||!isFinite(G.actingNeed)||G.actingNeed<=0) G.actingNeed=30+(9-G.seq)*14;
+  if(typeof G.tarotCount!=='number') G.tarotCount=0;
+  if(typeof G.tarotUnlocked!=='boolean') G.tarotUnlocked=!!G.tarotUnlocked;
+  G.madness=Math.max(0,Math.min(100,G.madness));
+  if(typeof G.gold!=='number'||!isFinite(G.gold)) G.gold=12;
+  if(!G.inv) G.inv={};
+  if(!G.storyFlags) G.storyFlags={};
+  if(!G.visited) G.visited={};
+  if(!Array.isArray(G.diary)) G.diary=[];
+  if(!Array.isArray(G.rpPool)) G.rpPool=[];
+  if(!G.attrs||typeof G.attrs!=='object') G.attrs={灵性:4,灵感:6,体魄:5,意志:6,学识:7,魅力:5};
+  ATTR_KEYS.forEach(k=>{ if(typeof G.attrs[k]!=='number') G.attrs[k]=5; });
+  if(!PATHS[G.pathway]) G.pathway='fool';
+  // 旧档兼容：补齐穿越者档案
+  if(!G.origin||typeof G.origin!=='object') G.origin={};
+  const o=G.origin;
+  if(!o.modernName) o.modernName='你';
+  if(!o.job) o.job='clerk';
+  if(!o.jobName) o.jobName=MODERN_JOBS[0].name;
+  if(!o.bodyName) o.bodyName=ORIGIN.body;
+  if(!o.bodyEn) o.bodyEn=ORIGIN.bodyEn;
+  if(!o.address) o.address=ORIGIN.address;
+  if(!o.world) o.world=ORIGIN.world;
+  if(!Array.isArray(o.memories)) o.memories=[];
+  if(!o.react) o.react='calm';
+  if(typeof o.suspicion!=='number') o.suspicion=0;
+  if(typeof o.frag!=='number') o.frag=0;
+  // 活的世界：旧档补齐（读档后世界照常运转）
+  if(typeof G.gold!=='number'||!isFinite(G.gold)) G.gold=0;
+  if(!Array.isArray(G.echoes)) G.echoes=[];
+  if(!Array.isArray(G.ledger)) G.ledger=[];
+  if(!Array.isArray(G.worldLog)) G.worldLog=[];
+  if(!G.relations||typeof G.relations!=='object') G.relations={};
+  if(!G.factions||typeof G.factions!=='object') G.factions={};
+  if(!G.worldFlags||typeof G.worldFlags!=='object') G.worldFlags={};
+  if(!G.billState||typeof G.billState!=='object') G.billState=null;
+  if(typeof G.debt!=='number') G.debt=0;
+  if(G.echoes.length===0) G.echoes=[{day:G.day,act:'在水仙花街 2 号醒来，此后行止与从前略有不同'}];
+}
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(G)); }catch(e){} }
+function load(){ try{ const s=localStorage.getItem(SAVE_KEY); if(s){ G=JSON.parse(s); normalizeG(); return true; } }catch(e){} return false; }
+function wipeSave(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} modalLocked=false; G=null; resetIntro(); renderPrologue(); }
+
+/* ========================= 途径/序列 helper ========================= */
+function seqsOf(pw){ return PATHS[pw].seqs; }
+function curSeq(){ return PATHS[G.pathway].seqs[9-G.seq]; }
+function nextSeq(){ if(G.seq<=0) return null; return PATHS[G.pathway].seqs[9-(G.seq-1)]; }
+function has(mats){ for(const k in mats){ if((G.inv[k]||0) < mats[k]) return false; } return true; }
+function hasObj(arr){ return arr.every(m=>(G.inv[m]||0)>=1); }
+function addInv(o){ for(const k in o){ G.inv[k]=(G.inv[k]||0)+o[k]; if(G.inv[k]<=0) delete G.inv[k]; } }
+function takeInv(o){ for(const k in o){ G.inv[k]=(G.inv[k]||0)-o[k]; if(G.inv[k]<=0) delete G.inv[k]; } }
+
+/* ---- 晋升材料闭环：探索夺取 / 黑市保底采购 ---- */
+function mainMatName(){ const n=nextSeq(); return n?n.rec.main:null; }
+function mainMatPrice(){ const n=nextSeq(); return n?(30+(9-n.seq)*10):0; } // 序列8=40 金镑，越高序列越贵
+const AUX_PRICE=10;
+function grantMainMat(){
+  const m=mainMatName(); if(!m) return null;
+  if((G.inv[m]||0)>=1){ G.gold+=10; return 'duplicate'; } // 已持有则折成金镑，避免背包堆废料
+  G.inv[m]=1; return m;
+}
+function buyMainMat(){
+  const m=mainMatName(); if(!m) return;
+  if((G.inv[m]||0)>=1){ toast('已持有该序列非凡特性'); return; }
+  const price=mainMatPrice();
+  if(G.gold<price){ toast('金镑不足，需 '+price+' 金镑'); return; }
+  G.gold-=price; G.inv[m]=1;
+  save(); updateTop(); renderView(); toast('重金购得 '+m);
+}
+function buyAuxMat(i){
+  const n=nextSeq(); if(!n) return;
+  const m=n.rec.aux[i]; if(!m) return;
+  if((G.inv[m]||0)>=1){ toast('已持有 '+m); return; }
+  if(G.gold<AUX_PRICE){ toast('金镑不足，需 '+AUX_PRICE+' 金镑'); return; }
+  G.gold-=AUX_PRICE; G.inv[m]=1;
+  save(); updateTop(); renderView(); toast('购入 '+m);
+}
+
+function optGainTxt(o){
+  // 只列出「确定到手」的所得；检定成功才给的奖励由调用方单独以 {g:win,mat,char,main} 传入显示，
+  // 避免玩家在选项按钮上看到失败时拿不到的物品。
+  let t=[]; if(o.g&&o.g.acting) t.push('扮演 +'+o.g.acting); if(o.g&&o.g.gold) t.push('金镑 '+(o.g.gold>0?'+':'')+o.g.gold);
+  if(o.g&&o.g.mad) t.push('疯狂 '+(o.g.mad>0?'+':'')+o.g.mad);
+  if(o.atr) for(const k in o.atr) t.push(ATTR_META[k].name+' +'+o.atr[k]);
+  if(o.mat) t.push(o.mat+'×1'); if(o.char) t.push(o.char+'×1');
+  if(o.main) t.push('『序列非凡特性』×1');
+  return t.join(' · ');
+}
+
+/* ========================= 角色属性 ========================= */
+const ATTR_META={
+  灵性:{name:'灵性',em:'🔮',desc:'神秘学力量之源，影响术式强度与施法。'},
+  灵感:{name:'灵感',em:'💡',desc:'感知异常与危险的直觉，探查类检定常用。'},
+  体魄:{name:'体魄',em:'💪',desc:'身体强度，抵抗创伤、侵蚀与封印物的冲击。'},
+  意志:{name:'意志',em:'🛡️',desc:'对抗疯狂与失神的精神防线，越高越不易失控。'},
+  学识:{name:'学识',em:'📚',desc:'仪式、历史、语言与封印的知识储备。'},
+  魅力:{name:'魅力',em:'🌟',desc:'社交、说服与影响他人的气质，塔罗会尤重。'},
+};
+const ATTR_KEYS=Object.keys(ATTR_META);
+function applyAttr(o){ if(!o) return; for(const k in o){ if(ATTR_META[k]){ G.attrs[k]=(G.attrs[k]||0)+o[k]; if(G.attrs[k]>20)G.attrs[k]=20; } } }
+
+/* ========================= 能力检定（绑定角色属性） ========================= */
+function abilityCheck(attrKey, diff){
+  const tier=9-G.seq; // 0(弱)~9(强) 序列等级加成
+  const av=(G.attrs && G.attrs[attrKey]!=null)?G.attrs[attrKey]:5; // 属性值
+  let chance=0.35 + av*0.03 + tier*0.03 - (diff||0)*0.12;
+  chance=Math.max(0.12,Math.min(0.95,chance));
+  return Math.random()<chance;
+}
+
+/* ========================= UI 基础 ========================= */
+function $(id){ return document.getElementById(id); }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1900); }
+function showModal(html){ $('modalBox').innerHTML=html; $('modal').classList.add('show'); }
+let modalLocked=false;  // 终局弹窗锁定：ESC / ✕ 都不可绕过结局
+function closeModal(){ if(modalLocked) return; $('modal').classList.remove('show'); }
+function restartGame(){ modalLocked=false; $('modal').classList.remove('show'); wipeSave(); }
+function gameOver(){
+  modalLocked=true;
+  const reason = G.madness>=100 ? '灵性彻底崩坏，你成为了自己最恐惧的"失控者"。' : '终局。';
+  showModal(`<span class="x" onclick="restartGame()">✕</span><h2>🌀 失控终局</h2>
+    <p class="lead">${reason}</p>
+    <p class="mini">你走到了 <b style="color:var(--gold)">${PATHS[G.pathway].name} · ${curSeq().name}</b>（序列 ${G.seq}），历 ${G.day} 日。</p>
+    <p class="mini">非凡者的路，从来伴着悬崖。这一局的愚行，且作下一局的镜。</p>
+    <div class="btn-row"><button class="btn primary" onclick="restartGame()">重开新局（重新选择途径）</button></div>`);
+}
+/* ========================= 身份暴露风险（穿越者独有的死法） ========================= */
+function suspLabel(){
+  const s=(G&&G.origin)?G.origin.suspicion:0;
+  if(s>=70) return {t:'岌岌可危',c:'susp-bad'};
+  if(s>=40) return {t:'已被留意',c:'susp-warn'};
+  return {t:'尚且安全',c:'susp-safe'};
+}
+function addSuspicion(n){
+  if(!G||!G.origin||!n) return;
+  const o=G.origin, before=o.suspicion||0;
+  o.suspicion=Math.max(0,Math.min(100,before+n));
+  if(o.suspicion>=100 && !G.storyFlags.exposed){
+    G.storyFlags.exposed=true; setTimeout(exposeEnd,450);
+  } else if(o.suspicion>=60 && before<60){
+    toast('⚠️ 有人开始留意你的异常 · 去灰雾之间对镜练习');
+  }
+}
+function exposeEnd(){
+  modalLocked=true;
+  const o=G.origin;
+  showModal(`<span class="x" onclick="restartGame()">✕</span><h2>🎭 身份暴露 · 终局</h2>
+    <p class="lead">不是魔药，也不是失控。压垮你的，是太多句「这个时代不该有的话」。</p>
+    <p class="mini">邓恩·史密斯把一份记录轻轻合上；伦纳德在门边停了很久，没有念诗。有人开始追问：<b>水仙花街那个年轻人，从哪一日起不再是原来的他</b>？<br>
+      教会稽查、密修会的眼线，或某个藏在灰雾之外的存在——总之，你借来的这具身体，终于被看穿了。</p>
+    <div class="soliloquy">我一直以为要防的是疯狂。原来最该藏好的，是「我记得另一个世界」这件事本身。</div>
+    <p class="mini">你以 <b style="color:var(--gold)">${o.modernName}</b> 之名，寄居于 <b>${o.bodyName}</b> 之身，走过 ${G.day} 日，抵达 ${PATHS[G.pathway].name} · ${curSeq().name}。<br>
+      身份暴露风险 100%。</p>
+    <div class="btn-row"><button class="btn primary" onclick="restartGame()">重新穿越（重开新局）</button></div>`);
+}
+function openHelp(){
+  showModal(`<span class="x" onclick="closeModal()">✕</span><h2>❔ 玩法与设定</h2>
+    <p class="lead">你不是这里的人。一次熄灯之后，你在 <b>${ORIGIN.world}</b> 的一间陌生公寓里醒来，镜中是 <b>${ORIGIN.body}</b> 的脸，脑中却还装着另一个世界的全部记忆。先走完<b>四步穿越序章</b>，再<b>自选一条非凡途径</b>（22 条任选），随后于廷根城地图上探索。</p>
+    <p class="mini">· <b>两段记忆</b>：现代职业与第一反应决定初始属性；序章挑选 2 项「现代认知」，此后在对应地点会多出一条<b style="color:var(--teal)">来自另一个世界</b>的专属解法。<br>
+    · <b>身份暴露</b>：用了不属于这个时代的思路、检定失手或扮演失格，都会累积暴露风险。满 100% 不是失控，而是<b>被看穿</b>——另一种终局。去「灰雾之间」对镜练习可降低风险。<br>
+    · <b>扮演法</b>：在情境/事件中"成为"你的序列、按守则行动，积累消化度——充分扮演可大幅压低晋升的疯狂。<br>
+    · <b>晋升</b>：配齐「序列非凡特性」与辅助材料即可饮下魔药，序列 9→0 逐级登临；扮演消化度满 100% 可把晋升疯狂压到四分之一，扮演不足亦可强饮，但疯狂增量 ×1.6。特性可在<b>晋升页黑市重金求购</b>，或于「查尼斯门 / 东区贫民窟」冒险剥离（需过属性检定、付出疯狂代价）；缺的辅料同样可在黑市补齐。<br>
+    · <b>疯狂</b>：每次动用/窥探/失格都会累积疯狂，满 100% 即失控终局。灰雾冥想、教会祈祷可消解。<br>
+    · <b>活的世界</b>：日期、星期、天气与节日按第五纪历法自行流转；<b>《廷根日报》</b>每日刊出与你无关的政局、市情与船期，也刊出<b>关于你的传闻</b>——身份暴露风险越高，措辞越指名道姓。周一的房租账单、黑荆棘周薪、寄给班森与梅丽莎的家用都要你亲手处理；值夜者、教会、塔罗会等势力会记住你做过的事。世界不等你，你留下的痕迹也不会消失。<br>
+    · <b>诚实说明</b>：这是「穿越者视角」的同人向游戏化演绎，序章与分支剧情为原创，不替代原著；22 途径名称与阵营完整还原，愚者/门/错误三途径为完整真实 10 序列，其余途径中间序列为游戏化整理占位（以原著为准）。</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal()">明白了</button></div>`);
+}
+
+/* ========================= 开局：穿越序章（四幕） ========================= */
+let intro={step:0,name:'',job:null,react:null,mems:[]};
+function resetIntro(){ intro={step:0,name:'',job:null,react:null,mems:[]}; }
+function escName(s){ return String(s||'').replace(/["<>]/g,'').slice(0,12); }
+function proChoose(kind,val){
+  if(kind==='job'){
+    const el=$('mname'); if(el&&el.value) intro.name=String(el.value).trim().slice(0,12);
+    intro.job=val; intro.step=1; renderPrologue(); return;
+  }
+  if(kind==='react'){ intro.react=val; intro.step=2; renderPrologue(); return; }
+  if(kind==='mem'){
+    const k=intro.mems.indexOf(val);
+    if(k>=0) intro.mems.splice(k,1);
+    else if(intro.mems.length<2) intro.mems.push(val);
+    renderPrologue(); return;
+  }
+  if(kind==='toFog'){ if(intro.mems.length===0) return; intro.step=3; renderPrologue(); return; }
+  if(kind==='back'){ intro.step=Math.max(0,intro.step-1); renderPrologue(); return; }
+  if(kind==='toPick'){ renderPick(); return; }
+}
+function proTopHide(){
+  const top=$('top'); if(top) top.classList.add('pre');
+  $('s-path').textContent='—'; $('s-seq').textContent='—'; $('s-day').textContent='—'; $('s-gold').textContent='—';
+  $('s-mad').style.width='0%'; $('s-madlbl').textContent='—';
+  const t=$('tabs'); if(t) t.innerHTML='';
+}
+function renderPrologue(){
+  const view=$('view'); view.innerHTML=''; curView='prologue'; proTopHide();
+  const hero=document.createElement('div'); hero.className='pro-hero';
+  const memNames=intro.mems.map(m=>{const x=MODERN_MEMORIES.find(y=>y.id===m);return x?x.em+x.name:'';}).filter(Boolean);
+  const nm=escName(intro.name)||'你';
+
+  if(intro.step===0){
+    hero.innerHTML=`<div class="pno">序 章 · 壹 / 肆</div><h1>熄 灭</h1>
+      <p class="lead">你记得的最后一件小事，是灯管闪了两下。</p>
+      <p>没有雷，没有车祸，也没有谁在耳边念出咒语。只是一阵极短的失重，像有人把书页轻轻翻了过去。<br>
+        再睁眼时，空气里有煤烟、旧纸和冷掉的红茶味——那不是你熟悉的任何一种气味。</p>
+      <div class="pro-quote">「我记得我是谁。可我不记得，这双手是谁的。」</div>
+      <p class="mini">先留下你在现代的名字，再选一个你曾是的身份。它会决定你带进这个世界的本事。</p>
+      <div class="pro-field"><label>你在现代的名字</label>
+        <input id="mname" maxlength="12" value="${escName(intro.name)}" placeholder="留空则记作「你」" /></div>
+      <div class="pro-cards">${MODERN_JOBS.map(j=>`<button class="pro-card" onclick="proChoose('job','${j.id}')">
+        <div class="pem">${j.em}</div><div class="pn2">${j.name}</div><div class="pd">${j.desc}</div>
+        <div class="pg">${j.note}</div></button>`).join('')}</div>`;
+  } else if(intro.step===1){
+    hero.innerHTML=`<div class="pno">序 章 · 贰 / 肆</div><h1>醒 来</h1>
+      <p class="lead">煤气灯咝咝作响。镜子里是一张二十二岁、陌生而苍白的脸。</p>
+      <p>记忆不是「涌进来」，更像是有人把另一个人二十二年的人生，粗暴地塞进你脑中，还留了一处整齐的缺口：<br>${ORIGIN.mystery}</p>
+      <div class="pro-meta">
+        <div class="row"><b>这具身体</b><span>${ORIGIN.body} · ${ORIGIN.age} · ${ORIGIN.job}</span></div>
+        <div class="row"><b>住处</b><span>${ORIGIN.address}</span></div>
+        <div class="row"><b>家人</b><span>${ORIGIN.family.map(f=>f.name+'（'+f.note.split('，')[0]+'）').join(' · ')}</span></div>
+        <div class="row"><b>时代</b><span>${ORIGIN.world}</span></div>
+        <div class="row"><b>而你</b><span>${nm} · ${(MODERN_JOBS.find(j=>j.id===intro.job)||MODERN_JOBS[0]).name}</span></div>
+      </div>
+      <p class="mini">楼下有人喊了他的名字。你的第一反应是——</p>
+      <div class="pro-cards">${PRO_REACTS.map(r=>`<button class="pro-card" onclick="proChoose('react','${r.id}')">
+        <div class="pem">${r.em}</div><div class="pn2">${r.name}</div><div class="pd">${r.desc}</div>
+        <div class="pg">${r.sus>0?('⚠ 第一声惊叫就露了破绽（暴露 +'+r.sus+'）'):('不露声色 · '+Object.keys(r.attrs).map(k=>ATTR_META[k].name+' +'+r.attrs[k]).join(' · '))}</div></button>`).join('')}</div>
+      <div class="btn-row"><button class="btn ghost" onclick="proChoose('back')">↩ 回到上一幕</button></div>`;
+  } else if(intro.step===2){
+    hero.innerHTML=`<div class="pno">序 章 · 叁 / 肆</div><h1>两 段 记 忆</h1>
+      <p class="lead">有些东西，这个世界还没有名字。</p>
+      <p>你带不来手机、钱包和身份证，只带来一整套看世界的方式。挑 <b style="color:var(--gold)">两样</b> 藏好——它们日后会在某些地方，给你一条别人想不到的路；也会让你更容易露出马脚。</p>
+      <div class="pro-cards">${MODERN_MEMORIES.map(m=>`<button class="pro-card${intro.mems.indexOf(m.id)>=0?' sel':''}" onclick="proChoose('mem','${m.id}')">
+        <div class="pem">${m.em}</div><div class="pn2">${m.name}</div><div class="pd">${m.desc}</div>
+        <div class="pg">将出现于 · ${m.where}</div></button>`).join('')}</div>
+      <p class="mini">已带走 ${intro.mems.length} / 2 项${memNames.length?('：'+memNames.join('、')):''}</p>
+      <div class="btn-row">
+        <button class="btn primary" ${intro.mems.length===0?'disabled':''} onclick="proChoose('toFog')">收好，睁开眼 →</button>
+        <button class="btn ghost" onclick="proChoose('back')">↩ 回到上一幕</button></div>`;
+  } else {
+    hero.innerHTML=`<div class="pno">序 章 · 肆 / 肆</div><h1>灰 雾</h1>
+      <p class="lead">在清醒与昏睡之间，你看见一片没有边际的灰。</p>
+      <p>灰雾深处悬着二十二个名字，像尚未翻开的牌。你忽然明白：这具身体原本要走的路已经断了，接下来的那一条，得由你自己挑。</p>
+      <div class="pro-quote">「我是一个来自异乡的客人。可既然借了他的命，就得把他的人生，好好演下去。」</div>
+      <div class="pro-meta">
+        <div class="row"><b>现代之名</b><span>${nm}</span></div>
+        <div class="row"><b>寄居之身</b><span>${ORIGIN.body}（${ORIGIN.bodyEn}）</span></div>
+        <div class="row"><b>携带认知</b><span>${memNames.join('、')||'无'}</span></div>
+        <div class="row"><b>你的处境</b><span>无人可证你是谁，也无人允许你不是他。</span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="proChoose('toPick')">选择非凡途径 →</button>
+        <button class="btn ghost" onclick="proChoose('back')">↩ 回到上一幕</button></div>`;
+  }
+  view.appendChild(hero);
+  const foot=document.createElement('div'); foot.className='card';
+  foot.innerHTML=`<p class="mini" style="margin:0">🕯️ 本作是「现代灵魂穿越进诡秘世界」的同人向游戏化演绎：原身、家人与时代沿用原著背景作舞台，序章及后续分支剧情均为原创，不替代原著。二十二途径名册与三条完整序列在图鉴中如实标注。</p>`;
+  view.appendChild(foot);
+}
+
+/* ========================= 开局：途径选择 ========================= */
+let pickSel=null;
+function renderPick(){
+  const view=$('view'); view.innerHTML=''; curView='pick'; proTopHide();
+  const nm=escName(intro.name)||'你';
+  const hero=document.createElement('div'); hero.className='path-hero';
+  hero.innerHTML=`<h1>诡秘之主 · 序列之路</h1>
+    <p>灰雾之上，二十二个名字静静悬着，像尚未翻开的牌。</p>
+    <p>你是 <b style="color:var(--teal)">${nm}</b>——来自另一个世界的灵魂，如今寄居于 <b>${ORIGIN.body}</b> 的身体。<br>
+      请选择你将要行走的<b style="color:var(--gold)">非凡途径</b>：它将决定你的能力、守则，以及这借来的一生如何收场。</p>`;
+  view.appendChild(hero);
+
+  Object.keys(CAMPS).forEach(campKey=>{
+    const camp=CAMPS[campKey];
+    const title=document.createElement('div'); title.className='camp-title'; title.textContent=camp.name;
+    view.appendChild(title);
+    const g2=document.createElement('div'); g2.className='path-grid';
+    camp.paths.forEach(pw=>{
+      const p=PATHS[pw];
+      const c=document.createElement('div'); c.className='path-card'+(pickSel===pw?' sel':'');
+      c.innerHTML=`<div class="pe">${p.emoji}</div><div class="pn">${p.name}</div>
+        <div class="pc">${p.en}</div>
+        <span class="pill ${p.real?'':'gen'}">${p.real?'完整序列':'整理占位'}</span>`;
+      c.onclick=()=>{ pickSel=pw; renderPick(); };
+      g2.appendChild(c);
+    });
+    view.appendChild(g2);
+  });
+  const bar=document.createElement('div'); bar.className='btn-row'; bar.style.justifyContent='center';
+  const btn=document.createElement('button'); btn.className='btn primary'; btn.textContent='确认命运 · 踏入廷根 →';
+  btn.disabled=!pickSel;
+  btn.onclick=()=>{
+    if(!pickSel) return;
+    G=newGame(pickSel,intro);
+    G.diary.unshift({day:1,seq:curSeq().name,title:'穿越 · 醒来',fit:'ok',
+      opt:'走上 '+PATHS[pickSel].name+' 途径',
+      diary:'我在 '+ORIGIN.address+' 醒来，镜子里是 '+ORIGIN.body+' 的脸。灰雾之上悬着二十二个名字，我选了「'+PATHS[pickSel].name+'」。从今天起，得学会用别人的手，过自己的日子。'});
+    save(); curView='status'; buildTabs(); renderView();
+    toast('以 '+PATHS[pickSel].name+' 之名，睁开眼');
+  };
+  bar.appendChild(btn);
+  const b2=document.createElement('button'); b2.className='btn ghost'; b2.textContent='↩ 重走穿越序章';
+  b2.onclick=()=>{ resetIntro(); renderPrologue(); };
+  bar.appendChild(b2); view.appendChild(bar);
+}
+function backToPick(){ wipeKeepFlag(); resetIntro(); renderPrologue(); }
+function wipeKeepFlag(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} G=null; }
+
+/* ========================= 顶部 Tabs ========================= */
+const TABS=[
+  {id:'status',name:'档案'},
+  {id:'map',name:'诡秘世界'},
+  {id:'world',name:'今日世界'},
+  {id:'promote',name:'晋升'},
+  {id:'acting',name:'扮演'},
+  {id:'codex',name:'图鉴'},
+];
+let curView='status';
+function buildTabs(){
+  const top=$('top'); if(top) top.classList.remove('pre');
+  const t=$('tabs'); t.innerHTML='';
+  TABS.forEach(v=>{ const b=document.createElement('button'); b.textContent=v.name; if(v.id===curView)b.className='on';
+    b.onclick=()=>{ curView=v.id; buildTabs(); renderView(); }; t.appendChild(b); });
+}
+function updateTop(){
+  if(!G){ return; }
+  ensureWorld();
+  const wd=worldDate(G.day);
+  $('s-day').textContent=wd.m+'月'+wd.md+'日 · '+wd.weekday;
+  $('s-dayn').textContent='第 '+G.day+' 日';
+  $('s-gold').textContent=Math.round(G.gold*100)/100;
+  // 顶栏标签本身已是「序列」，这里只显示编号；避免魔女途径入口名也叫「魔女」时出现「序列 魔女」
+  $('s-path').textContent=PATHS[G.pathway].name; $('s-seq').textContent=G.seq;
+  const md=Math.max(0,Math.min(100,G.madness));
+  $('s-mad').style.width=md+'%'; $('s-madlbl').textContent=md+'%';
+}
+function renderView(){ updateTop(); const v=$('view'); v.innerHTML=''; (VIEWS[curView]||VIEWS.status)(v); }
+
+const VIEWS={};
+
+/* ---------- 档案 ---------- */
+VIEWS.status=function(v){
+  const s=curSeq(); const p=PATHS[G.pathway];
+  const c=document.createElement('div'); c.className='card';
+  c.innerHTML=`<h2>非凡者档案</h2>
+    <div class="seq-hero">
+      <img class="portrait" src="assets/lm_player.webp" alt="主角立绘" onerror="this.style.display='none';var f=document.getElementById('pf');if(f)f.style.display='flex';" />
+      <div class="portrait-fallback" id="pf" style="display:none">🕵️</div>
+      <div class="seq-meta">
+        <div class="seq-name">${PATHS[G.pathway].real?(p.name+'途径 · '+s.name):s.name}${G.seq===0?'<span class="seq-tag">旧日</span>':''}</div>
+        <div class="seq-en">Sequence ${s.seq} · ${s.e}</div>
+        <div class="seq-desc">${s.d}</div>
+      </div>
+    </div>
+    <h3>角色属性</h3>
+    <div class="attrs">${ATTR_KEYS.map(k=>`<div class="attr"><div class="an"><span>${ATTR_META[k].em} ${ATTR_META[k].name}</span><b>${G.attrs[k]}</b></div><div class="abar"><i style="width:${Math.max(4,Math.min(100,G.attrs[k]/20*100))}%"></i></div></div>`).join('')}</div>
+    <p class="mini">属性通过「诡秘世界」探索与「扮演」事件成长，并直接决定能力检定成功率。</p>
+    <h3>当前序列能力</h3>
+    <div class="acts">${s.ab.map(a=>`<span class="ab"><b>${a[0]}</b> · ${a[1]}</span>`).join('')}</div>
+    <h3>扮演进度（消化魔药）</h3>
+    <div class="lbl"><span>距离完全消化当前序列</span><span>${Math.min(100,Math.floor(G.acting/G.actingNeed*100))}%</span></div>
+    <div class="prog"><i style="width:${Math.min(100,Math.floor(G.acting/G.actingNeed*100))}%"></i></div>
+    <p class="mini">扮演守则：${s.act}</p>
+    <div class="btn-row">
+      <button class="btn ghost" onclick="openHelp()">❔ 玩法 / 设定</button>
+      <button class="btn ghost" onclick="backToPick()">↺ 重新穿越（重开）</button>
+    </div>`;
+  v.appendChild(c);
+
+  // 穿越者档案：现代之名 / 寄居之身 / 两段记忆 / 身份暴露风险
+  const o=G.origin||{}, sl=suspLabel(), sus=o.suspicion||0, frag=o.frag||0;
+  const mems=(o.memories||[]).map(id=>MODERN_MEMORIES.find(m=>m.id===id)).filter(Boolean);
+  const oc=document.createElement('div'); oc.className='card';
+  oc.innerHTML=`<h2>穿越者档案 · 两段人生</h2>
+    <div class="origin-box">
+      <div class="seq-emblem" style="font-size:30px">镜</div>
+      <div>
+        <div class="p2">${escName(o.modernName||'你')} <span style="color:var(--dim);font-size:12px">── 寄居于 ──→</span> ${o.bodyName||ORIGIN.body}</div>
+        <div class="p3">${o.bodyEn||ORIGIN.bodyEn} · ${ORIGIN.age} · ${ORIGIN.job}<br>
+          ${o.address||ORIGIN.address}<br>${o.world||ORIGIN.world}</div>
+      </div>
+    </div>
+    <div class="pro-meta">
+      <div class="row"><b>现代身份</b><span>${o.jobName||MODERN_JOBS[0].name}</span></div>
+      <div class="row"><b>原身家人</b><span>${ORIGIN.family.map(f=>f.em+' '+f.name).join(' · ')}</span></div>
+      <div class="row"><b>记忆缺口</b><span>${ORIGIN.mystery}</span></div>
+      <div class="row"><b>拼回碎片</b><span>已拾起 ${frag} / ${ORIGIN_MEMORIES.length} 片（随探索增长）</span></div>
+    </div>
+    <h3>他的二十二年 · 记忆碎片</h3>
+    ${frag>0?ORIGIN_MEMORIES.slice(0,Math.min(frag,ORIGIN_MEMORIES.length)).map(m=>`<div class="diary-item"><div class="dh">🕯️ ${m.t}</div><p class="mini">${m.d}</p></div>`).join(''):'<p class="mini">尚未想起任何片段。去廷根城里走走，那些不属于你的日子会一片片回来。</p>'}
+    ${frag<ORIGIN_MEMORIES.length?`<p class="mini">还有 ${ORIGIN_MEMORIES.length-frag} 片散落在雾里。集齐之后，你会更像他一点。</p>`:'<p class="mini">已拼回全部碎片。你比初来时更懂得该怎么当「克莱恩·莫雷蒂」。</p>'}
+    <p class="mini">🕯️ 片段为游戏化原创演绎，用于让「借来的身体」有重量，非原著情节。</p>
+    <h3>从另一个世界带来的认知</h3>
+    <div>${mems.length?mems.map(m=>`<span class="mem-chip">${m.em} ${m.name}</span>`).join(''):'<span class="mini">未携带（旧档）</span>'}</div>
+    <p class="mini">这些认知会在对应地点多给出一条「来自另一个世界」的解法——它们是你独有的路，也是你最容易露出马脚的地方。</p>
+    <h3>身份暴露风险 <span class="${sl.c}" style="font-size:12px">${sl.t}</span></h3>
+    <div class="lbl"><span>有人认为「你不像原来的他」</span><span>${sus} / 100</span></div>
+    <div class="suspbar"><i style="width:${Math.max(2,Math.min(100,sus))}%"></i></div>
+    <p class="mini">用现代思路解题、检定失手、扮演失格都会累积风险；<b style="color:var(--teal)">「灰雾之间 · 对镜练习」</b> 能显著压低。满 100% 不是失控，而是<b>被看穿</b>——那是穿越者独有的终局。</p>`;
+  v.appendChild(oc);
+
+  if(G.seq===0){
+    const w=document.createElement('div'); w.className='card';
+    w.innerHTML=`<h2>🎉 登临序列 0</h2><p class="lead">你已抵达 <b style="color:var(--gold)">${p.name}</b> 之巅，执掌其权柄，成为跨越世界的旧日。雾中的王座，自此有了主人。<br>可继续在「诡秘世界 / 扮演 / 图鉴」中延展你的神话，或换途径体验另一条命运。</p>`;
+    v.appendChild(w);
+  }
+};
+
+/* ---------- 今日世界（活的世界） ---------- */
+function payBill(){
+  const bs=billState(); if(bs.paid||bs.skipped){ toast('本周账单已处理'); return; }
+  const rent=ECONOMY.weeklyRent, meals=+(ECONOMY.dailyMeal*7).toFixed(2), wage=ECONOMY.weeklyWage;
+  G.gold=+(G.gold-rent-meals+wage).toFixed(4);
+  bs.paid=true; faction('nighthawk',2); relation('邓恩·史密斯',3);
+  addLedger('结清本周账单（房租 '+fmtMoney(rent)+'、膳宿 '+fmtMoney(meals)+'），黑荆棘周薪 '+fmtMoney(wage)+' 到账。');
+  save(); renderView(); toast('账单结清 · 周薪到账');
+}
+function remitHome(){
+  const bs=billState(); if(bs.remitted){ toast('本周家书已寄出'); return; }
+  if(G.gold<ECONOMY.remittance){ toast('金镑不足，家里这周先等一等'); return; }
+  G.gold=+(G.gold-ECONOMY.remittance).toFixed(4); bs.remitted=true;
+  relation('班森',8); relation('梅丽莎',8);
+  addFrag();
+  applyAttr({意志:1});
+  addEcho('去邮局汇了一笔钱回家');
+  addLedger('寄出 '+fmtMoney(ECONOMY.remittance)+' 家用。梅丽莎回信说，哥哥的字体看着有些生疏。');
+  save(); renderView(); toast('家书与汇款已寄出');
+}
+function skipBill(){
+  const bs=billState(); if(bs.paid||bs.skipped){ toast('本周账单已处理'); return; }
+  bs.skipped=true; G.debt=(G.debt||0)+ECONOMY.weeklyRent;
+  addSuspicion(ECONOMY.debtSuspicion);
+  relation('班森',-4); relation('梅丽莎',-4); faction('nighthawk',-3);
+  addLedger('本周账单拖欠，房东在门上贴了字条。');
+  addEcho('房东在门上贴了催租字条');
+  save(); renderView(); toast('拖欠账单 · 有人开始留意');
+}
+function joinWorldEvent(){
+  ensureWorld(); const ev=todayEvent(G.day);
+  if(G.worldFlags[ev.id]){ toast('此事已有你的痕迹'); return; }
+  G.worldFlags[ev.id]='joined';
+  if(ev.g.acting) G.acting+=ev.g.acting;
+  if(ev.g.gold) G.gold=+(G.gold+ev.g.gold).toFixed(4);
+  if(ev.m) G.madness=Math.max(0,Math.min(100,G.madness+ev.m));
+  if(ev.atr) applyAttr(ev.atr);
+  faction(ev.fac||'nighthawk',3);
+  G.worldLog.unshift({day:G.day,title:ev.title,act:'介入'});
+  if(G.worldLog.length>30) G.worldLog.length=30;
+  addLedger('介入「'+ev.title+'」，向有关方面递了线索。');
+  const tag=ev.fac==='church'?'church':(ev.fac==='tarot'?'tarot':'east');
+  advanceDay('介入：'+ev.title, '把一条关于「'+ev.title+'」的线索递了出去', tag);
+  save(); renderView();
+  const facObj=FACTIONS.find(f=>f.id===(ev.fac||'nighthawk'))||FACTIONS[0];
+  showModal(`<span class="x" onclick="closeModal()">✕</span><h2>🌍 ${ev.title}</h2>
+    <p class="lead">${ev.join}</p>
+    <p class="mini">这不是你的任务，只是这座城今天发生的一件小事。但你走过去了——于是明天的报纸会换一种写法。</p>
+    <p class="mini">获得：${optGainTxt({g:ev.g,atr:ev.atr})||'一段见闻'} · ${facObj.name} 态度 +3 · 推进一日。</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal()">合上报纸</button></div>`);
+}
+function skipWorldEvent(){
+  ensureWorld(); const ev=todayEvent(G.day);
+  if(G.worldFlags[ev.id]){ toast('此事已有你的痕迹'); return; }
+  G.worldFlags[ev.id]='passed';
+  addLedger('读到「'+ev.title+'」，未加理会。');
+  save(); renderView(); toast('你把报纸翻了过去');
+}
+function gotoSchedule(id){ curView='map'; buildTabs(); renderView(); enterLocation(id); }
+
+VIEWS.world=function(v){
+  ensureWorld();
+  const wd=worldDate(G.day), ev=todayEvent(G.day), bs=billState(), news=makeNews(G.day);
+  const rent=ECONOMY.weeklyRent, meals=+(ECONOMY.dailyMeal*7).toFixed(2), wage=ECONOMY.weeklyWage;
+  const sched=NPC_SCHEDULE.filter(n=>n.days.indexOf(wd.wd)>=0);
+
+  const c1=document.createElement('div'); c1.className='card';
+  c1.innerHTML=`<h2>📰 今日世界 · 廷根</h2>
+    <div class="world-date">
+      <span class="wem">${wd.weather.em}</span>
+      <span class="wd1">${wd.label}</span>
+      <span class="wd2">${wd.weather.name} · ${wd.weather.desc}</span>
+      ${wd.festival?`<span class="wd2" style="color:var(--gold)">◆ ${wd.festival}</span>`:''}
+    </div>
+    <p class="mini">历法为游戏化整理（第五纪 1349 年起、每月 30 日、七日一周），日期与天气按天数确定性流转——<b>世界不会停在原地等你</b>。货币、人物、组织与地理沿用原著设定。</p>`;
+  v.appendChild(c1);
+
+  const c2=document.createElement('div'); c2.className='card';
+  c2.innerHTML=`<div class="news">
+      <div class="nh"><b>廷 根 日 报</b><span>第 ${G.day} 日 · ${wd.m}月${wd.md}日 ${wd.weekday} · 零售 1 便士</span></div>
+      ${news.map(n=>`<div class="ni"><span class="nc">${n.c}</span><span class="nt">${n.em} ${n.t}</span></div>`).join('')}
+    </div>
+    <p class="mini">「市井传闻」一栏写的是<b>你近日做过的事</b>。措辞随身份暴露风险变化——从「有人」到「水仙花街 2 号那位年轻住客」。</p>`;
+  v.appendChild(c2);
+
+  const c3=document.createElement('div'); c3.className='card';
+  const joined=G.worldFlags[ev.id];
+  c3.innerHTML=`<h2>🌍 世界正在发生的事</h2>
+    <div class="wev"><div class="wt">［${ev.tag}］${ev.title}</div>
+      <p class="mini">${ev.body}</p><p class="mini">下期续报会因你今日的选择而不同。</p></div>
+    <div class="btn-row">
+      ${joined?'<span class="mini" style="color:var(--good)">✓ 此事已有你的痕迹，世界记下了。</span>'
+        :`<button class="btn primary" onclick="joinWorldEvent()">前往介入（消耗一日）</button>
+          <button class="btn ghost" onclick="skipWorldEvent()">只作壁上观</button>`}
+    </div>`;
+  v.appendChild(c3);
+
+  const c4=document.createElement('div'); c4.className='card';
+  c4.innerHTML=`<h2>🕰️ 今日人物行程</h2>
+    <p class="mini">他们各有各的日子要过，不因为你来或不来而改变。今日（${wd.weekday}）可在城中遇见：</p>
+    ${sched.length?sched.map(n=>`<div class="sched"><span class="se">${n.em}</span><span><span class="sn">${n.name}</span> · <span class="sl">${n.locName}：${n.note}</span></span></div>`).join(''):'<p class="mini">今日无人有公开行程。</p>'}
+    ${sched.length?`<div class="btn-row"><button class="btn ghost" onclick="gotoSchedule('${sched[0].loc}')">前往 ${sched[0].locName}</button></div>`:''}
+    <p class="mini">与谁往来会改变他们对你的态度；态度会写进报纸的措辞里。</p>`;
+  v.appendChild(c4);
+
+  const c5=document.createElement('div'); c5.className='card';
+  const stateTxt=bs.paid?'✅ 本周账单已结清':(bs.skipped?'⚠️ 本周账单已拖欠':'待结 · 尚未处理');
+  c5.innerHTML=`<h2>🏠 水仙花街 2 号 · 家用与账本</h2>
+    <p class="mini">你借来的这具身体有房租要付，有周薪可领，还有一对等家书的兄妹。<b>持有 ${fmtMoney(G.gold)}</b>${G.debt>0?(' · <span style="color:var(--blood)">累计欠账 '+fmtMoney(G.debt)+'</span>'):''}</p>
+    <div class="bill"><span><b>本周房租</b>（每周一到期）</span><span class="amt">${fmtMoney(rent)}</span></div>
+    <div class="bill"><span><b>膳宿 · 煤气 · 报纸</b>（七日）</span><span class="amt">${fmtMoney(meals)}</span></div>
+    <div class="bill"><span><b>黑荆棘实习文员周薪</b></span><span class="amt" style="color:var(--good)">+ ${fmtMoney(wage)}</span></div>
+    <div class="bill"><span><b>寄给班森与梅丽莎的家用</b>（可选）</span><span class="amt">${fmtMoney(ECONOMY.remittance)}</span></div>
+    <p class="mini">当前：${stateTxt} · ${bs.remitted?'家书与汇款已寄出':'本周尚未寄钱回家'}</p>
+    <div class="btn-row">
+      ${(bs.paid||bs.skipped)?'':`<button class="btn primary" onclick="payBill()">结清账单并领周薪</button><button class="btn ghost" onclick="skipBill()">拖欠（欠账 + 暴露）</button>`}
+      ${bs.remitted?'':`<button class="btn ghost" onclick="remitHome()">💌 寄 1 金镑回家</button>`}
+    </div>
+    <h3>账本</h3>
+    <div class="ledger">${G.ledger.length?G.ledger.slice(0,8).map(l=>`第 ${l.day} 日 · ${l.text}`).join('<br>'):'尚无记录。'}</div>
+    <p class="mini">1 金镑 = 20 苏勒 = 240 便士（原著换算）；具体物价为游戏化平衡数值。</p>`;
+  v.appendChild(c5);
+
+  const c6=document.createElement('div'); c6.className='card';
+  c6.innerHTML=`<h2>⚖️ 廷根诸势力 · 对你的态度</h2>
+    ${FACTIONS.map(f=>{const val=G.factions[f.id]||0, pct=Math.max(3,Math.min(100,50+val/2));
+      return `<div class="fac"><span class="fn">${f.em} ${f.name}</span><span class="fb"><i style="width:${pct}%"></i></span><span class="fv">${val>0?'+':''}${val}</span></div><div class="mini" style="margin:-4px 0 8px">${f.desc}</div>`;}).join('')}
+    <p class="mini">声望不会改写剧情，但会改写报纸怎么称呼你：值夜者若把你当自己人，传闻里就少一个名字。</p>`;
+  v.appendChild(c6);
+
+  const c7=document.createElement('div'); c7.className='card';
+  c7.innerHTML=`<h2>🪞 世界眼中的你</h2>
+    <p class="mini">下列条目是<b>第三人称</b>的记录——世界并不认识「你」，只认得一个在雾里走动的年轻人。</p>
+    ${G.echoes.length?G.echoes.slice(0,6).map(e=>`<div class="bill"><span>第 ${e.day} 日</span><span>${echoSentence(e)}。</span></div>`).join(''):'<p class="mini">尚未留下痕迹。</p>'}
+    <p class="mini">身份暴露风险越高，这些句子越具体。终局不是数字涨满，而是<b>有人终于把几条传闻拼在了一起</b>。</p>`;
+  v.appendChild(c7);
+};
+
+/* ---------- 诡秘世界地图 ---------- */
+VIEWS.map=function(v){
+  const c=document.createElement('div'); c.className='map';
+  c.innerHTML=`<div class="map-title"><span>🗺️ 诡秘世界 · 廷根城</span><span class="mini">点选地点探索 · 行动消耗天数</span></div>`;
+  const locs=document.createElement('div'); locs.className='locs';
+  LOCATIONS.forEach(loc=>{
+    if(loc.needTarot && !G.tarotUnlocked) return;
+    const d=document.createElement('div'); d.className='loc'+(G.visited[loc.id]?' done':'');
+    d.innerHTML=`<span class="riski ${loc.risk}">${loc.risk==='low'?'安稳':loc.risk==='mid'?'凶险':'致命'}</span>
+      <div class="em">${loc.em}</div><div class="ln">${loc.name}</div><div class="ld">${loc.d}</div>`;
+    d.onclick=()=>enterLocation(loc.id);
+    locs.appendChild(d);
+  });
+  c.appendChild(locs); v.appendChild(c);
+  // 简短日志
+  const note=document.createElement('div'); note.className='card';
+  const sl=suspLabel(), myMems=(G.origin&&G.origin.memories)||[];
+  const usable=Object.keys(MODERN_SOLUTIONS).filter(k=>{const m=MODERN_SOLUTIONS[k];return !m.mem||myMems.indexOf(m.mem)>=0;});
+  note.innerHTML=`<h3 style="margin-top:0">此刻</h3>
+    <p class="mini" id="mapNote">你行走在雾气弥漫的廷根。选择一处地点，让命运向你展开。若在「扮演」中充分消化、或于「晋升」中集齐材料，序列将逐级登临。</p>
+    <p class="mini">🜁 当前有 <b style="color:var(--teal)">${usable.length}</b> 处地点可走出「来自另一个世界」的专属解法：${myMems.length} 条来自你携带的现代认知，另有<b>灰雾之间</b>通用的对镜练习（可降低暴露风险）。</p>
+    <p class="mini">🎭 身份暴露风险：<b class="${sl.c}">${G.origin?G.origin.suspicion:0} / 100 · ${sl.t}</b>（满 100% 将被看穿）。</p>`;
+  v.appendChild(note);
+};
+function enterLocation(id){
+  const loc=LOCATIONS.find(l=>l.id===id); const ev=loc.ev;
+  let optsHtml=ev.opts.map((o,i)=>{
+    let hint='';
+    if(o.check>0) hint=`<div class="check-hint">需 ${ATTR_META[o.attr||'灵感'].name} 检定（难度 ${o.check}）${o.win?(' · 成功可得 '+optGainTxt({g:o.win,mat:o.win.mat,char:o.win.char,main:o.win&&o.win.main})):''}</div>`;
+    return `<button class="choice" onclick="resolveLocation('${id}',${i})">
+        <div>${o.t}${o.act==='tarot'?'（召集塔罗会）':''}</div>
+        <div class="sub">${o.sub||''}</div>
+        <div class="gain">${optGainTxt(o)}</div>
+        ${hint}
+      </button>`;
+  }).join('');
+  const ms=MODERN_SOLUTIONS[id];
+  const myMems=(G.origin&&G.origin.memories)||[];
+  if(ms && (!ms.mem || myMems.indexOf(ms.mem)>=0)){
+    const mm=ms.mem?MODERN_MEMORIES.find(x=>x.id===ms.mem):null;
+    optsHtml+=`<button class="choice modern" onclick="resolveModern('${id}')">
+        <span class="mtag">🜁 来自另一个世界${mm?(' · '+mm.name):' · 随时可用'}</span>
+        <div>${ms.em} ${ms.title}</div>
+        <div class="sub">${ms.sub}</div>
+        <div class="gain">${optGainTxt({g:ms.g,atr:ms.atr,mat:ms.mat})} · 暴露风险 ${ms.sus>0?'+':''}${ms.sus}</div>
+      </button>`;
+  }
+  showModal(`<span class="x" onclick="closeModal()">✕</span>
+    <div class="scene" style="border:none;padding:0;margin:0;background:none">
+      <div class="shead"><div class="sem">${loc.em}</div><div class="stitle">${ev.title}</div></div>
+      <div class="sdesc">${ev.desc}</div>
+      ${optsHtml}
+    </div>`);
+}
+function resolveLocation(id,idx){
+  const loc=LOCATIONS.find(l=>l.id===id); const o=loc.ev.opts[idx];
+  let win=false, success=true;
+  if(o.act==='tarot'){ doTarotInner(); return; }
+  if(o.check>0){ success=abilityCheck(o.attr||'灵感', o.check); }
+  // apply
+  if(o.g.acting) G.acting+=o.g.acting;
+  if(o.g.gold) G.gold+=o.g.gold;
+  if(o.g.mad) G.madness+=o.g.mad;
+  if(o.m) G.madness+=o.m;
+  if(o.atr) applyAttr(o.atr);
+  if(success && o.win){
+    win=true;
+    if(o.win.gold) G.gold+=o.win.gold;
+    if(o.win.mad) G.madness+=o.win.mad;
+    if(o.win.char) G.inv[o.win.char]=(G.inv[o.win.char]||0)+1;
+    if(o.win.mat) G.inv[o.win.mat]=(G.inv[o.win.mat]||0)+1;
+    if(o.win.main){ if(grantMainMat()==='duplicate') toast('已持有该序列特性，折为 10 金镑'); }   // 剥离出当前晋升目标所需的非凡特性
+    if(o.win.atr) applyAttr(o.win.atr);
+  }
+  G.madness=Math.max(0,Math.min(100,G.madness));
+  G.visited[id]=true;
+  advanceDay(loc.ev.title, LOC_ECHO[id]||('被人瞧见出入'+loc.name), id);
+  addFrag();
+  if(!success) addSuspicion(2);   // 检定失手，举止露了破绽
+  if(o.sus) addSuspicion(o.sus);
+  save(); updateTop();
+  const resTxt = (!o.check||success)
+    ? `<p class="mini res-good">${o.win&&win?'行动成功，额外获得 '+optGainTxt({g:o.win,mat:o.win.mat,char:o.win.char,main:o.win&&o.win.main})+'。':'行动顺利。'}</p>`
+    : `<p class="mini res-bad">${ATTR_META[o.attr||'灵感'].name}不足，检定失败——你勉强脱身，但${o.m?('疯狂 +'+o.m):'无功而返'}。</p>`;
+  const s=curSeq();
+  showModal(`<span class="x" onclick="closeModal();renderView()">✕</span>
+    <h2>${loc.ev.title}</h2>
+    <p class="lead">${o.t}。</p>
+    <p class="mini">${(o.check>0&&!success)?'行动所得':'获得'}：${optGainTxt({g:o.g,atr:o.atr,mat:o.mat})||'无'}</p>
+    ${resTxt}
+    <p class="mini">当前序列：<b style="color:var(--gold)">${s.name}</b>（${Math.floor(G.acting)}/${G.actingNeed} 消化） · 疯狂 ${Math.floor(G.madness)}% · 身份暴露风险 <b class="${suspLabel().c}">${G.origin?G.origin.suspicion:0}%</b>。</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal();renderView()">返回地图</button></div>`);
+  if(G.madness>=100){ setTimeout(gameOver,500); }
+}
+
+/* 「来自另一个世界」的专属解法：只有序章携带对应认知才会出现 */
+function resolveModern(id){
+  const loc=LOCATIONS.find(l=>l.id===id), m=MODERN_SOLUTIONS[id];
+  if(!loc||!m) return;
+  const mems=(G.origin&&G.origin.memories)||[];
+  if(m.mem && mems.indexOf(m.mem)<0) return;
+  if(m.g.acting) G.acting+=m.g.acting;
+  if(m.g.gold) G.gold+=m.g.gold;
+  if(m.g.mad) G.madness+=m.g.mad;
+  if(m.atr) applyAttr(m.atr);
+  if(m.mat) G.inv[m.mat]=(G.inv[m.mat]||0)+1;
+  G.madness=Math.max(0,Math.min(100,G.madness));
+  G.visited[id]=true;
+  advanceDay(loc.ev.title+' · 来自另一个世界', LOC_ECHO[id]||('被人瞧见出入'+loc.name), id);
+  addFrag();
+  G.diary.unshift({day:G.day,seq:curSeq().name,title:loc.ev.title+' · 来自另一个世界',
+    fit:'perfect',opt:m.title,diary:m.diary});
+  if(G.diary.length>40) G.diary.length=40;
+  addSuspicion(m.sus||0);
+  save(); updateTop();
+  const sl=suspLabel();
+  showModal(`<span class="x" onclick="closeModal();renderView()">✕</span>
+    <h2>${loc.ev.title}</h2>
+    <p class="lead">${m.em} ${m.title}。</p>
+    <p class="mini">这个时代还没有这样的思路。你用得很顺手，也因此，稍稍不像「他」。</p>
+    <div class="soliloquy">${m.diary}</div>
+    <p class="mini">获得：${optGainTxt({g:m.g,atr:m.atr,mat:m.mat})}</p>
+    <p class="mini">身份暴露风险：<b class="${sl.c}">${G.origin?G.origin.suspicion:0} / 100 · ${sl.t}</b>${m.sus<0?'（对镜练习让你更稳妥了）':''}</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal();renderView()">返回地图</button></div>`);
+  if(G.madness>=100) setTimeout(gameOver,500);
+}
+
+/* 塔罗会（任何途径皆可召开，灰雾之上聚会） */
+function doTarotInner(){
+  G.tarotUnlocked=true; G.tarotCount++;
+  advanceDay('灰雾上的聚会','无人见其行踪，灰雾却翻涌了一夜','tarot');
+  const m=TAROT[Math.floor(Math.random()*TAROT.length)];
+  G.madness=Math.max(0,G.madness-2); G.acting+=6; G.gold+=6;
+  if(G.madness<0)G.madness=0;
+  save(); updateTop();
+  showModal(`<span class="x" onclick="closeModal();renderView()">✕</span><h2>🔮 第 ${G.tarotCount} 次塔罗会</h2>
+    <p class="lead">灰雾翻涌，长桌彼端落下一道灵光——<b style="color:var(--gold)">${m.name}</b> 带着祈求而来，于迷雾中望向你这"高位格"的存在。</p>
+    <p class="mini">你以隐喻给予了指引。获得：扮演 +6 · 金镑 +6 · 疯狂 -2。</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal();renderView()">散会</button></div>`);
+}
+
+/* ---------- 晋升 ---------- */
+VIEWS.promote=function(v){
+  const s=curSeq(), n=nextSeq();
+  const c=document.createElement('div'); c.className='card';
+  if(!n){
+    c.innerHTML=`<h2>序列之路 · 已抵尽头</h2><p class="lead">你已是 <b style="color:var(--gold)">${s.name}</b>（序列 0，旧日）。序列之路在此圆满。</p>`;
+    v.appendChild(c); return;
+  }
+  const rec=n.rec;
+  const ready = has({[rec.main]:1}) && hasObj(rec.aux);
+  const recipeHTML=`<div class="recipe">
+      <div class="mat"><span>主材料 · <b>${rec.main}</b></span><span class="${G.inv[rec.main]?'hav':'no'}">${G.inv[rec.main]||0}/1</span></div>
+      ${rec.aux.map(m=>`<div class="mat"><span>${m}</span><span class="${G.inv[m]?'hav':'no'}">${G.inv[m]||0}/1</span></div>`).join('')}
+    </div>`;
+  const mainOwned=(G.inv[rec.main]||0)>=1;
+  const shopHTML=`<div class="recipe">
+      <div class="mat" style="border-bottom:1px dashed var(--line)"><span><b>🛒 黑市 / 塔罗会 · 材料采购</b></span><span class="mini">持有 ${Math.floor(G.gold)} 金镑</span></div>
+      ${mainOwned?'':`<div class="mat"><span>重金求购 <b>${rec.main}</b></span><span><button class="buy-btn" onclick="buyMainMat()">🪙 ${mainMatPrice()} 金镑</button></span></div>`}
+      ${rec.aux.map((m,i)=>(G.inv[m]||0)>=1?'':`<div class="mat"><span>采购辅料 ${m}</span><span><button class="buy-btn" onclick="buyAuxMat(${i})">🪙 ${AUX_PRICE} 金镑</button></span></div>`).join('')}
+      ${(mainOwned&&hasObj(rec.aux))
+        ?'<p class="mini" style="color:var(--good);margin:6px 0 0">配方已齐，可配制魔药。</p>'
+        :'<p class="mini" style="color:var(--muted);margin:6px 0 0">也可前往「查尼斯门 / 东区贫民窟」冒险夺取特性：需通过属性检定，并付出疯狂代价。</p>'}
+    </div>`;
+  const safe=G.acting>=G.actingNeed;
+  c.innerHTML=`<h2>序列晋升 · ${s.name} → ${n.name}</h2>
+    <div class="seq-hero">
+      <div class="seq-emblem">${n.em}</div>
+      <div class="seq-meta">
+        <div class="seq-name">${n.name}${PATHS[G.pathway].real?' <span class="seq-tag">序列 '+n.seq+'</span>':''}</div>
+        <div class="seq-en">${n.e}</div>
+        <div class="seq-desc">${n.d}</div>
+      </div>
+    </div>
+    <h3>晋升魔药配方</h3>
+    <p class="mini">将主材料与辅助材料配制、饮下，方可登临下一序列。主材料可在黑市重金求购，或于「查尼斯门 / 东区贫民窟」的险地中剥离夺取。</p>
+    ${recipeHTML}
+    ${shopHTML}
+    <h3>晋升风险</h3>
+    <div class="lbl"><span>当前扮演消化度</span><span>${Math.min(100,Math.floor(G.acting/G.actingNeed*100))}%</span></div>
+    <div class="prog"><i style="width:${Math.min(100,Math.floor(G.acting/G.actingNeed*100))}%"></i></div>
+    <p class="mini">${safe?'✅ 扮演已圆满（消化度 100%），晋升固有疯狂增量将被大幅抵消。':'⚠️ 扮演不足，晋升将带来额外疯狂——建议先去「扮演 / 诡秘世界」积累消化度。'}</p>
+    <div class="btn-row"><button class="btn primary" id="promoteBtn" ${ready?'':'disabled'}>⚗ 配制魔药并晋升</button></div>
+    ${ready?'':'<p class="mini" style="color:var(--blood)">材料不齐，无法晋升。可在上方黑市重金求购，或前往「查尼斯门 / 东区贫民窟」冒险夺取。</p>'}`;
+  v.appendChild(c);
+  if(ready){ $('promoteBtn').onclick=()=>doPromote(n); }
+};
+function doPromote(n){
+  const rec=n.rec;
+  // 防御：任何路径（含未刷新的旧按钮）都不得在材料不齐时再次结算晋升
+  if(!hasObj([rec.main].concat(rec.aux||[]))){ toast('材料不齐，无法配制魔药'); renderView(); return; }
+  takeInv({[rec.main]:1}); rec.aux.forEach(m=>takeInv({[m]:1}));
+  let mad=n.mad;
+  if(G.acting>=G.actingNeed){ mad=Math.floor(mad*0.25); toast('扮演充分，疯狂增量大幅抵消'); }
+  else { mad=Math.floor(mad*1.6); }
+  G.madness=Math.max(0,Math.min(100,G.madness+mad)); G.seq=n.seq; G.acting=0; G.actingNeed=30+(9-n.seq)*14;
+  save(); updateTop(); renderView();
+  if(G.madness>=100){ showModal(`<span class="x" onclick="restartGame()">✕</span><h2>🌀 晋升即失控</h2>
+    <p class="lead">魔药灌下去的那一刻，你就知道错了——灵性像碎掉的玻璃，再也拼不回去。</p>
+    <p class="mini">你倒在 <b style="color:var(--gold)">${PATHS[G.pathway].name} · ${n.name}</b> 的门槛上，历 ${G.day} 日。</p>
+    <div class="btn-row"><button class="btn primary" onclick="restartGame()">重开新局</button></div>`);
+    modalLocked=true; return; }
+  if(G.seq===0){ ascendEnd(mad); return; }   // 序列 0：专属「登临旧日」结算
+  showModal(`<span class="x" onclick="closeModal();curView='status';renderView()">✕</span><h2>⚗ 晋升成功</h2>
+    <p class="lead">你饮下魔药，灵性剧烈翻涌——登临 <span style="color:var(--gold)">${n.name}</span>${PATHS[G.pathway].real?'（序列 '+n.seq+'）':''}。</p>
+    <p class="mini">本次疯狂增量：<b style="color:var(--blood)">+${mad}</b>（当前疯狂 ${Math.floor(G.madness)}%）。</p>
+    <p class="lead">新能力：${n.ab.map(a=>a[0]).join('、')}。</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal();curView='status';renderView()">查看档案</button></div>`);
+}
+
+/* ---------- 登临旧日：抵达序列 0 的通关结算 ---------- */
+function ascendEnd(mad){
+  const p=PATHS[G.pathway], s=curSeq(), cal=worldDate(G.day);
+  const facs=FACTIONS.map(f=>({em:f.em,name:f.name,v:(G.factions&&G.factions[f.id])||0}))
+    .filter(f=>f.v!==0).sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
+  const facTxt=facs.length?facs.slice(0,3).map(f=>f.em+' '+f.name+' '+(f.v>0?'+':'')+f.v).join(' · '):'尚无人真正记住你';
+  const seenEcho={};
+  const echoTxt=(G.echoes||[]).map(e=>echoSentence(e)).filter(s=>{
+    if(!s||seenEcho[s]) return false; seenEcho[s]=1; return true;
+  }).slice(0,3).join('；')||'你在廷根留下的痕迹，淡得像雾';
+  const frag=Math.min((G.origin&&G.origin.frag)||0, ORIGIN_MEMORIES.length);
+  const attrTxt=ATTR_KEYS.map(k=>ATTR_META[k].em+ATTR_META[k].name+' '+G.attrs[k]).join(' · ');
+  showModal(`<span class="x" onclick="closeModal();curView='status';renderView()">✕</span>
+    <h2>♠️ 登临旧日 · ${s.name}</h2>
+    <p class="lead">魔药的最后一滴落进喉咙，整座廷根为你静了一瞬。你不再是「一位非凡者」——你是这条途径的<span style="color:var(--gold)">顶点</span>，是雾中王座的主人。</p>
+    <div class="soliloquy">我从另一个世界来，借了他的身体、他的名字、他的妹妹。走到这里，我终于能说一句：这条路，是我自己选的。</div>
+    <h3>这一局的战报</h3>
+    <div class="pro-meta">
+      <div class="row"><b>途径</b><span>${p.emoji} ${p.name}${p.real?'（原著完整序列）':'（游戏整理序列）'}</span></div>
+      <div class="row"><b>抵达</b><span>序列 0 · ${s.name}（${s.e}）</span></div>
+      <div class="row"><b>历时</b><span>${G.day} 日 · ${cal.label}</span></div>
+      <div class="row"><b>最终疯狂</b><span>${Math.floor(G.madness)}%（末次晋升 +${mad}）</span></div>
+      <div class="row"><b>身份暴露</b><span>${(G.origin&&G.origin.suspicion)||0} / 100</span></div>
+      <div class="row"><b>拼回原身记忆</b><span>${frag} / ${ORIGIN_MEMORIES.length} 片</span></div>
+      <div class="row"><b>塔罗会</b><span>召开 ${G.tarotCount||0} 次</span></div>
+      <div class="row"><b>属性</b><span>${attrTxt}</span></div>
+      <div class="row"><b>势力</b><span>${facTxt}</span></div>
+    </div>
+    <h3>世界眼中的你</h3>
+    <p class="mini">${echoTxt}。</p>
+    <p class="mini" style="color:var(--dim)">🕯️ 这是穿越者视角的同人演绎：原著中的旧日远不止此、也不必如此抵达。此处的「登临」是本游戏为你留的一个句点，不是对原著的替代。</p>
+    <div class="btn-row">
+      <button class="btn primary" onclick="closeModal();curView='status';renderView()">继续俯瞰廷根</button>
+      <button class="btn ghost" onclick="restartGame()">换途径重开</button>
+    </div>`);
+}
+
+/* ---------- 扮演 ---------- */
+VIEWS.acting=function(v){
+  const s=curSeq();
+  const tier=9-G.seq;   // 0(序列9) ~ 9(序列0)：序列越高，能接的活越值钱
+  const acts=[
+    {t:'日常潜伏',d:'以序列之姿融入市井，观察而不介入。',g:{acting:6+tier,gold:2+tier},m:1,echo:'在集市与酒馆之间走动，与人闲谈几句'},
+    {t:'灵性沉淀',d:'于静处梳理灵性，稳固心智。',g:{acting:4+Math.floor(tier/2)},m:-2,echo:'闭门独坐了一整日，窗帘未开'},
+    {t:'市井兼职',d:'做些寻常营生，补贴金镑。',g:{acting:3,gold:6+tier*3},m:0,echo:'在铺面与码头之间做些零工'},
+    {t:'灰雾冥想',d:'于灰雾之上旁观自我，消解疯狂。',g:{acting:3+Math.floor(tier/2)},m:-5,echo:'整夜亮着灯，据说在冥想'},
+  ];
+  const c=document.createElement('div'); c.className='card';
+  c.innerHTML=`<h2>扮演 · ${s.name}</h2>
+    <p class="lead">扮演法是非凡者消化魔药、远离失控的核心。在情境中"成为"你的序列、按守则行动，既能加速成长，又能压低晋升的疯狂。<br><span style="color:var(--gold)">守则：</span>${s.act}</p>
+    <div class="lbl"><span>扮演消化度</span><span>${Math.min(100,Math.floor(G.acting/G.actingNeed*100))}%</span></div>
+    <div class="prog"><i style="width:${Math.min(100,Math.floor(G.acting/G.actingNeed*100))}%"></i></div>
+    <div class="btn-row"><button class="btn primary" id="rpBtn">⚑ 遭遇扮演事件 · 代入当下</button></div>
+    <p class="mini">在情境中做出符合序列守则的抉择，获得高扮演评价与"你"的内心独白——这是体验扮演乐趣的核心。</p>
+    <p class="mini">💼 序列越高，你在廷根能接的活越值钱，也越懂扮演法：「市井兼职」报酬 <b style="color:var(--gold)">${6+tier*3} 金镑</b> / 日，「日常潜伏」消化 <b style="color:var(--gold)">+${6+tier}</b>。晋升所需的非凡特性与辅料，可在「晋升」页黑市求购，或去查尼斯门 / 东区冒险夺取。</p>`;
+  c.querySelector('#rpBtn').onclick=rollRoleplay;
+  acts.forEach((a)=>{
+    const b=document.createElement('button'); b.className='choice';
+    let gainTxt=[]; if(a.g.acting)gainTxt.push('扮演 +'+a.g.acting); if(a.g.gold)gainTxt.push('金镑 +'+a.g.gold);
+    let madTxt=a.m>0?('疯狂 +'+a.m):(a.m<0?('疯狂 '+a.m):'疯狂 ±0');
+    b.innerHTML=`<div>${a.t} — ${a.d}</div><div class="gain">${gainTxt.join(' · ')}</div><div class="cost">${madTxt}</div>`;
+    b.onclick=()=>{ doAct(a); };
+    c.appendChild(b);
+  });
+  v.appendChild(c);
+  v.appendChild(renderDiary());
+};
+function doAct(a){
+  if(a.g.acting) G.acting+=a.g.acting; if(a.g.gold) G.gold+=a.g.gold;
+  if(a.atr) applyAttr(a.atr);
+  G.madness+=a.m; if(G.madness<0)G.madness=0; if(G.madness>100)G.madness=100;
+  advanceDay(a.t, a.echo||'按部就班地过了寻常一日', 'home'); save(); updateTop(); renderView(); toast(a.t+' 完成');
+  if(G.madness>=100) gameOver();
+}
+function rollRoleplay(){
+  if(G.rpPool.length===0) G.rpPool=ROLEPLAY_EVENTS.map(e=>e.id);
+  const id=G.rpPool.splice(Math.floor(Math.random()*G.rpPool.length),1)[0];
+  save();   // 事件池即时落盘，避免刷新后反复抽到同一情境
+  const ev=ROLEPLAY_EVENTS.find(e=>e.id===id);
+  showModal(`<span class="x" onclick="closeModal()">✕</span>
+    <h2>⚑ ${ev.title}</h2><p class="lead">${ev.scene}</p>
+    ${ev.opts.map((o,i)=>`<button class="choice" onclick="resolveRoleplay('${ev.id}',${i})">
+        <div>${o.label}</div><div class="gain">${optGainTxt(o)}${o.check>0?' · 需 '+ATTR_META[o.attr||'灵感'].name+' 检定（难度 '+o.check+'）':''}</div></button>`).join('')}
+    <p class="mini">提示：选择越贴合你序列的守则（${curSeq().act}），评价越高、消化越充分、疯狂越低。</p>`);
+}
+function resolveRoleplay(evId,idx){
+  const ev=ROLEPLAY_EVENTS.find(e=>e.id===evId); const o=ev.opts[idx];
+  const fitLabel={perfect:'完美扮演',ok:'尚可',fail:'失格'}[o.fit];
+  let success=true, win=false;
+  if(o.check>0) success=abilityCheck(o.attr||'灵感',o.check);
+  if(o.g.acting) G.acting+=o.g.acting; if(o.g.gold) G.gold+=o.g.gold;
+  if(o.g.mad) G.madness+=o.g.mad; if(o.m) G.madness+=o.m;
+  if(o.atr) applyAttr(o.atr);
+  if(success && o.win){
+    win=true;
+    if(o.win.gold) G.gold+=o.win.gold;
+    if(o.win.mad) G.madness+=o.win.mad;
+    if(o.win.mat) G.inv[o.win.mat]=(G.inv[o.win.mat]||0)+1;
+    if(o.win.atr) applyAttr(o.win.atr);
+  }
+  if(!success) addSuspicion(2);
+  if(o.fit==='fail') addSuspicion(3);
+  G.madness=Math.max(0,Math.min(100,G.madness));
+  advanceDay(ev.title,'独自在雾中伫立良久','roleplay');
+  const monologue=o.diary||'（这一幕太乱了，我没能替自己记下什么。只记得心跳很响，雾很凉。）';
+  G.diary.unshift({day:G.day,seq:curSeq().name,title:ev.title,fit:o.fit,opt:o.label,diary:monologue});
+  if(G.diary.length>40) G.diary.length=40;
+  save(); updateTop();
+  const extra=win?(' · 额外收获 '+optGainTxt({g:o.win})):'';
+  const failTxt=!success?' · 检定失手，未能取得额外收获':'';
+  showModal(`<span class="x" onclick="closeModal();renderView()">✕</span>
+    <h2>⚑ ${ev.title} <span class="fit ${o.fit}">${fitLabel}</span></h2>
+    <p class="mini">你的选择：<b>${o.label}</b></p>
+    <div class="soliloquy">${monologue}</div>
+    <p class="mini">获得：${optGainTxt(o)}${extra}${failTxt}${o.fit==='perfect'?' · 消化充分，晋升更稳':(o.fit==='fail'?' · 背离守则，警惕失控':'')}</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal();renderView()">合上日记</button></div>`);
+  if(G.madness>=100) setTimeout(gameOver,400);
+}
+function renderDiary(){
+  const w=document.createElement('div'); w.className='card diary';
+  if(!G.diary.length){ w.innerHTML='<h3>扮演履历 · 你的日记</h3><p class="diary-empty">尚无扮演记录。点击上方「遭遇扮演事件」，在情境中代入你的序列，写下第一笔日记。</p>'; return w; }
+  let h='<h3>扮演履历 · 你的日记</h3>';
+  G.diary.slice(0,18).forEach(d=>{
+    const fl={perfect:'完美',ok:'尚可',fail:'失格'}[d.fit];
+    h+=`<div class="diary-item"><div class="dh">第 ${d.day} 日 · ${d.seq} · ${fl}</div>
+      <div>${d.title}：<b>${d.opt}</b></div><div class="dm">${d.diary}</div></div>`;
+  });
+  w.innerHTML=h; return w;
+}
+
+/* ---------- 图鉴 ---------- */
+VIEWS.codex=function(v){
+  const p=PATHS[G.pathway];
+  const c=document.createElement('div'); c.className='card';
+  c.innerHTML=`<h2>图鉴 · 你所走之路</h2>
+    <p class="lead"><b style="color:var(--gold)">${p.name}途径</b>（${p.en}）· ${p.camp}${p.real?' · <span style="color:var(--good)">完整真实序列</span>':' · <span style="color:var(--dim)">中间序列为游戏整理占位</span>'}</p>
+    <p class="mini">${p.blurb}</p>
+    <h3>序列之路（序列 9 → 0）</h3>
+    <div class="acts">${p.seqs.slice().reverse().map(s=>{
+      const cur = s.seq===G.seq;
+      return `<span class="ab" style="${cur?'border-color:var(--gold)':''}"><b>${s.seq===0?'旧日':('序列'+s.seq)} · ${s.name}</b> · ${s.d}${cur?' （当前）':''}</span>`;
+    }).join('')}</div>`;
+  v.appendChild(c);
+
+  const c2=document.createElement('div'); c2.className='card';
+  c2.innerHTML=`<h2>二十二途径 · 名册</h2>
+    <p class="mini">《诡秘之主》二十二条非凡途径的完整名称与阵营。其中愚者 / 门 / 错误 三条为本游戏完整可玩真实序列；其余途径的中间序列为游戏化整理占位，<b>以原著设定为准</b>。</p>
+    <div class="grid">${Object.keys(PATHS).map(pw=>{ const pp=PATHS[pw];
+      return `<div class="pw"><div class="pn">${pp.emoji} ${pp.name}</div><div class="ps">${pp.en} · ${pp.camp}</div><div class="mini" style="margin-top:4px">${pp.real?'完整序列':(pp.entry?('入口：'+pp.entry):'途径之徒')}</div></div>`;
+    }).join('')}</div>`;
+  v.appendChild(c2);
+
+  const c3=document.createElement('div'); c3.className='card';
+  c3.innerHTML=`<h2>塔罗会 · 灰雾上的信众</h2>
+    <div class="grid">${TAROT.map(m=>`<div class="pw"><div class="pn">${m.em} ${m.name}</div><div class="ps">${m.real}</div><div class="mini" style="margin-top:4px">${m.note}</div></div>`).join('')}</div>
+    <p class="mini" style="margin-top:8px">在「诡秘世界 · 灰雾之间」选择"尝试呼唤塔罗会"，或于地图直接前往「塔罗会」节点，即可召开聚会。</p>`;
+  v.appendChild(c3);
+
+  const c4=document.createElement('div'); c4.className='card';
+  c4.innerHTML=`<h2>廷根人物志</h2>
+    <p class="mini">你穿行于这座蒸汽与迷雾之城，与这些命运交织的人相遇。其中多数为原著真名点缀，仅作背景与登场，不替代原著剧情。</p>
+    ${NPCS.map(n=>`<div class="npc"><div class="ne">${n.em}</div><div><div class="nn">${n.name}</div><div class="nr">${n.org} · ${n.role}</div><div class="nb">${n.bio}</div></div></div>`).join('')}
+    <h3 style="margin-top:14px">隐秘组织</h3>
+    <div class="mini">· <b style="color:var(--teal)">值夜者</b>：圣堂教会官方非凡机构，镇守廷根，黑荆棘安保公司为其据点。<br>
+      · <b style="color:var(--teal)">极光会</b>：崇拜"真实造物主"的激进组织，常于东区散发传单。<br>
+      · <b style="color:var(--teal)">秘祈人 / 密修会</b>：游走于正邪之间的隐秘结社。<br>
+      · <b style="color:var(--teal)">塔罗会</b>：你以"愚者"之名召集的信众，灰雾之上互通有无。</div>`;
+  v.appendChild(c4);
+
+  const o=G.origin||{}, myM=(o.memories||[]);
+  const c5=document.createElement('div'); c5.className='card';
+  c5.innerHTML=`<h2>两界对照 · 穿越者手记</h2>
+    <p class="mini">你带来不了一部手机，只带来一整套看世界的方式。以下六项「现代认知」在序章任选其二，此后会在对应地点化为旁人想不到的解法；<b style="color:var(--gold)">你已携带</b>的会高亮显示。</p>
+    <div class="acts">${MODERN_MEMORIES.map(m=>`<span class="ab" style="${myM.indexOf(m.id)>=0?'border-color:var(--gold)':''}">
+      <b>${m.em} ${m.name}${myM.indexOf(m.id)>=0?' ✓':''}</b> · ${m.desc}<br>
+      <span class="mini" style="margin:0">出现于 · ${m.where}</span></span>`).join('')}</div>
+    <h3>借来的这具身体</h3>
+    <div class="pro-meta">
+      <div class="row"><b>姓名</b><span>${ORIGIN.body}（${ORIGIN.bodyEn}） · ${ORIGIN.age}</span></div>
+      <div class="row"><b>出身</b><span>${ORIGIN.job}</span></div>
+      <div class="row"><b>住处</b><span>${ORIGIN.address}</span></div>
+      <div class="row"><b>家人</b><span>${ORIGIN.family.map(f=>f.name+'：'+f.note).join('；')}</span></div>
+      <div class="row"><b>时代</b><span>${ORIGIN.world}</span></div>
+      <div class="row"><b>缺口</b><span>${ORIGIN.mystery}</span></div>
+    </div>
+    <h3>两条终局</h3>
+    <p class="mini">· <b style="color:var(--blood)">失控</b>：疯狂满 100%，灵性崩坏，成为自己最恐惧的东西。<br>
+      · <b style="color:var(--gold)">暴露</b>：身份风险满 100%，被值夜者或暗处的存在看穿「你不是他」。<br>
+      这是穿越者才有的两难：既要战胜魔药，也要演好一个从未见过的人。</p>
+    <p class="mini">🕯️ 诚实边界：原身、家人、住处与时代沿用原著背景作舞台，序章及全部分支剧情为原创同人演绎，不替代原著。</p>`;
+  v.appendChild(c5);
+  const c6=document.createElement('div'); c6.className='card';
+  c6.innerHTML=`<h2>第五纪 · 世界年表与地理</h2>
+    <p class="mini">你所落入的是<b>第五纪 1349 年的鲁恩王国</b>。下列为原著世界背景（游戏化整理，非逐日考据）：</p>
+    <div class="pro-meta">
+      <div class="row"><b>时代</b><span>第五纪 · 蒸汽与电力初兴，煤气灯、火车、报纸与股份公司并存</span></div>
+      <div class="row"><b>国度</b><span>鲁恩王国（王都贝克兰德）· 因蒂斯共和国 · 弗萨克帝国 · 费内波特</span></div>
+      <div class="row"><b>本城</b><span>廷根：黑荆棘安保公司、圣堂、查尼斯门、廷根大学、东区与港口</span></div>
+      <div class="row"><b>海洋</b><span>迷雾海、苏尼亚海；神弃之地与白银城在传说之外</span></div>
+      <div class="row"><b>正教</b><span>黑夜女神、风暴之主、永恒烈阳、大地母神、知识与智慧之神、战神</span></div>
+      <div class="row"><b>隐秘</b><span>值夜者、极光会、密修会、玫瑰学派、塔罗会，以及灰雾之上的王座</span></div>
+    </div>
+    <p class="mini">游戏采用每月 30 日、七日一周的简化历法；日期、天气、节庆与报纸均为可玩性而设的原创演绎，<b>不冒充原著逐日纪事</b>。</p>`;
+  v.appendChild(c6);
+
+  const c7=document.createElement('div'); c7.className='card';
+  c7.innerHTML=`<h2>二十二途径 · 入口序列考据</h2>
+    <p class="mini">下表逐条标明序列 9 名称的核对状态。✅ 与公开资料一致；⚠️ 存在整理口径差异；🕯️ 游戏整理条目。<b>中间序列仍为占位，一律以原著为准。</b></p>
+    <div class="acts">${Object.keys(PATHS).map(k=>{const p=PATHS[k], nt=PATH_NOTES[k]||{s:'整理',n:'待考'};
+      const em=nt.s==='核对'?'✅':(nt.s==='差异'?'⚠️':'🕯️');
+      return `<span class="ab" style="${k===G.pathway?'border-color:var(--gold)':''}"><b>${em} ${p.name} · 序列9「${p.entry||p.seqs[0].name}」</b> · ${nt.n}</span>`;}).join('')}</div>
+    <p class="mini">已修正的旧错配：死神 通灵者→收尸人、月亮 收尸人→药师、红祭司 医师→猎人、黑暗 隐者→不眠者、魔女 魔女→刺客、深渊 魔鬼→罪犯、囚犯 犯人→囚犯。<br>
+      ⚠️ 尚存的结构性差异：原著「猎人」途径序列 0 即红祭司，本游戏为使 22 条齐全将其与「红祭司」分列；「战神 / 黄昏巨人」「深渊 / 被缚者」的序列 0 归属在不同整理资料中亦有分歧。此处如实标注，不冒称考据定论。</p>`;
+  v.appendChild(c7);
+
+  const c8=document.createElement('div'); c8.className='card';
+  c8.innerHTML=`<h2>💰 货币与物价</h2>
+    <div class="pro-meta">
+      <div class="row"><b>换算</b><span>1 金镑 = 20 苏勒 = 240 便士（原著设定）</span></div>
+      <div class="row"><b>周薪</b><span>${fmtMoney(ECONOMY.weeklyWage)} · 黑荆棘实习文员</span></div>
+      <div class="row"><b>房租</b><span>${fmtMoney(ECONOMY.weeklyRent)} / 周</span></div>
+      <div class="row"><b>膳宿杂项</b><span>${fmtMoney(ECONOMY.dailyMeal)} / 日（三餐、煤气与一份报纸）</span></div>
+      <div class="row"><b>家用</b><span>${fmtMoney(ECONOMY.remittance)} / 周 · 寄给班森与梅丽莎</span></div>
+    </div>
+    <p class="mini">具体物价为游戏化平衡数值；换算关系、职业与生活方式沿用原著。账单在「今日世界」亲手结算——拖欠会在报纸与门上留下痕迹。</p>`;
+  v.appendChild(c8);
+};
+
+/* ========================= 启动 ========================= */
+function boot(){
+  if(load() && G && G.pathway && PATHS[G.pathway]){
+    curView='status'; buildTabs(); renderView();
+    // 终局存档刷新后仍需结算：否则 ESC / 刷新可绕过失控与暴露
+    if(G.storyFlags && G.storyFlags.exposed) exposeEnd();
+    else if(G.madness>=100) gameOver();
+  } else {
+    resetIntro(); renderPrologue();
+  }
+}
+window.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+boot();
+</script>
+</body>
+</html>
