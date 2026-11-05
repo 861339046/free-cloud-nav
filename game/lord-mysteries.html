@@ -281,10 +281,10 @@ const SAVE_KEY='ztyz_lm_save_v1';
 const CAMPS={
   mystery:{name:'诡秘支柱',paths:['fool','door','error','visionary']},
   order:{name:'律令与审判',paths:['arbiter','black','whitetower']},
-  giant:{name:'黄昏与战争',paths:['twilight','death','war','tyrant']},
-  monster:{name:'怪物与猎杀',paths:['abyss','demoness','redpriest','dark','hunter']},
+  giant:{name:'黄昏与战争',paths:['twilight','death','tyrant']},
+  monster:{name:'怪物与猎杀',paths:['abyss','demoness','dark','hunter','monster']},
   nature:{name:'自然与月亮',paths:['mother','moon','sun']},
-  outsider:{name:'异类与外神',paths:['chained','prisoner','hermit']},
+  outsider:{name:'异类与外神',paths:['prisoner','hermit','hangman','perfecter']},
 };
 
 // 完整真实三途径（seq9→seq0 真实序列）
@@ -365,22 +365,22 @@ const PATHS={
   whitetower:{name:'白塔',en:'White Tower',emoji:'🗼',camp:'律令与审判',real:false,entry:'阅读者',blurb:'知识的化身，通晓万物之理。'},
   twilight:{name:'黄昏巨人',en:'Twilight Giant',emoji:'🌅',camp:'黄昏与战争',real:false,entry:'战士',blurb:'太阳陨落后的巨人，掌毁灭与黄昏之力。'},
   death:{name:'死神',en:'Death',emoji:'💀',camp:'黄昏与战争',real:false,entry:'收尸人',blurb:'执掌死亡与亡灵的国度。'},
-  war:{name:'战神',en:'God of War',emoji:'⚔️',camp:'黄昏与战争',real:false,entry:'军人',blurb:'战争的化身，嗜血而荣耀。'},
   tyrant:{name:'暴君',en:'Tyrant',emoji:'🌩️',camp:'黄昏与战争',real:false,entry:'水手',blurb:'执掌风暴与海洋，雷电与暴风雨的化身。'},
   abyss:{name:'深渊',en:'Abyss',emoji:'🔥',camp:'怪物与猎杀',real:false,entry:'罪犯',blurb:'欲望与堕落之源，诱人沉沦。'},
   demoness:{name:'魔女',en:'Demoness',emoji:'🌹',camp:'怪物与猎杀',real:false,entry:'刺客',blurb:'灾祸与魅惑，不老不死的诅咒。'},
-  redpriest:{name:'红祭司',en:'Red Priest',emoji:'🩸',camp:'怪物与猎杀',real:false,entry:'猎人',blurb:'战争与瘟疫的化身，焚尽万物。'},
   dark:{name:'黑暗',en:'Dark',emoji:'🌑',camp:'怪物与猎杀',real:false,entry:'不眠者',blurb:'原始的黑暗，吞噬与庇护并存。'},
   hunter:{name:'猎人',en:'Hunter',emoji:'🏹',camp:'怪物与猎杀',real:false,entry:'猎人',blurb:'狩猎怪物者，亦可能沦为怪物。'},
   mother:{name:'母亲',en:'Mother',emoji:'🌿',camp:'自然与月亮',real:false,entry:'耕种者',blurb:'丰饶与生命之源，草木皆兵。'},
   moon:{name:'月亮',en:'Moon',emoji:'🌕',camp:'自然与月亮',real:false,entry:'药师',blurb:'灵性之月，与动物、尸体、灵界亲近。'},
   sun:{name:'太阳',en:'Sun',emoji:'☀️',camp:'自然与月亮',real:false,entry:'歌颂者',blurb:'净化与光明的化身，驱散邪祟。'},
-  chained:{name:'异种',en:'Chained',emoji:'⛓️',camp:'异类与外神',real:false,entry:'囚徒',blurb:'被缚者，非人之扭曲与诅咒。'},
   prisoner:{name:'囚犯',en:'Prisoner',emoji:'🚧',camp:'异类与外神',real:false,entry:'囚犯',blurb:'封锁与释放，肉体与灵魂的牢笼。'},
   hermit:{name:'隐者',en:'Hermit',emoji:'🔮',camp:'异类与外神',real:false,entry:'窥秘人',blurb:'探索宇宙隐秘，知识即力量。'},
+  hangman:{name:'倒吊人',en:'Trapezist',emoji:'🙃',camp:'异类与外神',real:false,entry:'秘祈人',blurb:'聆听星空与命运的低语，于倒悬中窥见真实。'},
+  perfecter:{name:'完美者',en:'Perfect One',emoji:'⚙️',camp:'异类与外神',real:false,entry:'通识者',blurb:'追求肉身与知识的极致完美，机械与炼金的大师。'},
+  monster:{name:'命运之轮',en:'Wheel of Fortune',emoji:'🔄',camp:'怪物与猎杀',real:false,entry:'怪物',blurb:'幸运与厄运的宠儿，命运在指尖流转。'},
 };
 // 把生成途径补齐
-['visionary','arbiter','black','whitetower','twilight','death','war','tyrant','abyss','demoness','redpriest','dark','hunter','mother','moon','sun','chained','prisoner','hermit'].forEach(k=>{ PATHS[k]=mkGen(PATHS[k]); });
+['visionary','arbiter','black','whitetower','twilight','death','tyrant','abyss','demoness','dark','hunter','mother','moon','sun','prisoner','hermit','hangman','perfecter','monster'].forEach(k=>{ PATHS[k]=mkGen(PATHS[k]); });
 
 // 统一补全每条序列的 seq 下标（数组 seq9→seq0 对应索引 0→9）
 // 修复：序列对象原本缺失 seq 字段，导致晋升时 G.seq 被写为 undefined 而崩溃
@@ -461,61 +461,119 @@ const NPCS=[
 /* ========================= 数据：诡秘世界地图（廷根城） ========================= */
 // 每个地点：事件场景，选项含检定/收益。visitOnce 标记可重复。
 const LOCATIONS=[
-  {id:'home',em:'🏠',name:'灰雾之间 · 居所',risk:'low',d:'你的精神在灰雾之上沉淀。这里是安全的避风港，也是你与"另一个自己"对峙的镜厅。',repeat:true,
+  {id:'home',em:'🏠',name:'灰雾之间 · 居所',risk:'low',city:'all',d:'你的精神在灰雾之上沉淀。这里是安全的避风港，也是你与"另一个自己"对峙的镜厅。',repeat:true,
     ev:{title:'灰雾冥想',desc:'于灰雾之上盘坐，旁观自己的灵性如观他人——这是远离失控的锚，也是克莱恩式的生存之道。',
       opts:[
         {t:'静心冥想',sub:'沉淀灵性，锤炼意志',g:{mad:-10},atr:{意志:1},m:0,check:0},
         {t:'梳理今日扮演',sub:'回顾守则，沉淀学识',g:{acting:5},atr:{学识:1},m:0,check:0},
         {t:'尝试呼唤塔罗会',sub:'若已开启，召集成员',act:'tarot',g:{},m:0,check:0},
       ]}},
-  {id:'blackthorn',em:'🥀',name:'黑荆棘安保公司',risk:'mid',d:'廷根城官方的非凡机构，值夜者小队的据点。队长邓恩·史密斯与老尼尔前辈在此坐镇，机遇与危险并存。',repeat:true,
+  {id:'blackthorn',em:'🥀',name:'黑荆棘安保公司',risk:'mid',city:'tingen',d:'廷根城官方的非凡机构，值夜者小队的据点。队长邓恩·史密斯与老尼尔前辈在此坐镇，机遇与危险并存。',repeat:true,
     ev:{title:'入职与异常',desc:'你以新人身份踏入黑荆棘。走廊尽头，一桩未归档的异常案件正等待处理，邓恩在玻璃窗后注视着你。',
       opts:[
         {t:'随队处置异常',sub:'凭体魄与灵感应对，或有收获',g:{gold:6,acting:6},atr:{体魄:1,灵感:1},m:2,check:1,attr:'体魄',win:{char:'黑荆棘档案',gold:4}},
         {t:'暗中搜集情报',sub:'以魅力周旋，积攒扮演',g:{acting:8,gold:2},atr:{魅力:1},m:1,check:0},
         {t:'回避，保持低调',sub:'不惹事，但错过机缘',g:{},m:0,check:0},
       ]}},
-  {id:'chanis',em:'🚪',name:'查尼斯门 · 封印地',risk:'high',d:'教会禁地，封存着失控的封印物与"0级"传说的余烬。一步踏错，便可能万劫不复。',repeat:true,
+  {id:'chanis',em:'🚪',name:'查尼斯门 · 封印地',risk:'high',city:'tingen',d:'教会禁地，封存着失控的封印物与"0级"传说的余烬。一步踏错，便可能万劫不复。',repeat:true,
     ev:{title:'封印物异动',desc:'某件封印物骤然躁动，灵性如潮水般外泄。你的序列与意志，能否压制它？',
       opts:[
         {t:'强行镇压封印物',sub:'高风险：检定成功可剥离出当前序列非凡特性',g:{},atr:{灵性:1,意志:1},m:6,check:3,attr:'灵性',win:{char:'失控封印残渣',mad:-2,main:true}},
         {t:'以智取代之，记录符文',sub:'中风险，凭学识稳妥积累',g:{acting:9},atr:{学识:1},m:3,check:2,attr:'学识'},
         {t:'立即撤离',sub:'保命要紧',g:{},m:0,check:0},
       ]}},
-  {id:'church',em:'⛪',name:'圣堂 · 贝克兰德分部',risk:'low',d:'正教的圣所，信徒往来。神父的告解室后，藏着教会对非凡者的审视，也藏着试探。',repeat:true,
+  {id:'church',em:'⛪',name:'圣堂 · 贝克兰德分部',risk:'low',city:'tingen',d:'正教的圣所，信徒往来。神父的告解室后，藏着教会对非凡者的审视，也藏着试探。',repeat:true,
     ev:{title:'告解与窥探',desc:'你佯作信徒步入圣堂。告解室后，似乎另有隐情——圣堂教会从不对非凡者完全坦诚。',
       opts:[
         {t:'聆听信徒告解',sub:'收集市井与贵族秘闻',g:{gold:3,acting:7},atr:{魅力:1},m:1,check:0},
         {t:'以灵感探查圣所暗格',sub:'中风险，或得材料',g:{},atr:{灵感:1},m:3,check:2,attr:'灵感',win:{mat:'古老书页'}},
         {t:'安分祈祷',sub:'净化少许疯狂，坚定意志',g:{mad:-5},atr:{意志:1},m:0,check:0},
       ]}},
-  {id:'univ',em:'🏛️',name:'廷根大学',risk:'low',d:'知识与禁忌的交汇。图书馆深处，藏着非凡者才看得懂的篇章——老尼尔曾在此借阅不少"不该借"的书。',repeat:true,
+  {id:'univ',em:'🏛️',name:'廷根大学',risk:'low',city:'tingen',d:'知识与禁忌的交汇。图书馆深处，藏着非凡者才看得懂的篇章——老尼尔曾在此借阅不少"不该借"的书。',repeat:true,
     ev:{title:'禁书区的低语',desc:'深夜的图书馆，一本无名的书在向你低语。阅读它，或被它阅读。',
       opts:[
         {t:'研读禁忌典籍',sub:'增进学识，小幅疯狂',g:{acting:8},atr:{学识:1},m:4,check:1,attr:'学识'},
         {t:'摘录而非深读',sub:'稳妥积累',g:{gold:2,acting:5},atr:{学识:1},m:1,check:0},
         {t:'闭卷离开',sub:'敬畏未知，守住意志',g:{mad:-3},atr:{意志:1},m:0,check:0},
       ]}},
-  {id:'east',em:'🪙',name:'东区贫民窟',risk:'mid',d:'廷根的暗面。帮派、黑市与绝望交织，极光会的传单偶尔在此飘落。这里是材料的廉价来源，也是杀机。',repeat:true,
+  {id:'east',em:'🪙',name:'东区贫民窟',risk:'mid',city:'tingen',d:'廷根的暗面。帮派、黑市与绝望交织，极光会的传单偶尔在此飘落。这里是材料的廉价来源，也是杀机。',repeat:true,
     ev:{title:'黑市交易',desc:'一名独眼贩子向你兜售一支沾血的试管，价码低得可疑——东区，从不对来历多问。',
       opts:[
         {t:'压价巧取',sub:'以魅力低价购入',g:{gold:-5,acting:6},atr:{魅力:1},m:1,check:1,attr:'魅力',win:{mat:'变异蘑菇'}},
         {t:'以力夺取',sub:'高风险：黑市贩子手里或有序列非凡特性',g:{},atr:{体魄:1},m:5,check:2,attr:'体魄',win:{gold:10,mad:4,main:true}},
         {t:'婉拒离开',sub:'不沾血污',g:{},m:0,check:0},
       ]}},
-  {id:'port',em:'⚓',name:'码头 · 港口',risk:'mid',d:'来自海上的货物与走私。倒吊人阿尔杰的讯息，常从此地流入你的耳中。',repeat:true,
+  {id:'port',em:'⚓',name:'码头 · 港口',risk:'mid',city:'tingen',d:'来自海上的货物与走私。倒吊人阿尔杰的讯息，常从此地流入你的耳中。',repeat:true,
     ev:{title:'走私船的货舱',desc:'一艘挂着他国旗帜的船靠岸。货舱里，有你需要的，也有不该看的东西。',
       opts:[
         {t:'与船长密谈',sub:'借倒吊人之名取线',g:{acting:6,gold:4},atr:{魅力:1},m:2,check:1,attr:'魅力',win:{mat:'秘银丝'}},
         {t:'潜入货舱搜刮',sub:'中风险，凭灵感寻宝',g:{},atr:{体魄:1,灵感:1},m:3,check:2,attr:'灵感',win:{mat:'星水晶'}},
         {t:'只做寻常搬运工',sub:'赚些干净的钱',g:{gold:5},atr:{体魄:1},m:0,check:0},
       ]}},
-  {id:'tarot',em:'🔮',name:'塔罗会 · 灰雾聚会',risk:'low',d:'你以「愚者」之名召集信众于长桌之畔——奥黛丽、阿尔杰、佛尔思……无论你走哪条途径，灰雾之上的聚会都可召开。',repeat:true,needTarot:true,
+  {id:'tarot',em:'🔮',name:'塔罗会 · 灰雾聚会',risk:'low',city:'all',d:'你以「愚者」之名召集信众于长桌之畔——奥黛丽、阿尔杰、佛尔思……无论你走哪条途径，灰雾之上的聚会都可召开。',repeat:true,needTarot:true,
     ev:{title:'灰雾上的祈求',desc:'一位成员带着困境前来，于长桌彼端望向你这"高位格"的存在。',
       opts:[
         {t:'降下隐喻神谕',sub:'给予指引，增益扮演与魅力',g:{acting:8,gold:8},atr:{魅力:2},m:0,check:0},
         {t:'沉默聆听',sub:'让其自悟，磨砺灵感',g:{acting:4,gold:3},atr:{灵感:1},m:0,check:0},
         {t:'试探其底蕴',sub:'探查虚实，微增疯狂',g:{acting:5},atr:{学识:1},m:2,check:0},
+      ]}},
+
+  /* ===== 贝克兰德（首都）地点 · 原创演绎，非原著剧情 ===== */
+  {id:'bk_lodgings',em:'🏨',name:'贝克兰德的旅馆房间',risk:'low',city:'backlund',d:'你在这座雾都租下一间小屋。窗外是望不到边的烟囱与煤气灯，比廷根更喧闹，也更孤独。灰雾仍会在这里接你回去。',repeat:true,
+    ev:{title:'安顿与对镜',desc:'你对着镜子，把"克莱恩"练到不必思考；又在灰雾之上静坐，把这一路的疯狂压回瓶底。',
+      opts:[
+        {t:'灰雾冥想',sub:'沉淀灵性，远离失控',g:{mad:-10},atr:{意志:1},m:0,check:0},
+        {t:'对镜练习「成为他」',sub:'压低暴露风险',g:{acting:3},m:0,check:0,sus:-8},
+      ]}},
+  {id:'bk_univ',em:'🏛️',name:'贝克兰德大学 · 图书馆',risk:'low',city:'backlund',d:'帝国学术的心脏。穹顶之下，藏着比廷根更古老的钞本，也藏着更危险的好奇心。',repeat:true,
+    ev:{title:'禁书区的低语',desc:'比起廷根，这里的禁书区更庞大。一本无主的书在向你低语——它似乎认得"另一个世界"的笔迹。',
+      opts:[
+        {t:'研读禁忌典籍',sub:'增进学识，小幅疯狂',g:{acting:8},atr:{学识:1},m:4,check:1,attr:'学识'},
+        {t:'摘录而非深读',sub:'稳妥积累',g:{gold:2,acting:5},atr:{学识:1},m:1,check:0},
+        {t:'闭卷离开',sub:'敬畏未知，守住意志',g:{mad:-3},atr:{意志:1},m:0,check:0},
+      ]}},
+  {id:'bk_george',em:'⛪',name:'圣乔治大教堂',risk:'low',city:'backlund',d:'蒸汽与机械之神教会的总部，黄铜与齿轮在穹顶下运转。这里对非凡者的审视，比廷根更系统。',repeat:true,
+    ev:{title:'告解与窥探',desc:'你佯作信徒步入圣乔治。黄铜告解室后，藏着教会对"异端"的卷宗，也藏着试探。',
+      opts:[
+        {t:'聆听信徒告解',sub:'收集上流与贵族秘闻',g:{gold:3,acting:7},atr:{魅力:1},m:1,check:0},
+        {t:'以灵感探查暗格',sub:'中风险，或得材料',g:{},atr:{灵感:1},m:3,check:2,attr:'灵感',win:{mat:'古老书页'}},
+        {t:'安分祈祷',sub:'净化少许疯狂，坚定意志',g:{mad:-5},atr:{意志:1},m:0,check:0},
+      ]}},
+  {id:'bk_queen',em:'👑',name:'皇后区 · 上流社交',risk:'mid',city:'backlund',d:'贝克兰德的门面，金镑与纹章的海洋。一场舞会能决定一笔生意，也能葬送一个名字。',repeat:true,
+    ev:{title:'沙龙里的暗流',desc:'你以得体的姿态混入一场沙龙。水晶灯下，有人在谈生意，有人在谈阴谋，没人注意到角落里的你——这正是你要的。',
+      opts:[
+        {t:'攀交贵妇与银行家',sub:'凭魅力周旋，积攒扮演与金镑',g:{acting:8,gold:6},atr:{魅力:1},m:1,check:1,attr:'魅力',win:{gold:6}},
+        {t:'刺探贵族密谈',sub:'高风险：中风险检定，暴露也更高',g:{acting:6},atr:{灵感:1},m:3,check:2,attr:'灵感',win:{gold:10,sus:4}},
+        {t:'安分做个旁观者',sub:'不惹事，但错过机缘',g:{acting:3},m:0,check:0},
+      ]}},
+  {id:'bk_slum',em:'🪙',name:'桥南贫民窟',risk:'mid',city:'backlund',d:'贝克兰德的另一面，比廷根东区更拥挤、更绝望。极光会的传单在此飘落，黑市的价码低得可疑。',repeat:true,
+    ev:{title:'黑市与午夜布道',desc:'一名独眼贩子向你兜售一支沾血的试管；巷子深处，一支唱诗的队伍正走向某处——它们念着"真实造物主"的名字。',
+      opts:[
+        {t:'压价巧取',sub:'以魅力低价购入',g:{gold:-5,acting:6},atr:{魅力:1},m:1,check:1,attr:'魅力',win:{mat:'变异蘑菇'}},
+        {t:'以力夺取',sub:'高风险：黑市贩子手里或有序列非凡特性',g:{},atr:{体魄:1},m:5,check:2,attr:'体魄',win:{gold:10,mad:4,main:true}},
+        {t:'跟踪极光会的午夜布道',sub:'顺藤摸瓜，窥见首都暗流（线索）',g:{acting:4,mad:2},atr:{灵感:1},m:2,check:2,attr:'灵感',win:{flag:'bkCultClue',acting:3,diary:'你跟着那支唱诗的队伍拐进巷子，听见了"真实造物主"的名字——它们比廷根的同类更狂热，也更成体系。',sus:3}},
+        {t:'婉拒离开',sub:'不沾血污',g:{},m:0,check:0},
+      ]}},
+  {id:'bk_factory',em:'🏭',name:'工厂区',risk:'mid',city:'backlund',d:'蒸汽与齿轮的轰鸣之地。童工、罢工与煤灰交织，玫瑰学派的暗影偶尔在夜班时分掠过。',repeat:true,
+    ev:{title:'夜班的低语',desc:'午夜的厂房只剩值守的工头与一盏孤灯。机器停转的间隙，你听见了不该有的、像叹息般的低语。',
+      opts:[
+        {t:'混入夜班探查',sub:'凭体魄与灵感，或得材料',g:{acting:5},atr:{体魄:1,灵感:1},m:3,check:2,attr:'体魄',win:{mat:'星水晶'}},
+        {t:'倾听机器下的低语',sub:'中风险，磨砺灵感',g:{acting:6},atr:{灵感:1},m:3,check:2,attr:'灵感'},
+        {t:'替一名童工顶了半班',sub:'积德，小幅压低疯狂',g:{gold:-2,acting:4},atr:{意志:1},m:-3,check:0},
+      ]}},
+  {id:'bk_parliament',em:'🏛',name:'国会与下议院',risk:'mid',city:'backlund',d:'帝国权力的前台。谷物税、战争债与一封封密报在此流转；值夜者的耳目，也混在旁听席里。',repeat:true,
+    ev:{title:'旁听席上的算计',desc:'你坐在旁听席，看议员们为数字争得面红耳赤。账本推动着这座城，而有些账，从不对平民公开。',
+      opts:[
+        {t:'旁听并记录数字',sub:'以学识读懂这座城',g:{acting:5,gold:2},atr:{学识:1},m:0,check:0},
+        {t:'与旁听席的耳目攀谈',sub:'凭魅力探听虚实',g:{acting:6,gold:3},atr:{魅力:1},m:2,check:1,attr:'魅力'},
+        {t:'向值夜者密报极光会阴谋',sub:'把线索递出去，了结暗涌（需先取得线索）',g:{acting:5,gold:4},atr:{学识:1},m:1,check:3,attr:'学识',hideUnless:'bkCultClue',win:{flag:'bkCultDone',gold:10,acting:6,diary:'你把极光会贝克兰德支部的线索整理成文，交给了一位愿意见你的人。烟囱下的暗流，暂时被按了回去——而你的名字，也第一次进了值夜者的"可用名单"。'}},
+      ]}},
+  {id:'bk_theatre',em:'🎭',name:'剧院区',risk:'low',city:'backlund',d:'煤气灯与掌声的海洋。心理炼金会的成员最爱混迹于此，把人心当作最精妙的机械来研究。',repeat:true,
+    ev:{title:'幕布后的心思',desc:'一场首演落幕，演员卸了妆。你在后台的镜廊里，看见有人用"读心"般的眼神打量每一位访客。',
+      opts:[
+        {t:'以魅力周旋于名流',sub:'增益扮演与金镑',g:{acting:7,gold:5},atr:{魅力:1},m:1,check:1,attr:'魅力',win:{gold:4}},
+        {t:'试探那位"读心者"',sub:'中风险：以灵感对峙，或得见识',g:{acting:5},atr:{灵感:1},m:3,check:2,attr:'灵感',win:{acting:3}},
+        {t:'只做安静的看客',sub:'不露声色',g:{acting:3},m:0,check:0},
       ]}},
 ];
 
@@ -707,6 +765,18 @@ const MODERN_SOLUTIONS={
     sub:'先止血、再清创，煮沸过的布比祈祷更管用——但别当着水手的面这么说。',
     g:{gold:5,acting:5},atr:{体魄:1,学识:1},sus:2,
     diary:'我让他们烧开水，自己把伤口边缘洗净。船长问我跟谁学的，我说「书上看来的」。这句是真话，只是那本书，隔了一整个世界。'},
+  bk_univ:{mem:'history',em:'📜',title:'用「史学训练」对照首都钞本',
+    sub:'首都的钞本比廷根更古老。同一段历史在不同版本里差了三年——被删去的地方，往往才是正文。',
+    g:{acting:8},atr:{学识:2},sus:2,mat:'古老书页',
+    diary:'四个版本，同一场战役，纪年各差三年。我几乎要笑出来——这种笨拙的删改，我太熟悉了。合上书时手指有点凉：越靠近权力的地方，越怕被翻旧账。'},
+  bk_george:{mem:'skeptic',em:'🕯️',title:'以「无神论者的清醒」旁观大弥撒',
+    sub:'黄铜穹顶下，齿轮与祷词一同转动。你不期待回应，于是不容易被牵着走。但别让执事看出你毫无敬畏。',
+    g:{acting:5,mad:-6},atr:{意志:2},sus:2,
+    diary:'所有人低头时，我在看穹顶的齿轮怎么咬合。不是不敬——我只是知道，抬头的人更容易看清梁上有没有东西。信与不信，在这座城里都是要藏好的私事。'},
+  bk_slum:{mem:'statistics',em:'🎲',title:'用「概率与期望」给桥南黑市定价',
+    sub:'他喊的价、他愿意等的时长、他偷看巷口的频率，都是可算的信息。',
+    g:{gold:9,acting:4},atr:{学识:1,魅力:1},sus:1,mat:'变异蘑菇',
+    diary:'我没有还价，只报了一个他几乎不可能拒绝的数。独眼贩子骂了句脏话，把试管推过来。数学是少数几个跨世界还讲道理的东西——哪怕在桥南。'},
 };
 
 /* =====================================================================
@@ -757,6 +827,22 @@ const WORLD_EVENTS=[
   {id:'w18',tag:'古物',title:'密修会委托拍卖一批第四纪出土器物',body:'目录含铜镜、楔形泥板与一枚无铭戒指，鉴定意见含糊。',follow:'拍卖因「来源待考」延期。',join:'你隔着玻璃看了那枚戒指一眼，转身就走。',g:{acting:5},m:3,atr:{灵感:1},fac:'rose'},
 ];
 
+// 贝克兰德（首都）世界事件 · 原创演绎（非原著剧情）。字段与廷根世界事件一致。
+const BACKLUND_EVENTS=[
+  {id:'bk01',tag:'政局',title:'下议院就战争债展开秘密辩论',body:'贝克兰德各报只字未提，但银行间的金镑汇率已先一步波动。',follow:'战争债案被压下，未对外公布。',join:'你在旁听席记下几组数字，忽然读懂了这座城怎样被账本推动。',g:{acting:3,gold:2},m:1,atr:{学识:1},fac:'nighthawk'},
+  {id:'bk02',tag:'教会',title:'蒸汽与机械之神教会总殿扩建奠基',body:'黄铜与齿轮的穹顶又要高出一截，信众排队领受祈福。',follow:'总殿扩建募得足额捐款。',join:'你替一名老信徒扶了一次拐杖，换来一句关于夜间钟声的闲谈。',g:{acting:4},m:0,atr:{体魄:1},fac:'church'},
+  {id:'bk03',tag:'航运',title:'南大陆商船「金雀花号」满载抵港',body:'港务局称货物为香料与矿石，可几只木箱的通关文书写得含糊。',follow:'金雀花号于三日后离港。',join:'你在码头帮着核对货单，记下了几个不在册的箱号。',g:{acting:4,gold:2},m:2,atr:{灵感:1},fac:'tarot'},
+  {id:'bk04',tag:'市井',title:'贝克兰德市政厅拟增装煤气路灯',body:'桥南区居民担心加税，商会则称夜间盗窃已减少三成。',follow:'首批路灯在皇宫街点亮。',join:'你数了数新旧灯柱的间距，发现有一段刻意留了暗处。',g:{acting:3},m:1,atr:{灵感:1},fac:'nighthawk'},
+  {id:'bk05',tag:'非凡',title:'桥南又一起离奇失踪案',body:'警方称当事人或自行离城；值夜者未对外置评，却加强了夜巡。',follow:'失踪案仍无线索。',join:'你在巷口看见不该在那里的痕迹，没有声张，只把它记进本子。',g:{acting:5},m:3,atr:{灵感:1},fac:'nighthawk'},
+  {id:'bk06',tag:'学界',title:'贝克兰德大学举办罗塞尔笔记特展',body:'历史系公开陈列若干复刻手稿，入场券两苏勒。',follow:'特展笔记被抄录数份流入黑市。',join:'你抄下几行不像这个时代的公式，指尖停了一瞬。',g:{acting:4},m:2,atr:{学识:1},fac:'tarot'},
+  {id:'bk07',tag:'铁路',title:'贝克兰德环城高架拟开工',body:'三等车厢票价维持不变，货运运力将翻倍。',follow:'高架工程自下月起动工。',join:'你在蓝图边角算出一段无人认领的空档。',g:{acting:3,gold:1},m:0,atr:{学识:1},fac:'nighthawk'},
+  {id:'bk08',tag:'劳工',title:'工厂区童工请愿缩短工时',body:'厂方称订单积压，双方约定在市政厅调解。',follow:'调解达成，夜班缩短一个时辰。',join:'你替一位不识字的工人念完了请愿书。',g:{acting:4},m:0,atr:{魅力:1},fac:'aurora'},
+  {id:'bk09',tag:'上流',title:'皇后区举办慈善舞会',body:'社交版用整版篇幅描写宾客衣饰与首饰。',follow:'舞会上一位男爵的失物启事见报。',join:'你只是从铁门外经过，却记住了门口那辆马车的纹章。',g:{acting:3,gold:1},m:0,atr:{魅力:1},fac:'tarot'},
+  {id:'bk10',tag:'医事',title:'桥南诊所收治数名热病患者',body:'院方称与饮水有关，已请市政厅查验水井。',follow:'涉事水井被封闭。',join:'你提醒他们把水煮沸再用，被当成了一句外行话。',g:{acting:4},m:1,atr:{学识:1},fac:'church'},
+  {id:'bk11',tag:'隐秘',title:'桥南区出现极光会公开布道',body:'传单印着倒十字与晦涩祷文，教会劝告信徒勿近。',follow:'布道被驱散，仍有抄本流传。',join:'你读了两行就把它折起来——有些句子不该读完。',g:{acting:4},m:4,atr:{意志:1},fac:'aurora'},
+  {id:'bk12',tag:'报业',title:'《贝克兰德时报》悬赏本地异闻',body:'启事称「凡首都异闻，一经采用，酬五苏勒」。',follow:'首篇本地通讯见于第三版。',join:'你投了一则没有署名的短讯。',g:{acting:3,gold:1},m:0,atr:{魅力:1},fac:'nighthawk'},
+];
+
 const FACTIONS=[
   {id:'nighthawk',name:'值夜者 · 黑荆棘',em:'🌙',desc:'官方非凡机构，镇守廷根，审视每一个异常'},
   {id:'church',name:'圣堂教会',em:'⛪',desc:'正教的注视、告解与庇护'},
@@ -766,14 +852,21 @@ const FACTIONS=[
 ];
 // 人物各有日程：不因玩家来或不来而改变
 const NPC_SCHEDULE=[
-  {name:'邓恩·史密斯',em:'🧥',loc:'blackthorn',locName:'黑荆棘安保公司',days:[0,2,4,6],note:'在整理值夜卷宗，桌上搁着凉透的咖啡'},
-  {name:'老尼尔',em:'📜',loc:'blackthorn',locName:'黑荆棘安保公司',days:[1,3,5],note:'守着草药柜，愿意教人分辨安神草'},
-  {name:'伦纳德·米切尔',em:'🌹',loc:'chanis',locName:'查尼斯门',days:[0,3,6],note:'倚着门框念诗，像在等谁'},
-  {name:'奥黛丽·霍尔',em:'💎',loc:'church',locName:'圣堂',days:[6],note:'随家人来做礼拜，戴着一顶新帽子'},
-  {name:'阿尔杰·威尔森',em:'🌊',loc:'port',locName:'码头',days:[1,4],note:'船刚靠岸，正与水手核对货单'},
-  {name:'佛尔思·沃尔',em:'📚',loc:'univ',locName:'廷根大学',days:[2,5],note:'在图书馆翻旧报，替小说找素材'},
-  {name:'圣堂教会',em:'⛪',loc:'church',locName:'圣堂',days:[6],note:'礼拜日开放，告解室前排着队'},
-  {name:'因斯·赞格威尔',em:'🔥',loc:'east',locName:'东区贫民窟',days:[3],note:'有人见过一个相貌相似的人，最好别深究'},
+  {name:'邓恩·史密斯',em:'🧥',loc:'blackthorn',locName:'黑荆棘安保公司',days:[0,2,4,6],city:'tingen',note:'在整理值夜卷宗，桌上搁着凉透的咖啡'},
+  {name:'老尼尔',em:'📜',loc:'blackthorn',locName:'黑荆棘安保公司',days:[1,3,5],city:'tingen',note:'守着草药柜，愿意教人分辨安神草'},
+  {name:'伦纳德·米切尔',em:'🌹',loc:'chanis',locName:'查尼斯门',days:[0,3,6],city:'tingen',note:'倚着门框念诗，像在等谁'},
+  {name:'奥黛丽·霍尔',em:'💎',loc:'church',locName:'圣堂',days:[6],city:'tingen',note:'随家人来做礼拜，戴着一顶新帽子'},
+  {name:'阿尔杰·威尔森',em:'🌊',loc:'port',locName:'码头',days:[1,4],city:'tingen',note:'船刚靠岸，正与水手核对货单'},
+  {name:'佛尔思·沃尔',em:'📚',loc:'univ',locName:'廷根大学',days:[2,5],city:'tingen',note:'在图书馆翻旧报，替小说找素材'},
+  {name:'圣堂教会',em:'⛪',loc:'church',locName:'圣堂',days:[6],city:'tingen',note:'礼拜日开放，告解室前排着队'},
+  {name:'因斯·赞格威尔',em:'🔥',loc:'east',locName:'东区贫民窟',days:[3],city:'tingen',note:'有人见过一个相貌相似的人，最好别深究'},
+  /* ===== 贝克兰德（首都）人物 · 原创演绎 ===== */
+  {name:'老科勒',em:'🧓',loc:'bk_lodgings',locName:'旅馆房间',days:[0,1,2,3,4,5,6],city:'backlund',note:'旅馆门房，桥南与皇后区的闲话他都略知一二'},
+  {name:'迈克·约瑟夫',em:'📰',loc:'bk_parliament',locName:'国会与下议院',days:[1,3,5],city:'backlund',note:'报社同事，专跑下议院与市政厅的线'},
+  {name:'玛丽夫人',em:'💎',loc:'bk_queen',locName:'皇后区 · 上流社交',days:[2,6],city:'backlund',note:'沙龙的女主人，金镑与人脉的枢纽'},
+  {name:'本杰明执事',em:'⚙️',loc:'bk_george',locName:'圣乔治大教堂',days:[0,4],city:'backlund',note:'蒸汽教会的执事，愿与"识货的人"交谈'},
+  {name:'那位"读心者"',em:'🎭',loc:'bk_theatre',locName:'剧院区',days:[3,5],city:'backlund',note:'心理炼金会的成员，眼神像能看穿人心'},
+  {name:'独眼贩子',em:'🪙',loc:'bk_slum',locName:'桥南贫民窟',days:[1,2,4],city:'backlund',note:'桥南黑市的中间人，价码低得可疑'},
 ];
 // 玩家行为在「世界眼中」的第三人称措辞
 const LOC_ECHO={
@@ -797,19 +890,19 @@ const PATH_NOTES={
   whitetower:{s:'核对',n:'序列9 阅读者 · 序列0 白塔'},
   twilight:{s:'核对',n:'序列9 战士 · 序列0 黄昏巨人'},
   death:{s:'核对',n:'序列9 收尸人（旧版误作通灵者，已修正）· 序列0 死神'},
-  war:{s:'差异',n:'「战士」途径序列0 归属有战神 / 黄昏巨人两种整理口径'},
   tyrant:{s:'核对',n:'序列9 水手 · 序列0 暴君'},
   abyss:{s:'差异',n:'深渊途径序列9 为「罪犯」；「被缚者」归属另有整理口径'},
   demoness:{s:'核对',n:'序列9 刺客（旧版误作魔女，已修正）· 序列0 原初魔女'},
-  redpriest:{s:'差异',n:'序列9 猎人 · 序列0 红祭司；原著与「猎人」条同源'},
   dark:{s:'核对',n:'序列9 不眠者（旧版误作隐者）· 序列0 黑暗'},
-  hunter:{s:'差异',n:'序列9 猎人 · 序列0 红祭司；与「红祭司」条同源'},
+  hunter:{s:'核对',n:'序列9 猎人 · 序列0 红祭司（已并入原「红祭司」条）'},
   mother:{s:'核对',n:'序列9 耕种者 · 序列0 母亲'},
   moon:{s:'核对',n:'序列9 药师（旧版误作收尸人）· 序列0 月亮'},
   sun:{s:'核对',n:'序列9 歌颂者 · 序列0 太阳'},
-  chained:{s:'整理',n:'「异种」为游戏整理条目，原著 22 途径中无此名'},
   prisoner:{s:'核对',n:'序列9 囚犯 · 序列0 被缚者 / 深渊（归属有分歧）'},
   hermit:{s:'核对',n:'序列9 窥秘人 · 序列0 隐者'},
+  hangman:{s:'核对',n:'序列9 秘祈人 · 序列0 真实造物主（亦称命运之轮）'},
+  perfecter:{s:'核对',n:'序列9 通识者 · 序列0 完美者'},
+  monster:{s:'核对',n:'序列9 怪物 · 序列0 命运之轮'},
 };
 
 /* ---- 活的世界 · 计算与流转 ---- */
@@ -841,6 +934,7 @@ function ensureWorld(){
   if(!G.relations||typeof G.relations!=='object') G.relations={};
   if(!G.factions||typeof G.factions!=='object') G.factions={};
   if(!G.worldFlags||typeof G.worldFlags!=='object') G.worldFlags={};
+  if(!G.city||(G.city!=='tingen'&&G.city!=='backlund')) G.city='tingen';
   if(!G.billState||typeof G.billState!=='object') G.billState=null;
   if(typeof G.debt!=='number') G.debt=0;
 }
@@ -871,11 +965,12 @@ function echoSentence(e){
   if(/^(无人|不见|未有人|据传|有传闻)/.test(a)) return '有传闻称：'+a;
   return echoVoice()+a;
 }
-function todayEvent(day){ const n=WORLD_EVENTS.length; return WORLD_EVENTS[(((day-1)%n)+n)%n]; }
+function cityEvents(){ return (G&&G.city==='backlund')?BACKLUND_EVENTS:WORLD_EVENTS; }
+function todayEvent(day){ const arr=cityEvents(); const n=arr.length; return arr[(((day-1)%n)+n)%n]; }
 function makeNews(day){
   ensureWorld();
   const wd=worldDate(day), ev=todayEvent(day), prev=todayEvent(day-1);
-  const sus=(G.origin&&G.origin.suspicion)||0, last=G.echoes[0], flag=G.worldFlags[prev.id];
+  const sus=(G.origin&&G.origin.suspicion)||0, last=G.echoes[0], flag=G.worldFlags[(G.city||'tingen')+':'+prev.id];
   const follow=flag==='joined'
     ? '续报：'+prev.title+'一事，据称已有热心市民向值夜者递了线索，案情有了新方向。'
     : (flag==='passed' ? '续报：'+prev.title+'一事终归沉寂，报馆已撤下版面。'
@@ -923,7 +1018,7 @@ function newGame(pathway,intro){
   for(const k in (job.attrs||{})) attrs[k]=(attrs[k]||5)+job.attrs[k];
   for(const k in (react.attrs||{})) attrs[k]=(attrs[k]||5)+react.attrs[k];
   return {
-    pathway:pathway, seq:9, acting:0, actingNeed:30,
+    pathway:pathway, seq:9, acting:0, actingNeed:30, city:'tingen',
     madness:0, gold:12, day:1,
     attrs:attrs,
     origin:{
@@ -962,6 +1057,9 @@ function normalizeG(){
   if(!Array.isArray(G.rpPool)) G.rpPool=[];
   if(!G.attrs||typeof G.attrs!=='object') G.attrs={灵性:4,灵感:6,体魄:5,意志:6,学识:7,魅力:5};
   ATTR_KEYS.forEach(k=>{ if(typeof G.attrs[k]!=='number') G.attrs[k]=5; });
+  // 旧档途径迁移：合并 / 归并后，将原 key 映射到现行 key（redpriest→hunter、war→twilight、chained→prisoner）
+  const PATHWAY_MIGRATE={'redpriest':'hunter','war':'twilight','chained':'prisoner'};
+  if(PATHWAY_MIGRATE[G.pathway]) G.pathway=PATHWAY_MIGRATE[G.pathway];
   if(!PATHS[G.pathway]) G.pathway='fool';
   // 旧档兼容：补齐穿越者档案
   if(!G.origin||typeof G.origin!=='object') G.origin={};
@@ -986,6 +1084,7 @@ function normalizeG(){
   if(!G.relations||typeof G.relations!=='object') G.relations={};
   if(!G.factions||typeof G.factions!=='object') G.factions={};
   if(!G.worldFlags||typeof G.worldFlags!=='object') G.worldFlags={};
+  if(!G.city||(G.city!=='tingen'&&G.city!=='backlund')) G.city='tingen';
   if(!G.billState||typeof G.billState!=='object') G.billState=null;
   if(typeof G.debt!=='number') G.debt=0;
   if(G.echoes.length===0) G.echoes=[{day:G.day,act:'在水仙花街 2 号醒来，此后行止与从前略有不同'}];
@@ -1390,8 +1489,9 @@ function skipBill(){
 }
 function joinWorldEvent(){
   ensureWorld(); const ev=todayEvent(G.day);
-  if(G.worldFlags[ev.id]){ toast('此事已有你的痕迹'); return; }
-  G.worldFlags[ev.id]='joined';
+  const fk=(G.city||'tingen')+':'+ev.id;
+  if(G.worldFlags[fk]){ toast('此事已有你的痕迹'); return; }
+  G.worldFlags[fk]='joined';
   if(ev.g.acting) G.acting+=ev.g.acting;
   if(ev.g.gold) G.gold=+(G.gold+ev.g.gold).toFixed(4);
   if(ev.m) G.madness=Math.max(0,Math.min(100,G.madness+ev.m));
@@ -1412,8 +1512,9 @@ function joinWorldEvent(){
 }
 function skipWorldEvent(){
   ensureWorld(); const ev=todayEvent(G.day);
-  if(G.worldFlags[ev.id]){ toast('此事已有你的痕迹'); return; }
-  G.worldFlags[ev.id]='passed';
+  const fk=(G.city||'tingen')+':'+ev.id;
+  if(G.worldFlags[fk]){ toast('此事已有你的痕迹'); return; }
+  G.worldFlags[fk]='passed';
   addLedger('读到「'+ev.title+'」，未加理会。');
   save(); renderView(); toast('你把报纸翻了过去');
 }
@@ -1423,10 +1524,10 @@ VIEWS.world=function(v){
   ensureWorld();
   const wd=worldDate(G.day), ev=todayEvent(G.day), bs=billState(), news=makeNews(G.day);
   const rent=ECONOMY.weeklyRent, meals=+(ECONOMY.dailyMeal*7).toFixed(2), wage=ECONOMY.weeklyWage;
-  const sched=NPC_SCHEDULE.filter(n=>n.days.indexOf(wd.wd)>=0);
+  const sched=NPC_SCHEDULE.filter(n=>n.days.indexOf(wd.wd)>=0 && (n.city||'tingen')===G.city);
 
   const c1=document.createElement('div'); c1.className='card';
-  c1.innerHTML=`<h2>📰 今日世界 · 廷根</h2>
+  c1.innerHTML=`<h2>📰 今日世界 · ${G.city==='backlund'?'贝克兰德':'廷根'}</h2>
     <div class="world-date">
       <span class="wem">${wd.weather.em}</span>
       <span class="wd1">${wd.label}</span>
@@ -1438,14 +1539,14 @@ VIEWS.world=function(v){
 
   const c2=document.createElement('div'); c2.className='card';
   c2.innerHTML=`<div class="news">
-      <div class="nh"><b>廷 根 日 报</b><span>第 ${G.day} 日 · ${wd.m}月${wd.md}日 ${wd.weekday} · 零售 1 便士</span></div>
+      <div class="nh"><b>${G.city==='backlund'?'贝 克 兰 德 日 报':'廷 根 日 报'}</b><span>第 ${G.day} 日 · ${wd.m}月${wd.md}日 ${wd.weekday} · 零售 1 便士</span></div>
       ${news.map(n=>`<div class="ni"><span class="nc">${n.c}</span><span class="nt">${n.em} ${n.t}</span></div>`).join('')}
     </div>
     <p class="mini">「市井传闻」一栏写的是<b>你近日做过的事</b>。措辞随身份暴露风险变化——从「有人」到「水仙花街 2 号那位年轻住客」。</p>`;
   v.appendChild(c2);
 
   const c3=document.createElement('div'); c3.className='card';
-  const joined=G.worldFlags[ev.id];
+  const joined=G.worldFlags[(G.city||'tingen')+':'+ev.id];
   c3.innerHTML=`<h2>🌍 世界正在发生的事</h2>
     <div class="wev"><div class="wt">［${ev.tag}］${ev.title}</div>
       <p class="mini">${ev.body}</p><p class="mini">下期续报会因你今日的选择而不同。</p></div>
@@ -1499,10 +1600,21 @@ VIEWS.world=function(v){
 
 /* ---------- 诡秘世界地图 ---------- */
 VIEWS.map=function(v){
+  const cityName=G.city==='backlund'?'贝克兰德':'廷根';
   const c=document.createElement('div'); c.className='map';
-  c.innerHTML=`<div class="map-title"><span>🗺️ 诡秘世界 · 廷根城</span><span class="mini">点选地点探索 · 行动消耗天数</span></div>`;
+  const canTravelBK = G.seq<=7;
+  let travelHtml='';
+  if(G.city==='tingen'){
+    travelHtml = canTravelBK
+      ? `<div style="margin:10px 0;padding:10px 12px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:rgba(255,255,255,.04);display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between"><span>🚆 你已足够强大，可以远行至首都 <b style="color:var(--gold)">贝克兰德</b>。</span><button class="btn primary" onclick="travelTo('backlund')">远行 · 前往贝克兰德（2 金镑 · 耗时 3 日）</button></div>`
+      : `<div style="margin:10px 0;padding:10px 12px;border:1px dashed rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.02);color:var(--dim)">🚆 需达序列 7 及以上方可远行（你目前序列 ${G.seq}）。更强一些，首都自会向你敞开。</div>`;
+  } else {
+    travelHtml = `<div style="margin:10px 0;padding:10px 12px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:rgba(255,255,255,.04);display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between"><span>🚆 你身在首都贝克兰德。想回去，列车随时在站。</span><button class="btn ghost" onclick="travelTo('tingen')">返回廷根（2 金镑 · 耗时 3 日）</button></div>`;
+  }
+  c.innerHTML=`<div class="map-title"><span>🗺️ 诡秘世界 · ${cityName}</span><span class="mini">点选地点探索 · 行动消耗天数</span></div>${travelHtml}`;
   const locs=document.createElement('div'); locs.className='locs';
   LOCATIONS.forEach(loc=>{
+    if(loc.city && loc.city!=='all' && loc.city!==G.city) return;
     if(loc.needTarot && !G.tarotUnlocked) return;
     const d=document.createElement('div'); d.className='loc'+(G.visited[loc.id]?' done':'');
     d.innerHTML=`<span class="riski ${loc.risk}">${loc.risk==='low'?'安稳':loc.risk==='mid'?'凶险':'致命'}</span>
@@ -1515,15 +1627,46 @@ VIEWS.map=function(v){
   const note=document.createElement('div'); note.className='card';
   const sl=suspLabel(), myMems=(G.origin&&G.origin.memories)||[];
   const usable=Object.keys(MODERN_SOLUTIONS).filter(k=>{const m=MODERN_SOLUTIONS[k];return !m.mem||myMems.indexOf(m.mem)>=0;});
+  const bkLine = (G.storyFlags&&G.storyFlags.bkCultDone)
+    ? `<p class="mini" style="color:var(--gold)">🌊 贝克兰德暗涌 · 已了：你递出的线索让极光会的暗流暂时平息，名字也第一次进了值夜者的"可用名单"。</p>`
+    : ((G.storyFlags&&G.storyFlags.bkCultClue)?`<p class="mini" style="color:var(--teal)">🌊 贝克兰德暗涌：你已窥见极光会的线索，去「国会与下议院」把它递出去。</p>`:'');
   note.innerHTML=`<h3 style="margin-top:0">此刻</h3>
-    <p class="mini" id="mapNote">你行走在雾气弥漫的廷根。选择一处地点，让命运向你展开。若在「扮演」中充分消化、或于「晋升」中集齐材料，序列将逐级登临。</p>
+    <p class="mini" id="mapNote">你行走在${cityName}。选择一处地点，让命运向你展开。若在「扮演」中充分消化、或于「晋升」中集齐材料，序列将逐级登临。</p>
+    ${bkLine}
     <p class="mini">🜁 当前有 <b style="color:var(--teal)">${usable.length}</b> 处地点可走出「来自另一个世界」的专属解法：${myMems.length} 条来自你携带的现代认知，另有<b>灰雾之间</b>通用的对镜练习（可降低暴露风险）。</p>
     <p class="mini">🎭 身份暴露风险：<b class="${sl.c}">${G.origin?G.origin.suspicion:0} / 100 · ${sl.t}</b>（满 100% 将被看穿）。</p>`;
   v.appendChild(note);
 };
+function travelTo(city){
+  if(!G||G.city===city) return;
+  const cost=2;
+  if(G.gold<cost){ toast('金镑不足，买不起车票（需 '+cost+' 金镑）'); return; }
+  G.gold=+(G.gold-cost).toFixed(4);
+  const toName=city==='backlund'?'贝克兰德':'廷根';
+  const echoes=['在开往'+toName+'的列车上，你把脸贴在车窗','列车穿过三座城，煤烟落满衣领','抵达'+toName+'时，站台的雾比记忆里更浓'];
+  for(let i=0;i<3;i++) advanceDay('远行途中','有人见其'+echoes[i], city==='backlund'?'tarot':'nighthawk');
+  G.city=city;
+  save(); updateTop();
+  if(city==='backlund' && !(G.storyFlags&&G.storyFlags.bkArrived)){
+    if(!G.storyFlags) G.storyFlags={};
+    G.storyFlags.bkArrived=true; save();
+    showModal(`<span class="x" onclick="closeModal();buildTabs();renderView()">✕</span>
+      <h2>🚆 抵达贝克兰德</h2>
+      <p class="lead">列车驶入这座雾都。烟囱比廷根更密，煤气灯比记忆更亮，皇后的纹章与桥南的煤灰共用同一片夜空。</p>
+      <p class="mini">你把行李放进租来的小屋，灰雾仍会在这里接你回去。从这里起，舞台更大，暗流更深——贝克兰德的篇章，由你提笔。</p>
+      <p class="mini">🕯️ 贝克兰德的人物、地点与世界事件均为本游戏的原创演绎，用作更大舞台，不复制原著剧情。</p>
+      <div class="btn-row"><button class="btn primary" onclick="closeModal();buildTabs();renderView()">走入贝克兰德</button></div>`);
+  } else {
+    showModal(`<span class="x" onclick="closeModal();buildTabs();renderView()">✕</span>
+      <h2>🚆 回到廷根</h2>
+      <p class="lead">列车把你送回熟悉的雾里。水仙花街 2 号还在老地方，班森与梅丽莎大约正等着那封家书。</p>
+      <div class="btn-row"><button class="btn primary" onclick="closeModal();buildTabs();renderView()">回到廷根</button></div>`);
+  }
+  buildTabs(); renderView();
+}
 function enterLocation(id){
   const loc=LOCATIONS.find(l=>l.id===id); const ev=loc.ev;
-  let optsHtml=ev.opts.map((o,i)=>{
+  let optsHtml=ev.opts.map((o,i)=>({o,i})).filter(x=>!x.o.hideUnless||(G.storyFlags&&G.storyFlags[x.o.hideUnless])).map(({o,i})=>{
     let hint='';
     if(o.check>0) hint=`<div class="check-hint">需 ${ATTR_META[o.attr||'灵感'].name} 检定（难度 ${o.check}）${o.win?(' · 成功可得 '+optGainTxt({g:o.win,mat:o.win.mat,char:o.win.char,main:o.win&&o.win.main})):''}</div>`;
     return `<button class="choice" onclick="resolveLocation('${id}',${i})">
@@ -1570,6 +1713,8 @@ function resolveLocation(id,idx){
     if(o.win.mat) G.inv[o.win.mat]=(G.inv[o.win.mat]||0)+1;
     if(o.win.main){ if(grantMainMat()==='duplicate') toast('已持有该序列特性，折为 10 金镑'); }   // 剥离出当前晋升目标所需的非凡特性
     if(o.win.atr) applyAttr(o.win.atr);
+    if(o.win.flag){ if(!G.storyFlags) G.storyFlags={}; G.storyFlags[o.win.flag]=1; }   // 剧情线旗标（如贝克兰德暗涌）
+    if(o.win.diary){ G.diary.unshift({day:G.day,seq:curSeq().name,title:loc.ev.title+' · 暗涌',fit:'ok',opt:o.win.diary,diary:o.win.diary}); if(G.diary.length>40) G.diary.length=40; }
   }
   G.madness=Math.max(0,Math.min(100,G.madness));
   G.visited[id]=true;
@@ -1873,7 +2018,9 @@ VIEWS.codex=function(v){
     <div class="mini">· <b style="color:var(--teal)">值夜者</b>：圣堂教会官方非凡机构，镇守廷根，黑荆棘安保公司为其据点。<br>
       · <b style="color:var(--teal)">极光会</b>：崇拜"真实造物主"的激进组织，常于东区散发传单。<br>
       · <b style="color:var(--teal)">秘祈人 / 密修会</b>：游走于正邪之间的隐秘结社。<br>
-      · <b style="color:var(--teal)">塔罗会</b>：你以"愚者"之名召集的信众，灰雾之上互通有无。</div>`;
+      · <b style="color:var(--teal)">塔罗会</b>：你以"愚者"之名召集的信众，灰雾之上互通有无。</div>
+    <h3 style="margin-top:14px">贝克兰德 · 首都舞台</h3>
+    <p class="mini">当你的序列抵达 <b>7 及以上</b>，可乘列车远行至首都贝克兰德。那里有皇后区的沙龙、桥南的贫民窟、圣乔治大教堂与国会下议院——更大的舞台，更深的暗流（含一条可了结的「贝克兰德暗涌」线索）。<b>贝克兰德的地点、人物与世界事件均为本游戏的原创演绎</b>，仅借用原著的城市与时代作背景，不复制原著剧情。</p>`;
   v.appendChild(c4);
 
   const o=G.origin||{}, myM=(o.memories||[]);
@@ -1919,7 +2066,7 @@ VIEWS.codex=function(v){
       const em=nt.s==='核对'?'✅':(nt.s==='差异'?'⚠️':'🕯️');
       return `<span class="ab" style="${k===G.pathway?'border-color:var(--gold)':''}"><b>${em} ${p.name} · 序列9「${p.entry||p.seqs[0].name}」</b> · ${nt.n}</span>`;}).join('')}</div>
     <p class="mini">已修正的旧错配：死神 通灵者→收尸人、月亮 收尸人→药师、红祭司 医师→猎人、黑暗 隐者→不眠者、魔女 魔女→刺客、深渊 魔鬼→罪犯、囚犯 犯人→囚犯。<br>
-      ⚠️ 尚存的结构性差异：原著「猎人」途径序列 0 即红祭司，本游戏为使 22 条齐全将其与「红祭司」分列；「战神 / 黄昏巨人」「深渊 / 被缚者」的序列 0 归属在不同整理资料中亦有分歧。此处如实标注，不冒称考据定论。</p>`;
+      ⚠️ 考据说明：本作已消除「猎人 / 红祭司分列」「战神 / 黄昏巨人分列」两处原结构差异，现二十二途径名册严格对齐原著。仅余「深渊（罪犯）/ 被缚者（囚犯）」的序列 0 归属在个别整理资料中仍有分歧，此处如实标注，不冒称考据定论。</p>`;
   v.appendChild(c7);
 
   const c8=document.createElement('div'); c8.className='card';
