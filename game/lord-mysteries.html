@@ -575,6 +575,28 @@ const LOCATIONS=[
         {t:'试探那位"读心者"',sub:'中风险：以灵感对峙，或得见识',g:{acting:5},atr:{灵感:1},m:3,check:2,attr:'灵感',win:{acting:3}},
         {t:'只做安静的看客',sub:'不露声色',g:{acting:3},m:0,check:0},
       ]}},
+  {id:'bk_dock',em:'🚢',name:'雾港码头',risk:'mid',city:'backlund',d:'贝克兰德的水上门户。走私船在雾里进进出出，装卸的号子声盖不住缆绳间的低语。',repeat:true,
+    ev:{title:'雾里的号子',desc:'汽笛声从雾深处传来，短促、发闷，像被什么捂住了嘴。码头上，一票没有报关单的货正被搬进仓房。',
+      opts:[
+        {t:'接一票押运的活',sub:'凭体魄吃饭，挣辛苦钱',g:{acting:5,gold:7},atr:{体魄:1},m:1,check:1,attr:'体魄',win:{gold:5}},
+        {t:'潜入走私船的货舱',sub:'中风险：以灵感寻宝，或得材料',g:{},atr:{灵感:1},m:3,check:2,attr:'灵感',win:{mat:'秘银丝'}},
+        {t:'听老水手讲雾中怪谈',sub:'不花钱的教训，也是见识',g:{acting:4},atr:{灵感:1},m:0,check:0},
+        {t:'随值夜者参加收网行动',sub:'暗涌第二幕：按你递出的线索布网（需已密报）',g:{acting:8},atr:{体魄:1,灵感:1},m:2,check:3,attr:'灵感',hideUnless:'bkCultDone',win:{flag:'bkNetDone',gold:15,acting:8,mat:'星水晶',diary:'收网那夜，雾比往常更浓。当最后一艘接应船被拦下时，带队的值夜者朝你点了点头——没有道谢，但名单上的名字旁，多了一个记号。'}},
+      ]}},
+  {id:'bk_hospital',em:'🏥',name:'慈惠医院',risk:'low',city:'backlund',d:'教会捐建的慈善医院，收容桥南送来的伤者。石碳酸的气味里，混着煤灰与祷告。',repeat:true,
+    ev:{title:'长廊尽头的咳嗽声',desc:'长廊两侧挤满了床位，咳嗽声此起彼伏。修女们步履匆匆，缺人手，缺药品，唯独不缺伤员。',
+      opts:[
+        {t:'帮修女们义诊',sub:'上手包扎，赢下感激与平静',g:{acting:6},atr:{意志:1},m:-3,check:1,attr:'意志'},
+        {t:'陪护重伤的码头工人',sub:'听他讲雾里的遭遇',g:{acting:4},atr:{灵感:1},m:0,check:0},
+        {t:'安静整理药柜',sub:'琐碎的活计，让心绪落回原处',g:{acting:2},atr:{意志:1},m:-5,check:0},
+      ]}},
+  {id:'bk_ring',em:'🥊',name:'地下拳场',risk:'mid',city:'backlund',d:'桥南废弃仓库的地窖。汗水、血与赌注在煤油灯下翻滚——这里只承认一种语言。',repeat:true,
+    ev:{title:'地窖里的喧嚣',desc:'拳台围着一圈嘶喊的人。登记拳手只要一个化名，赔率牌上的粉笔字还没写完，下一场就开始了。',
+      opts:[
+        {t:'化名下场打一场',sub:'高风险：赢了是金镑，输了是伤',g:{},atr:{体魄:1},m:2,check:2,attr:'体魄',win:{gold:12,acting:6}},
+        {t:'押注观战',sub:'凭眼力下注，小赌怡情',g:{gold:-3,acting:3},atr:{灵感:1},m:0,check:1,attr:'灵感',win:{gold:8}},
+        {t:'从拳手的闲谈里捞消息',sub:'地下的耳目，比报纸灵通',g:{acting:4,gold:2},atr:{魅力:1},m:0,check:0},
+      ]}},
 ];
 
 /* ========================= 数据：通用扮演事件（第一人称"你"） ========================= */
@@ -777,6 +799,10 @@ const MODERN_SOLUTIONS={
     sub:'他喊的价、他愿意等的时长、他偷看巷口的频率，都是可算的信息。',
     g:{gold:9,acting:4},atr:{学识:1,魅力:1},sus:1,mat:'变异蘑菇',
     diary:'我没有还价，只报了一个他几乎不可能拒绝的数。独眼贩子骂了句脏话，把试管推过来。数学是少数几个跨世界还讲道理的东西——哪怕在桥南。'},
+  bk_hospital:{mem:'medicine',em:'🏥',title:'用「基础医学」稳住长廊里的伤员',
+    sub:'这里的伤口来自机器、拳头与更糟的东西。隔离、清创、记录体征——你做的事，修女们称为"神迹"。',
+    g:{acting:7,gold:2},atr:{学识:1,意志:1},sus:2,m:-4,
+    diary:'我按无菌的路数处理了三处溃烂的创口，又劝看护把伤员分间安置。夜班修女握着我的手说「主赐予了你技艺」。我没纠正她。有些知识，在这里只能借神的名义行走。'},
 };
 
 /* =====================================================================
@@ -867,6 +893,9 @@ const NPC_SCHEDULE=[
   {name:'本杰明执事',em:'⚙️',loc:'bk_george',locName:'圣乔治大教堂',days:[0,4],city:'backlund',note:'蒸汽教会的执事，愿与"识货的人"交谈'},
   {name:'那位"读心者"',em:'🎭',loc:'bk_theatre',locName:'剧院区',days:[3,5],city:'backlund',note:'心理炼金会的成员，眼神像能看穿人心'},
   {name:'独眼贩子',em:'🪙',loc:'bk_slum',locName:'桥南贫民窟',days:[1,2,4],city:'backlund',note:'桥南黑市的中间人，价码低得可疑'},
+  {name:'老雅各',em:'⚓',loc:'bk_dock',locName:'雾港码头',days:[0,2,5],city:'backlund',note:'在雾里跑了四十年船的老水手，怪谈比船票还多'},
+  {name:'艾格妮丝修女',em:'🕯️',loc:'bk_hospital',locName:'慈惠医院',days:[1,3,4,6],city:'backlund',note:'夜班的看护，感激每一双愿意搭把子的手'},
+  {name:'拳场管事"铜哨"',em:'🥊',loc:'bk_ring',locName:'地下拳场',days:[2,4,5],city:'backlund',note:'只认化名与押金，眼睛却比赔率牌更毒'},
 ];
 // 玩家行为在「世界眼中」的第三人称措辞
 const LOC_ECHO={
@@ -878,6 +907,17 @@ const LOC_ECHO={
   east:'于东区黑市与人低声议价',
   port:'在码头与一名外港水手交谈',
   tarot:'无人见其行踪，灰雾却翻涌了一夜',
+  bk_lodgings:'在旅馆门房那里坐到很晚，问了不少事',
+  bk_univ:'在大学钞本室翻阅过年份可疑的旧档',
+  bk_george:'于圣乔治大教堂的大弥撒末尾悄然离席',
+  bk_queen:'出现在皇后区某场没有名帖的沙龙里',
+  bk_slum:'被人瞧见在桥南黑市讨价还价',
+  bk_factory:'深夜出入工厂区，与夜班工头攀谈',
+  bk_parliament:'在国会旁听席坐了整个下午',
+  bk_theatre:'在剧院后台的镜廊里与人低语',
+  bk_dock:'在雾港码头问过一票没报关单的货',
+  bk_hospital:'在慈惠医院帮忙义诊，修女们称其手艺近乎神迹',
+  bk_ring:'以化名出现在桥南地下拳场的名单上',
 };
 // 22 途径序列 9 名称的核对状态（诚实标注，不冒称考据定论）
 const PATH_NOTES={
@@ -1627,9 +1667,11 @@ VIEWS.map=function(v){
   const note=document.createElement('div'); note.className='card';
   const sl=suspLabel(), myMems=(G.origin&&G.origin.memories)||[];
   const usable=Object.keys(MODERN_SOLUTIONS).filter(k=>{const m=MODERN_SOLUTIONS[k];return !m.mem||myMems.indexOf(m.mem)>=0;});
-  const bkLine = (G.storyFlags&&G.storyFlags.bkCultDone)
-    ? `<p class="mini" style="color:var(--gold)">🌊 贝克兰德暗涌 · 已了：你递出的线索让极光会的暗流暂时平息，名字也第一次进了值夜者的"可用名单"。</p>`
-    : ((G.storyFlags&&G.storyFlags.bkCultClue)?`<p class="mini" style="color:var(--teal)">🌊 贝克兰德暗涌：你已窥见极光会的线索，去「国会与下议院」把它递出去。</p>`:'');
+  const bkLine = (G.storyFlags&&G.storyFlags.bkNetDone)
+    ? `<p class="mini" style="color:var(--teal)">🌊 贝克兰德暗涌 · 落幕：收网那夜的雾比往常更浓。此后值夜者的名单上，你的名字旁多了一个记号。</p>`
+    : ((G.storyFlags&&G.storyFlags.bkCultDone)
+      ? `<p class="mini" style="color:var(--gold)">🌊 贝克兰德暗涌 · 第二幕：值夜者已按你的线索在「雾港码头」布网——他们还缺一个敢下场的人。</p>`
+      : ((G.storyFlags&&G.storyFlags.bkCultClue)?`<p class="mini" style="color:var(--teal)">🌊 贝克兰德暗涌：你已窥见极光会的线索，去「国会与下议院」把它递出去。</p>`:''));
   note.innerHTML=`<h3 style="margin-top:0">此刻</h3>
     <p class="mini" id="mapNote">你行走在${cityName}。选择一处地点，让命运向你展开。若在「扮演」中充分消化、或于「晋升」中集齐材料，序列将逐级登临。</p>
     ${bkLine}
