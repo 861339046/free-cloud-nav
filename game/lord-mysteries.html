@@ -88,6 +88,8 @@
   .diary-item{background:#101a20;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin:7px 0;font-size:12.5px;line-height:1.55}
   .diary-item .dh{color:var(--gold);font-size:12px}
   .diary-item .dm{color:var(--muted);margin-top:3px}
+  .diary-item.recall{cursor:pointer;transition:.15s}
+  .diary-item.recall:hover{border-color:var(--teal2);background:#13202a;transform:translateY(-1px)}
   .diary-empty{color:var(--dim);font-size:12.5px;margin-top:8px}
   /* 世界地图 */
   .map{position:relative;background:linear-gradient(160deg,#0c1420,#0a1019);border:1px solid var(--line);
@@ -607,12 +609,12 @@ const ORIGIN={
 // 原身记忆碎片：随探索逐片拾起。这些是「他」的二十二年，不是穿越者的——
 // 借来的身体因此慢慢变成一个具体的人。片段为游戏化原创，不冒充原著情节。
 const ORIGIN_MEMORIES=[
-  {t:'水仙花街的晚饭',d:'班森把盘子里唯一一块肉夹给梅丽莎，说自己在公司吃过了。他没吃。这具身体记得那句谎话的语气，甚至记得桌角那道被烫白的痕。'},
-  {t:'毕业那天的合照',d:'廷根大学历史系的院子里，班森借了相机，反复叮嘱他别把帽子压太低。照片洗出来时，母亲的位置空着——谁也没提。'},
-  {t:'被拆开的闹钟',d:'梅丽莎把家里的闹钟拆了一地，装不回去，急得眼圈发红。他陪她蹲到煤气灯亮起，一枚一枚把齿轮归位。她那时说，长大要造比这更大的机器。'},
-  {t:'第三封未获回复的求职信',d:'待业的第三个月，他把回信地址抄了又抄，字迹一次比一次工整。班森没催过，只在他半夜起身时，默默把客厅的灯留着。'},
-  {t:'怀表与旧大衣',d:'父亲留下的怀表走得慢，他每周日上一次弦。大衣袖口磨白了，他总说等找到差事再换。原来一个人过日子，是由这些很小的固执撑起来的。'},
-  {t:'断掉的那一夜',d:'记忆在这里整齐地断了一截：左轮、写满符号的纸、以「我」笔迹留下的遗书。你翻遍了所有碎片，唯独这一夜仍不肯回来——那是他留给你的、也可能是留给自己的谜。'},
+  {t:'水仙花街的晚饭',d:'班森把盘子里唯一一块肉夹给梅丽莎，说自己在公司吃过了。他没吃。这具身体记得那句谎话的语气，甚至记得桌角那道被烫白的痕。',feel:'你替他尝到那块不存在的肉的空缺。原来穷，是一个家合力演给彼此看的一场戏，而所有人都配合得很好。'},
+  {t:'毕业那天的合照',d:'廷根大学历史系的院子里，班森借了相机，反复叮嘱他别把帽子压太低。照片洗出来时，母亲的位置空着——谁也没提。',feel:'照片里空着的位置，你竟比他还清楚该是谁。这不属于你的遗憾，正悄悄长进你的骨血。'},
+  {t:'被拆开的闹钟',d:'梅丽莎把家里的闹钟拆了一地，装不回去，急得眼圈发红。他陪她蹲到煤气灯亮起，一枚一枚把齿轮归位。她那时说，长大要造比这更大的机器。',feel:'你想起自己那台坏了就换、从不拆开的手机。两种活法，在煤气灯下的这一夜第一次有了高下。'},
+  {t:'第三封未获回复的求职信',d:'待业的第三个月，他把回信地址抄了又抄，字迹一次比一次工整。班森没催过，只在他半夜起身时，默默把客厅的灯留着。',feel:'简历、投递、已读不回——这你熟。可他的灯，是有人替他留着的；你的没有。'},
+  {t:'怀表与旧大衣',d:'父亲留下的怀表走得慢，他每周日上一次弦。大衣袖口磨白了，他总说等找到差事再换。原来一个人过日子，是由这些很小的固执撑起来的。',feel:'慢一点，再撑一撑。你忽然懂了，为什么有些人宁可不换。那是他们唯一能抓住的、属于自己的时间。'},
+  {t:'断掉的那一夜',d:'记忆在这里整齐地断了一截：左轮、写满符号的纸、以「我」笔迹留下的遗书。你翻遍了所有碎片，唯独这一夜仍不肯回来——那是他留给你的、也可能是留给自己的谜。',feel:'这一段怎么也想不起来。可每次逼近，太阳穴那道擦伤就隐隐发烫——他是想让你看，还是不敢让你看？'},
 ];
 function addFrag(){
   if(!G||!G.origin) return;
@@ -627,6 +629,34 @@ function addFrag(){
     G.origin.suspicion=Math.max(0,(G.origin.suspicion||0)-10);
     toast('拼回了他的一生 · 演起来更像了（暴露风险 -10）');
   }
+}
+// 记忆闪回：把已拾起的原身记忆做成可交互的「回忆事件」——点开是一片氛围闪回，并给出一次轻互动
+function recallMemory(idx){
+  if(!G||!G.origin) return;
+  const m=ORIGIN_MEMORIES[idx];
+  if(!m) return;
+  const recalled=(G.origin.recalled||[]);
+  const done=recalled.indexOf(idx)>=0;
+  showModal(`<span class="x" onclick="closeModal()">✕</span>
+    <h2 style="color:var(--gold)">🕯️ ${m.t}</h2>
+    <p class="lead">${m.d}</p>
+    <div class="soliloquy">${m.feel}</div>
+    ${done?`<p class="mini" style="color:var(--dim)">你已与这段记忆共处过了。</p>`
+      :`<div class="acts" style="margin-top:12px">
+          <button class="btn ghost" onclick="recallChoose(${idx},'immerse')">沉浸其中 · 更懂「他」一点（消化 +4）</button>
+          <button class="btn ghost" onclick="recallChoose(${idx},'suppress')">压下情绪 · 不让外人看出异样（暴露 -2）</button>
+        </div>`}
+    <p class="mini" style="margin-top:10px">🕯️ 片段为游戏化原创演绎，用于让「借来的身体」有重量，非原著情节。</p>`);
+}
+function recallChoose(idx,choice){
+  if(!G||!G.origin) return;
+  const o=G.origin;
+  if(!Array.isArray(o.recalled)) o.recalled=[];
+  if(o.recalled.indexOf(idx)>=0){ closeModal(); return; }
+  o.recalled.push(idx);
+  if(choice==='immerse'){ G.acting+=4; toast('沉浸回忆 · 消化 +4'); }
+  else { o.suspicion=Math.max(0,(o.suspicion||0)-2); toast('压下情绪 · 暴露 -2'); }
+  save(); closeModal(); renderView();
 }
 const MODERN_JOBS=[
   {id:'clerk',em:'💼',name:'加班到深夜的职员',desc:'报表、末班地铁、凉掉的外卖。最后一记得是屏幕上过曝的白光，和一声很轻的耳鸣。',attrs:{意志:1,学识:1},note:'耐得住枯燥，擅长把混乱整理成表格。'},
@@ -900,7 +930,7 @@ function newGame(pathway,intro){
       modernName:i.name||'你', job:job.id, jobName:job.name,
       bodyName:ORIGIN.body, bodyEn:ORIGIN.bodyEn, address:ORIGIN.address, world:ORIGIN.world,
       memories:(i.mems||[]).slice(0,2), react:react.id,
-      suspicion:Math.max(0,react.sus||0), frag:0,
+      suspicion:Math.max(0,react.sus||0), frag:0, recalled:[],
     },
     inv:{'星水晶':2,'安神草':2,'水银':1},
     storyFlags:{}, visited:{}, tarotUnlocked:false, tarotCount:0,
@@ -936,6 +966,7 @@ function normalizeG(){
   // 旧档兼容：补齐穿越者档案
   if(!G.origin||typeof G.origin!=='object') G.origin={};
   const o=G.origin;
+  if(!Array.isArray(o.recalled)) o.recalled=[];
   if(!o.modernName) o.modernName='你';
   if(!o.job) o.job='clerk';
   if(!o.jobName) o.jobName=MODERN_JOBS[0].name;
@@ -1308,8 +1339,8 @@ VIEWS.status=function(v){
       <div class="row"><b>记忆缺口</b><span>${ORIGIN.mystery}</span></div>
       <div class="row"><b>拼回碎片</b><span>已拾起 ${frag} / ${ORIGIN_MEMORIES.length} 片（随探索增长）</span></div>
     </div>
-    <h3>他的二十二年 · 记忆碎片</h3>
-    ${frag>0?ORIGIN_MEMORIES.slice(0,Math.min(frag,ORIGIN_MEMORIES.length)).map(m=>`<div class="diary-item"><div class="dh">🕯️ ${m.t}</div><p class="mini">${m.d}</p></div>`).join(''):'<p class="mini">尚未想起任何片段。去廷根城里走走，那些不属于你的日子会一片片回来。</p>'}
+    <h3>他的二十二年 · 记忆碎片 <span class="mini" style="color:var(--teal)">（点开，让一段日子重新亮起来）</span></h3>
+    ${frag>0?ORIGIN_MEMORIES.slice(0,frag).map((m,i)=>`<div class="diary-item recall" onclick="recallMemory(${i})"><div class="dh">🕯️ ${m.t} ${G.origin.recalled&&G.origin.recalled.indexOf(i)>=0?'<span class="fit ok">已回味</span>':''}</div><p class="mini">${m.d}</p><p class="mini" style="color:var(--teal)">轻触，重新走过这一天 →</p></div>`).join(''):'<p class="mini">尚未想起任何片段。去廷根城里走走，那些不属于你的日子会一片片回来。</p>'}
     ${frag<ORIGIN_MEMORIES.length?`<p class="mini">还有 ${ORIGIN_MEMORIES.length-frag} 片散落在雾里。集齐之后，你会更像他一点。</p>`:'<p class="mini">已拼回全部碎片。你比初来时更懂得该怎么当「克莱恩·莫雷蒂」。</p>'}
     <p class="mini">🕯️ 片段为游戏化原创演绎，用于让「借来的身体」有重量，非原著情节。</p>
     <h3>从另一个世界带来的认知</h3>
