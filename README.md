@@ -80,6 +80,7 @@ GitHub 仓库 Secrets：`CRON_SECRET`（与 Pages 环境变量同值）——供
 - GitHub schedule 按 UTC 执行，高峰可能延迟数分钟到数小时（GitHub 已知现象），页面会按数据时间提示新鲜度；
 - 仓库连续 60 天无活动会被暂停定时任务，有推送即恢复；
 - 可在 Actions 页手动 **Run workflow** 立即测试； Pages 自带的 Cron Trigger 已下线，勿再依赖。
+- 每次运行**先 GET 一次 `/api/services` 做 Supabase 保活**（服务端会查一次 `submissions` 表），避免免费项目因 7 天无数据库活动被自动暂停。
 
 ## 六、日常维护
 
@@ -87,7 +88,15 @@ GitHub 仓库 Secrets：`CRON_SECRET`（与 Pages 环境变量同值）——供
 - **新增工具**：复制一个 `tool-*.html` 改内容，在 `tools.html` 加卡片，`sitemap.xml` 加条目
 - **额度变动**：及时更新 `index.html` 对应条目的 `note`
 - **安全头收紧**：CSP 现为 Report-Only，观察无违规报告后可改为强制（改 `_headers`）
-- **暗色模式**：所有页面已支持 `prefers-color-scheme`，新增页面时把 `<style>` 放在 `</head>` 前即可被覆盖规则命中（或复用现有页面骨架）
+- **暗色模式**：样式集中在 `assets/dark.css`，全站统一外链；新增页面在 `</head>` 前加一行 `<link rel="stylesheet" href="assets/dark.css" />` 即可
+
+### 故障：后台报「error code: 1016」/ 登录失败
+
+**原因**：Supabase 免费项目 7 天无数据库活动会被自动暂停；暂停后 `<ref>.supabase.co` 返回 NXDOMAIN（外部看和项目被删除一样），Cloudflare 侧表现为 HTTP 530 + `error code: 1016`。此时后台、留言板、提交收录、首页动态收录全部不可用；静态页面与 KV 点击统计不受影响。
+
+**恢复**：登录 Supabase Dashboard → 选中项目 → **Resume project** → 等待 2–5 分钟。数据完整保留，暂停后 1 年内可恢复。用 `curl https://keting.eu.org/api/services` 验证返回 `{"ok":true,...}` 即恢复。
+
+**防复发**：靠上面 `status-probe.yml` 的保活步骤。若仓库长期不推送（GitHub 60 天会停定时任务），记得每 1–2 个月去 Actions 页手动 **Run workflow** 一次。
 
 ## 七、安全设计要点
 

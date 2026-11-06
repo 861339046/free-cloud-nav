@@ -56,6 +56,18 @@ function requireConfig(env) {
   return { SUPABASE_URL };
 }
 
+// Cloudflare 1016 / HTTP 530 = 源站域名解析失败。Supabase 免费项目 7 天无数据库活动
+// 被自动暂停时正是这个表现（NXDOMAIN，从外部看和「项目被删除」一模一样）。
+// 把这类天书错误码翻译成可执行的处置建议，避免站长对着数字猜。
+function upstreamErrorMessage(status, text) {
+  const t = String(text || '');
+  if (status === 530 || /error code:\s*1016|Origin DNS error/i.test(t)) {
+    return 'Supabase 项目可能已被自动暂停（免费版 7 天无数据库活动会自动暂停，暂停后域名不可解析）。'
+      + '请登录 Supabase Dashboard → 选中项目 → 点「Resume project」恢复，等几分钟后重试。';
+  }
+  return 'Supabase 返回错误：' + t.slice(0, 300);
+}
+
 // GET /api/admin?status=pending —— 列出申请（不传 status 列出全部，最多 200 条）
 export async function onRequestGet(context) {
   try {
@@ -73,7 +85,7 @@ export async function onRequestGet(context) {
       headers: supabaseHeaders(env)
     });
     const text = await res.text().catch(() => '');
-    if (!res.ok) return json({ ok: false, upstreamStatus: res.status, message: 'Supabase 返回错误：' + text.slice(0, 300) });
+    if (!res.ok) return json({ ok: false, upstreamStatus: res.status, message: upstreamErrorMessage(res.status, text) });
 
     return json({ ok: true, rows: JSON.parse(text || '[]') });
   } catch (e) {
@@ -119,7 +131,7 @@ export async function onRequestPost(context) {
       body
     });
     const text = await res.text().catch(() => '');
-    if (!res.ok) return json({ ok: false, upstreamStatus: res.status, message: 'Supabase 返回错误：' + text.slice(0, 300) });
+    if (!res.ok) return json({ ok: false, upstreamStatus: res.status, message: upstreamErrorMessage(res.status, text) });
 
     return json({ ok: true });
   } catch (e) {

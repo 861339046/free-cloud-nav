@@ -19,6 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # 保活：Supabase 免费项目 7 天无「数据库查询」会被自动暂停（暂停后域名 NXDOMAIN，
+      # Cloudflare 报 1016/530，后台与留言板全挂）。/api/services 由服务端查 submissions 表，
+      # 每次调用即产生一次真实数据库活动。放在探测之前、失败也不阻断主流程；
+      # 本 workflow 实际 3–4 小时跑一次，足够维持活跃，无需新增任何 Secret。
+      - name: 保活 Supabase 数据库
+        run: |
+          curl -fsS -m 30 https://keting.eu.org/api/services > /dev/null \
+            || echo "warn: keepalive 请求失败（不影响状态探测；若持续失败请检查 Supabase 项目是否被暂停）"
       - name: 触发状态探测
         run: |
           for i in 1 2 3; do
