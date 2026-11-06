@@ -876,6 +876,62 @@ const FACTIONS=[
   {id:'aurora',name:'极光会',em:'🌅',desc:'在东区散发传单的激进组织'},
   {id:'rose',name:'玫瑰学派',em:'🌹',desc:'魔女与欢愉的暗影，最好只远远看着'},
 ];
+/* ===== 值夜者名录 · 编外委托（原创演绎）=====
+   收网之后名字进了名单，值夜者开始给「编外合作者」派活。
+   tier 决定委托难度与报酬；名录资历越高，可接的池子越大。 */
+const COMMISSION_RANKS=[
+  {name:'编外',       need:0,mul:1,   maxtier:1,desc:'名单边缘的一个记号。派下来的都是没人愿意跑的杂务。'},
+  {name:'登记在册',   need:2,mul:1.2, maxtier:1,desc:'有了固定的代号，卷宗上开始写你的名字。'},
+  {name:'可信赖',     need:5,mul:1.4, maxtier:2,desc:'值夜者肯把没写在纸上的事，也交给你去办。'},
+  {name:'值夜者之友', need:9,mul:1.6, maxtier:3,desc:'不必再解释来历。递来的档案，往往只剩半页。'},
+];
+const COMMISSIONS=[
+  {id:'cm1',tier:1,tag:'杂务',title:'失踪的邮包',attr:'学识',diff:1,
+    body:'桥南一带连着几日有信未达。值夜者不想惊动邮局，只要有人把投递簿逐年核对一遍。',
+    reward:{gold:6,acting:4,nh:2},
+    win:'你把三本投递簿按日期并排摊开，圈出同一个收件地址。值夜者收下那张纸时没多问，只在名册上又添了一笔。',
+    fail:'簿子被水汽泡得发胀，字迹糊成一团。你抄了半晚，什么也没对出来。'},
+  {id:'cm2',tier:1,tag:'文书',title:'值夜卷宗的抄录',attr:'意志',diff:1,
+    body:'一叠旧卷宗顺序全乱了，需要按年月重排、誊清目录。枯燥，但没人会因此盯上你。',
+    reward:{gold:5,acting:5,nh:2,mad:-3},
+    win:'你把卷宗按年份排好，顺手补了两处缺失的编号。灯下抄写的这一夜，心里竟难得安静。',
+    fail:'抄到后半夜，编号开始在你眼前游移。你合上卷宗，承认今晚做不完了。'},
+  {id:'cm3',tier:1,tag:'走访',title:'煤气灯下的目击者',attr:'魅力',diff:1,
+    body:'一位证人连着三次拒绝开口。值夜者希望有人以「只是聊聊」的姿态去坐一会儿。',
+    reward:{gold:6,acting:5,nh:2},
+    win:'你没提案件，只替她把炉子添了煤。临走时她忽然说了个时间，你点头，没让她重复第二遍。',
+    fail:'你敲开门，她隔着门链看了你一眼，就把门合上了。有些话，急不得。'},
+  {id:'cm4',tier:2,tag:'查验',title:'雾港的无主货箱',attr:'灵感',diff:2,
+    body:'码头扣下一只无人认领的货箱，报关单是假的。值夜者要的不是清单，是「它本该送去哪」。',
+    reward:{gold:9,acting:6,nh:3,mat:'秘银丝'},
+    win:'箱底的木纹里嵌着盐霜与一点不该有的银丝。你顺着封条上的压痕，推回了一间早已停业的货栈。',
+    fail:'雾太浓，货箱的来路断在半途。你记下能记的，把剩下的留给值夜者。'},
+  {id:'cm5',tier:2,tag:'异常',title:'夜半的低语',attr:'灵感',diff:2,
+    body:'皇后区一栋宅子夜半有异响。值夜者只要求先探查、别惊动住户，是否需要上报由你判断。',
+    win:'你在墙后找到了一窝被煤气管烘暖的野猫，和一段松脱的铜管。你在报告里写：无需上报。这是真话。',
+    fail:'那声音在你靠近时停了，再没响起。你不敢断言它是什么，只好写「待复查」。',
+    reward:{gold:10,acting:8,nh:3,mad:2}},
+  {id:'cm6',tier:2,tag:'符号',title:'教堂后巷的涂鸦',attr:'学识',diff:2,
+    body:'后巷墙上出现一组不属于任何已知教派的符号。值夜者想先知道，它究竟是威胁，还是谁的恶作剧。',
+    reward:{gold:9,acting:7,nh:3,mat:'古老书页'},
+    win:'你临摹下来，翻了三本旧书，认出那是一百年前某家印刷行的装订记号——被谁照着描错了两笔。',
+    fail:'符号在雨里糊了一半。你带回去的临摹缺了关键的一角，谁也读不出完整意思。'},
+  {id:'cm7',tier:3,tag:'寻人',title:'失联的线人',attr:'灵感',diff:3,
+    body:'一位递过消息的人失联三日。值夜者不派人，只问你愿不愿意去找——并且做好找不到人的准备。',
+    reward:{gold:16,acting:10,nh:5,sus:2,mat:'星水晶'},
+    win:'你在慈惠医院的夜班名册上找到他化名登记的床位。人活着，只是被吓坏了。值夜者听完后沉默了很久，说：这次记你的。',
+    fail:'三条线索都断了。你回来时天已亮，只能如实说：没找到。没人责怪你，但名单上也没有新增的一笔。'},
+  {id:'cm8',tier:3,tag:'封印物',title:'仿造的封印物',attr:'意志',diff:3,
+    body:'黑市有人拿仿造的封印物叫卖，买主已经出现。值夜者要你在交易前把东西换出来，且不留下痕迹。',
+    reward:{gold:15,acting:9,nh:4},
+    win:'你没抢，只让卖家相信自己手里的那只是赝品。他主动撤了摊子。真品在傍晚回到了值夜者的柜子里。',
+    fail:'你晚了一步。买主带着东西消失在人流里，只留下摊主一句「早些来就好了」。'},
+  {id:'cm9',tier:3,tag:'卷宗',title:'不该出现的名字',attr:'学识',diff:3,
+    body:'一份新归档的卷宗里，出现了一个本该被注销的代号。值夜者没解释，只把卷宗放在你面前。',
+    reward:{gold:14,acting:10,nh:4,mad:-4},
+    win:'你比对笔迹与编号，确认是归档时的误植，而非有人回来过。你把那一页抽出来，没留副本——有些名字，少一个人知道更好。',
+    fail:'编号跨了二十年，旧档缺了三册。你无法证明它是误植，也无法证明它不是。只好把卷宗原样合上。'},
+];
 // 人物各有日程：不因玩家来或不来而改变
 const NPC_SCHEDULE=[
   {name:'邓恩·史密斯',em:'🧥',loc:'blackthorn',locName:'黑荆棘安保公司',days:[0,2,4,6],city:'tingen',note:'在整理值夜卷宗，桌上搁着凉透的咖啡'},
@@ -975,6 +1031,7 @@ function ensureWorld(){
   if(!G.factions||typeof G.factions!=='object') G.factions={};
   if(!G.worldFlags||typeof G.worldFlags!=='object') G.worldFlags={};
   if(!G.city||(G.city!=='tingen'&&G.city!=='backlund')) G.city='tingen';
+  if(!G.commission||typeof G.commission!=='object') G.commission={done:0,failed:0,doneDay:0,log:[]};
   if(!G.billState||typeof G.billState!=='object') G.billState=null;
   if(typeof G.debt!=='number') G.debt=0;
 }
@@ -1073,6 +1130,7 @@ function newGame(pathway,intro){
     echoes:[{day:1,act:'在水仙花街 2 号醒来，此后行止与从前略有不同'}],
     ledger:[{day:1,text:'黑荆棘安保公司录用为实习文员，周薪 '+fmtMoney(ECONOMY.weeklyWage)+'；本周房租待结。'}],
     worldLog:[], relations:{}, factions:{}, worldFlags:{}, debt:0,
+    commission:{done:0,failed:0,doneDay:0,log:[]},
     billState:{week:0,paid:false,remitted:false,skipped:false},
   };
 }
@@ -1093,6 +1151,12 @@ function normalizeG(){
   if(!G.inv) G.inv={};
   if(!G.storyFlags) G.storyFlags={};
   if(!G.visited) G.visited={};
+  // 值夜者名录：旧档没有委托记录时补默认值，避免读档后委托卡白屏
+  if(!G.commission||typeof G.commission!=='object') G.commission={done:0,failed:0,doneDay:0,log:[]};
+  if(typeof G.commission.done!=='number') G.commission.done=0;
+  if(typeof G.commission.failed!=='number') G.commission.failed=0;
+  if(typeof G.commission.doneDay!=='number') G.commission.doneDay=0;
+  if(!Array.isArray(G.commission.log)) G.commission.log=[];
   if(!Array.isArray(G.diary)) G.diary=[];
   if(!Array.isArray(G.rpPool)) G.rpPool=[];
   if(!G.attrs||typeof G.attrs!=='object') G.attrs={灵性:4,灵感:6,体魄:5,意志:6,学识:7,魅力:5};
@@ -1125,6 +1189,7 @@ function normalizeG(){
   if(!G.factions||typeof G.factions!=='object') G.factions={};
   if(!G.worldFlags||typeof G.worldFlags!=='object') G.worldFlags={};
   if(!G.city||(G.city!=='tingen'&&G.city!=='backlund')) G.city='tingen';
+  if(!G.commission||typeof G.commission!=='object') G.commission={done:0,failed:0,doneDay:0,log:[]};
   if(!G.billState||typeof G.billState!=='object') G.billState=null;
   if(typeof G.debt!=='number') G.debt=0;
   if(G.echoes.length===0) G.echoes=[{day:G.day,act:'在水仙花街 2 号醒来，此后行止与从前略有不同'}];
@@ -1560,6 +1625,66 @@ function skipWorldEvent(){
 }
 function gotoSchedule(id){ curView='map'; buildTabs(); renderView(); enterLocation(id); }
 
+/* ---------- 值夜者名录 · 编外委托 ---------- */
+function commissionUnlocked(){ return !!(G&&G.storyFlags&&G.storyFlags.bkNetDone); }
+function commissionRank(){
+  ensureWorld(); const done=(G.commission&&G.commission.done)||0;
+  let idx=0; for(let i=0;i<COMMISSION_RANKS.length;i++){ if(done>=COMMISSION_RANKS[i].need) idx=i; }
+  const r=COMMISSION_RANKS[idx], next=COMMISSION_RANKS[idx+1]||null;
+  return {idx:idx,done:done,name:r.name,mul:r.mul,maxtier:r.maxtier,desc:r.desc,next:next,left:next?next.need-done:0};
+}
+function commissionOf(day,rank){
+  const pool=COMMISSIONS.filter(c=>c.tier<=(rank||commissionRank()).maxtier);
+  return pool[(((day-1)%pool.length)+pool.length)%pool.length];
+}
+function takeCommission(){
+  ensureWorld();
+  if(!commissionUnlocked()){ toast('名录尚未向你敞开'); return; }
+  const c=G.commission;
+  if(c.doneDay===G.day){ toast('今日的委托已经办过了，明日再来'); return; }
+  const day0=G.day, rank=commissionRank(), job=commissionOf(G.day,rank);
+  const success=abilityCheck(job.attr,job.diff);
+  c.doneDay=day0;
+  let gold=0, acting=0, levelUp=null;
+  if(success){
+    const rw=job.reward, mul=rank.mul;
+    gold=Math.round((rw.gold||0)*mul); acting=Math.round((rw.acting||0)*mul);
+    G.gold=+(G.gold+gold).toFixed(4); G.acting+=acting;
+    if(rw.mad) G.madness=Math.max(0,Math.min(100,G.madness+rw.mad));
+    if(rw.mat) addInv({[rw.mat]:1});
+    if(rw.sus) addSuspicion(rw.sus);
+    faction('nighthawk',rw.nh||2);
+    c.done=(c.done||0)+1;
+    c.log.unshift({day:day0,title:job.title,ok:true});
+    addLedger('办妥值夜者委托「'+job.title+'」，名录资历 +1。');
+    const after=commissionRank(); if(after.idx>rank.idx) levelUp=after;
+  } else {
+    c.failed=(c.failed||0)+1;
+    G.gold=+(G.gold+2).toFixed(4);
+    G.madness=Math.max(0,Math.min(100,G.madness+5));
+    addSuspicion(2);
+    c.log.unshift({day:day0,title:job.title,ok:false});
+    addLedger('值夜者委托「'+job.title+'」未能办妥，只领了车马费。');
+  }
+  if(c.log.length>12) c.log.length=12;
+  G.madness=Math.max(0,Math.min(100,G.madness));
+  advanceDay('值夜者委托：'+job.title,
+    success?'值夜者名单上又多了办妥的一笔':'值夜者那边有人空手回来，没提缘由','blackthorn');
+  save(); renderView();
+  const gainTxt=success
+    ? `${gold} 金镑 · 扮演 +${acting}${job.reward.mat?' · '+job.reward.mat+' ×1':''}${job.reward.mad?(' · 疯狂 '+(job.reward.mad>0?'+':'')+job.reward.mad):''} · 值夜者态度 +${job.reward.nh||2} · 名录资历 +1`
+    : '车马费 2 金镑 · 疯狂 +5 · 暴露 +2 · 名录资历不变';
+  const after=commissionRank();
+  showModal(`<span class="x" onclick="closeModal();renderView()">✕</span>
+    <h2>🌙 ${job.title}</h2>
+    <p class="lead">${success?job.win:job.fail}</p>
+    <p class="mini ${success?'res-good':'res-bad'}">${success?'办妥了。':'没办成。'}获得：${gainTxt}。推进一日。</p>
+    ${levelUp?`<p class="mini" style="color:var(--gold)">✦ 名录资历晋升：<b>${levelUp.name}</b>。${levelUp.desc} 从明日起，值夜者会派更重的活给你。</p>`:''}
+    <p class="mini">名录：<b style="color:var(--teal)">${after.name}</b> · 已办妥 ${after.done} 件${after.next?`（距「${after.next.name}」还差 ${after.left} 件）`:'（已抵名录尽头）'} · 报酬倍率 ×${after.mul.toFixed(1)}</p>
+    <div class="btn-row"><button class="btn primary" onclick="closeModal();renderView()">合上卷宗</button></div>`);
+  if(G.madness>=100) setTimeout(gameOver,500);
+}
+
 VIEWS.world=function(v){
   ensureWorld();
   const wd=worldDate(G.day), ev=todayEvent(G.day), bs=billState(), news=makeNews(G.day);
@@ -1596,6 +1721,30 @@ VIEWS.world=function(v){
           <button class="btn ghost" onclick="skipWorldEvent()">只作壁上观</button>`}
     </div>`;
   v.appendChild(c3);
+
+  // 值夜者名录：收网之后解锁，每日一条可重复的编外委托（原创支线）
+  if(commissionUnlocked()){
+    const cm=G.commission, rk=commissionRank(), job=commissionOf(G.day,rk);
+    const rw=job.reward, mul=rk.mul;
+    const gold=Math.round((rw.gold||0)*mul), acting=Math.round((rw.acting||0)*mul);
+    const attrName=(ATTR_META[job.attr]&&ATTR_META[job.attr].name)||job.attr;
+    const diffTxt=['','低','中','高'][job.diff]||'中';
+    const pct=rk.next?Math.max(3,Math.min(100,Math.round(rk.done/rk.next.need*100))):100;
+    const cCM=document.createElement('div'); cCM.className='card';
+    cCM.innerHTML=`<h2>🌙 值夜者名录 · 今日委托</h2>
+      <p class="mini">收网那夜之后，你的名字留在了名单上。值夜者不把你当自己人，但肯把没人愿意跑的活递给你——<b>此支线为本游戏原创演绎</b>。</p>
+      <div class="fac"><span class="fn">✦ 名录资历：<b style="color:var(--teal)">${rk.name}</b></span><span class="fb"><i style="width:${pct}%"></i></span><span class="fv">${rk.done} 件</span></div>
+      <p class="mini">${rk.desc} 报酬倍率 <b>×${mul.toFixed(1)}</b>${rk.next?` · 再办妥 <b>${rk.left}</b> 件升至「${rk.next.name}」，解锁更重的委托`:' · 已抵名录尽头，全部委托向你敞开'}。</p>
+      <div class="wev"><div class="wt">［${job.tag} · ${diffTxt}难］${job.title}</div>
+        <p class="mini">${job.body}</p>
+        <p class="mini">检定：<b>${attrName}</b>（难度 ${diffTxt}） · 办妥可得 ${gold} 金镑 / 扮演 +${acting}${rw.mat?' / '+rw.mat+' ×1':''}${rw.mad?(' / 疯狂 '+(rw.mad>0?'+':'')+rw.mad):''} / 值夜者态度 +${rw.nh||2}。</p></div>
+      <div class="btn-row">${cm.doneDay===G.day
+        ?'<span class="mini" style="color:var(--good)">✓ 今日的委托已经办过了。</span>'
+        :'<button class="btn primary" onclick="takeCommission()">接下委托（消耗一日）</button>'}</div>
+      ${cm.log&&cm.log.length?`<h3>名录近录</h3><div class="ledger">${cm.log.slice(0,4).map(l=>`第 ${l.day} 日 · ${l.ok?'✓':'✗'} ${l.title}`).join('<br>')}</div>`:''}
+      <p class="mini">失手只留下疯狂与暴露，不涨资历；每次接活推进一日，故每日至多一条。累计失手 ${cm.failed||0} 件。</p>`;
+    v.appendChild(cCM);
+  }
 
   const c4=document.createElement('div'); c4.className='card';
   c4.innerHTML=`<h2>🕰️ 今日人物行程</h2>
@@ -1668,7 +1817,7 @@ VIEWS.map=function(v){
   const sl=suspLabel(), myMems=(G.origin&&G.origin.memories)||[];
   const usable=Object.keys(MODERN_SOLUTIONS).filter(k=>{const m=MODERN_SOLUTIONS[k];return !m.mem||myMems.indexOf(m.mem)>=0;});
   const bkLine = (G.storyFlags&&G.storyFlags.bkNetDone)
-    ? `<p class="mini" style="color:var(--teal)">🌊 贝克兰德暗涌 · 落幕：收网那夜的雾比往常更浓。此后值夜者的名单上，你的名字旁多了一个记号。</p>`
+    ? `<p class="mini" style="color:var(--teal)">🌊 贝克兰德暗涌 · 落幕：收网那夜的雾比往常更浓。你的名字留在了值夜者的名单上——去「今日世界」看看他们递来的活。</p>`
     : ((G.storyFlags&&G.storyFlags.bkCultDone)
       ? `<p class="mini" style="color:var(--gold)">🌊 贝克兰德暗涌 · 第二幕：值夜者已按你的线索在「雾港码头」布网——他们还缺一个敢下场的人。</p>`
       : ((G.storyFlags&&G.storyFlags.bkCultClue)?`<p class="mini" style="color:var(--teal)">🌊 贝克兰德暗涌：你已窥见极光会的线索，去「国会与下议院」把它递出去。</p>`:''));
@@ -2062,7 +2211,7 @@ VIEWS.codex=function(v){
       · <b style="color:var(--teal)">秘祈人 / 密修会</b>：游走于正邪之间的隐秘结社。<br>
       · <b style="color:var(--teal)">塔罗会</b>：你以"愚者"之名召集的信众，灰雾之上互通有无。</div>
     <h3 style="margin-top:14px">贝克兰德 · 首都舞台</h3>
-    <p class="mini">当你的序列抵达 <b>7 及以上</b>，可乘列车远行至首都贝克兰德。那里有皇后区的沙龙、桥南的贫民窟、圣乔治大教堂与国会下议院——更大的舞台，更深的暗流（含一条可了结的「贝克兰德暗涌」线索）。<b>贝克兰德的地点、人物与世界事件均为本游戏的原创演绎</b>，仅借用原著的城市与时代作背景，不复制原著剧情。</p>`;
+    <p class="mini">当你的序列抵达 <b>7 及以上</b>，可乘列车远行至首都贝克兰德。那里有皇后区的沙龙、桥南的贫民窟、圣乔治大教堂与国会下议院——更大的舞台，更深的暗流（「贝克兰德暗涌」三幕：取线索 → 密报 → 收网）。收网之后解锁<b>「值夜者名录」编外委托</b>：每日一条、可反复接办，累计办妥可晋升名录资历并解锁更重的活。<b>贝克兰德的地点、人物、世界事件与名录委托均为本游戏的原创演绎</b>，仅借用原著的城市与时代作背景，不复制原著剧情。</p>`;
   v.appendChild(c4);
 
   const o=G.origin||{}, myM=(o.memories||[]);
